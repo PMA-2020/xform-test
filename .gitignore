@@ -1,0 +1,25 @@
+# project
+_dev/
+dev/
+env/
+dist/
+*~$*
+
+# ide
+.idea
+*.iml
+out
+
+# java
+*.class
+
+# gradle
+.gradle
+build
+
+# maven
+target
+secrets.xml
+
+# OS X
+.DS_Store

@@ -1,0 +1,6 @@
+# Python is used for testing, documentation, and possibly, in the future, conversion.
+Sphinx
+sphinx-rtd-theme
+recommonmark
+m2r
+pyxform

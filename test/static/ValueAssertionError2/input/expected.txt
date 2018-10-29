@@ -1,0 +1,1 @@
+Exception in thread "main" org.pma2020.xform_test.ValueAssertionError: Asserted enterable value '-1' was not able to be entered on node SDP_1. The constraint '(. > 0 ) or (. = '-77')' was violated.

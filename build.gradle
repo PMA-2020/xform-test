@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+    id 'checkstyle'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    //noinspection GroovyAssignabilityCheck
+    main {
+        //noinspection GroovyAssignabilityCheck
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['res']
+        }
+    }
+}
+
+compileJava {
+    options.compilerArgs << "-Xlint:deprecation"
+}
+
+configurations {
+    // https://discuss.gradle.org/t/how-to-include-dependencies-in-jar/19571/5
+    // configuration that holds jars to include in the jar
+    extraLibs
+}
+
+dependencies {
+    // Be sure to update dependencies in pom.xml to match
+    compile group: 'org.opendatakit', name: 'opendatakit-javarosa', version: '2.11.2'
+    compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.21'
+    extraLibs group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.21'
+    extraLibs group: 'org.opendatakit', name: 'opendatakit-javarosa', version: '2.11.2'
+    configurations.compile.extendsFrom(configurations.extraLibs)
+}
+
+// Required to use fileExtensions property in checkstyle file
+checkstyle {
+    toolVersion = '7.6.1' 
+}
+
+jar {
+    baseName = 'xform-test'
+    // Be sure to update version in pom.xml to match
+    // snapshot release = x.x.x-SNAPSHOT
+    // production release = x.x.x
+    version = '0.3.0'
+    archiveName = baseName + '-' + version + '.jar'
+
+    manifest {
+        attributes 'Manifest-Version': "$jar.version"
+        attributes 'Main-Class': "org.pma2020.xform_test.XFormTest"
+    }
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+// TODO: does not build UML diagrams
+javadoc {
+    failOnError = false
+}
+
