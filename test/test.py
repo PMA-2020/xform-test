@@ -1,4 +1,5 @@
 """Tests for Xform Test Suite"""
+import ntpath
 import os
 import subprocess
 import unittest
@@ -24,6 +25,7 @@ def command_base_for_latest_jar(directory):
         list: Command list for jar.
     """
     return ['java', '-jar', latest_jar(directory)]
+
 
 def latest_jar(directory):
     """Gets name of highest versioned jar in directory.
@@ -73,10 +75,11 @@ class CliTest(unittest.TestCase):
     def input_files(self):
         """Return paths of input files for test class."""
         all_files = glob(self.input_path() + '*')
-        # With sans_temp_files, you can have Excel files open while testing.
-        sans_temp_files = [x for x in all_files
-                           if not x[len(self.input_path()):].startswith('~$')]
-        return sans_temp_files
+        # With "sans_temps", you can have Excel files open while testing.
+        sans_temps_and_dirs = [x for x in all_files if
+                               not x[len(self.input_path()):].startswith('~$')
+                               and not os.path.isdir(x)]
+        return sans_temps_and_dirs
 
     @staticmethod
     def _dict_options_to_list(options):
@@ -108,20 +111,29 @@ class CliTest(unittest.TestCase):
             ['--OPTION_NAME', 'VALUE', '--OPTION_NAME', ...]
 
         Returns:
-            1. str: TODO
-            2. str: TODO
+            1. str: Expected error message (empty string).
+            2. str: Actual error message, if any.
         """
+        msg = 'TestFailure: Error occurred while running test.\n\n' \
+              'Details:\n{}'
+        expected_err = ''
         in_files = self.input_files()
+        command = command_base_for_latest_jar(LIBS_DIR) + in_files + options
 
-        print(COMMAND_HEAD)
-        command = \
-            command_base_for_latest_jar(LIBS_DIR) + in_files + options
-        subprocess.call(command)
+        try:
+            process = subprocess.Popen(command,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
+            process.wait()
+            err_msg = process.stderr.read().decode().strip()
+            process.stderr.close()
+            process.stdout.close()
+        except Exception as err_msg:
+            err_msg = str(err_msg)
+        if err_msg:
+            self.assertEqual(expected_err, err_msg, msg.format(err_msg))
 
-        # TODO
-        expected = True
-        actual = False
-        return expected, actual
+        return expected_err, err_msg
 
     def standard_cli_test(self, options={}):
         """Checks CLI success.
@@ -135,13 +147,84 @@ class CliTest(unittest.TestCase):
         Side effects:
             assertEqual()
         """
+        for file in self.input_files():  # temp until xform-test doesn't make
+            if file.endswith('-modified.xml'):
+                os.remove(file)
+
         options_list = CliTest._dict_options_to_list(options)
 
         expected, actual = self.standard_cli(options_list)
         self.assertEqual(expected, actual)
 
+        for file in self.input_files():  # temp until xform-test doesn't make
+            if file.endswith('-modified.xml'):
+                os.remove(file)
 
-class MultipleFiles(CliTest):
+
+class XFormsTest(CliTest):
+    """Augments CliTest with methods for handling XForms and XLSForms."""
+
+    @staticmethod
+    def input_src_files(path):
+        """Return paths of input files for test class.
+
+        Args:
+            path (str): Path to dir with input files.
+
+        Returns:
+            list: Of files.
+        """
+        all_files = glob(path + '*')
+        # With "sans_temps", you can have Excel files open while testing.
+        sans_temps_and_dirs = [x for x in all_files if
+                               not x[len(path):].startswith('~$')
+                               and not os.path.isdir(x)]
+        return sans_temps_and_dirs
+
+    def update_xml_files(self):
+        """Update XML files."""
+        path = self.input_path() + 'src/'
+        for in_file in self.input_src_files(path):
+            in_filename = ntpath.basename(in_file)
+            out_filename = in_filename.replace('.xlsx', '.xml')
+            out_file = in_file.replace(in_filename, '../'+out_filename)
+            command = ['xls2xform', in_file, out_file]
+            process = subprocess.Popen(command)
+            process.wait()
+
+    @staticmethod
+    def delete_if_bad_extension(files, ok_extensions):
+        """Remove files with bad extension
+
+        Args:
+            files (list): List of paths of files.
+            ok_extensions (list): List of extensions that are ok to keep.
+
+        Side Effects:
+            Removes non-xml files from file system, not simply from an
+            in-memory array of references to test files.
+        """
+        for file in files:
+            if not any([file.endswith(x) for x in ok_extensions]):
+                os.remove(file)
+
+    def setUp(self):
+        """setUp"""
+        self.update_xml_files()
+        XFormsTest.delete_if_bad_extension(files=self.input_files(),
+                                           ok_extensions=['.xml'])
+
+
+class MultipleFiles(XFormsTest):
+    """Can run CLI on multiple files at once?"""
+
+    def test_cli(self):
+        """Simple smoke test to see that CLI runs without error."""
+        super(XFormsTest, self).setUp()
+        self.standard_cli_test()
+
+
+class MultipleTestCases(XFormsTest):
     """Can run CLI on multiple files at once?"""
 
     def test_cli(self):
