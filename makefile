@@ -29,8 +29,8 @@ run-only: xform-test-only
 
 # Install
 make install:
-	rm /Library/Java/Extensions/xform-test.jar; \
-	sudo cp build/libs/xform-test*.jar /Library/Java/Extensions/xform-test.jar
+	rm /Library/Java/Executables/xform-test.jar; \
+	sudo cp build/libs/xform-test*.jar /Library/Java/Executables/xform-test.jar
 
 # Build
 build:
@@ -62,10 +62,10 @@ build-docs:
 	make build-docs-no-open && \
 	make open-docs
 docs-push-production:
-	aws s3 sync docs/build/html s3://xform-test.pma2020.org --region us-west-2\
+	aws s3 sync docs/build/html s3://xform-test-docs.pma2020.org --region us-west-2\
 	 --profile work
 docs-push-staging:
-	aws s3 sync docs/build/html s3://xform-test-staging.pma2020.org --region\
+	aws s3 sync docs/build/html s3://xform-test-docs-staging.pma2020.org --region\
 	 us-west-2 --profile work
 docs-push:
 	make docs-push-staging && \

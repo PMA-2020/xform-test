@@ -126,6 +126,7 @@ class CliTest(unittest.TestCase):
                                        stderr=subprocess.PIPE)
             process.wait()
             err_msg = process.stderr.read().decode().strip()
+            # stdout = process.stdout.read().decode().strip()
             process.stderr.close()
             process.stdout.close()
         except Exception as err_msg:
