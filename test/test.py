@@ -126,7 +126,9 @@ class CliTest(unittest.TestCase):
                                        stderr=subprocess.PIPE)
             process.wait()
             err_msg = process.stderr.read().decode().strip()
-            # stdout = process.stdout.read().decode().strip()
+            # TODO: Temp
+            stdout = process.stdout.read().decode().strip()
+            print(stdout)
             process.stderr.close()
             process.stdout.close()
         except Exception as err_msg:
@@ -226,6 +228,15 @@ class MultipleFiles(XFormsTest):
 
 
 class MultipleTestCases(XFormsTest):
+    """Can run CLI on multiple files at once?"""
+
+    def test_cli(self):
+        """Simple smoke test to see that CLI runs without error."""
+        self.standard_cli_test()
+
+
+# TODO
+class ValueAssertionError(XFormsTest):
     """Can run CLI on multiple files at once?"""
 
     def test_cli(self):

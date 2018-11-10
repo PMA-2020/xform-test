@@ -207,27 +207,23 @@ public class XFormTest {
 
     /** Runs XFormTest spec tests on valid XForm XML files.
      *
-     * @param args Plain text paths to valid XForm XML files.
-     *
-     * @throws IllegalArgumentException if more than one argument provided.
-     * @throws AssertionSyntaxException if invalid syntax via usage of comma within values rather than exclusively as an
-     * assertion field delimiter.
-     * @throws AssertionTypeException if invalid assertion type (e.g. value or relevant or constraint) is
-     * asserted. This can happen if, for example, a value assertion is made on a read_only question. For read_only
-     * questions, no value can be entered, so such an assertion is inherently invalid.
-     * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
-     * @throws RelevantAssertionError if relevant did not evaluate as expected. */
-    public static void main(String[] args) throws IllegalArgumentException, AssertionSyntaxException,
-            AssertionTypeException, MissingAssertionError, RelevantAssertionError {
+     * @param args Plain text paths to valid XForm XML files. */
+    public static void main(String[] args) {
         if (args.length == 0)
-            throw new IllegalArgumentException("Error: Must pass one or more files as arguments.");
-        for (String file : args)
-            validateFile(file);
+            System.err.println("XFormTestError: Must pass one or more files as arguments.");
+        try {
+            for (String file : args)
+                validateFile(file);
 
-        System.out.println("\nRunning XForm Test");
-        System.out.println("http://xform-test.pma2020.org");
-        for (String file : args) {
-            runTestsOnFile(file);
+                System.out.println("\nRunning XForm Test");
+                System.out.println("http://xform-test.pma2020.org");
+
+                for (String file : args) {
+                    runTestsOnFile(file);
+                }
+        } catch (AssertionSyntaxException | AssertionTypeException| MissingAssertionError |
+                RelevantAssertionError | XformTestIllegalArgumentException err) {
+            System.err.println(err.getClass().getSimpleName() + ": " + err.getMessage());
         }
     }
 
@@ -271,9 +267,17 @@ public class XFormTest {
      * @return a list of valid XFormTest fields*/
     private static ArrayList<String> testFieldNames(String filePath) {
         ArrayList<String> fieldNames = new ArrayList<>();
-
         XFormTest tempInstance = new XFormTest();
+
+        // Silence stdout while doing this first setup.
+        PrintStream originalStream = System.out;
+        PrintStream dummyStream = new PrintStream(new OutputStream(){
+            public void write(int b) {}  // NO-OP
+        });
+        System.setOut(dummyStream);
         FormEntryController tempFormEntryController = tempInstance.setUpAndGetController(filePath);
+        System.setOut(originalStream);
+
         ArrayList<TreeElement> tempInstanceNodes = instanceNodes(tempFormEntryController);
         ArrayList<TreeElement> tempFormElements = instanceNodesToFormElements(tempInstanceNodes);
 
@@ -294,10 +298,10 @@ public class XFormTest {
 
     /** Validates file and throws error early if it detects file is not valid.
      * @param fileName path to file to be validated.
-     * @throws IllegalArgumentException if file is not valid. */
-    private static void validateFile(String fileName) throws IllegalArgumentException {
+     * @throws XformTestIllegalArgumentException if file is not valid. */
+    private static void validateFile(String fileName) throws XformTestIllegalArgumentException {
        if (!fileName.endsWith(".xml"))
-           throw new IllegalArgumentException("Error: Non-XML file passed as argument. Please pass only XML files." +
+           throw new XformTestIllegalArgumentException("Error: Non-XML file passed as argument. Please pass only XML files." +
                    "\n\nErrored on the following file:\n" +
                    fileName);
     }
@@ -988,10 +992,10 @@ public class XFormTest {
             throw new AssertionSyntaxException("Relevant statement syntax on'" + node.getName() + "' was invalid." +
                 "\nExpected: " + "true || 1 || false || 0" +
                 "\nGot: " + relevant);
-        boolean assertedIsRelevant = (relevant.equals("true") || relevant.equals("1"));
-        if (node.isRelevant() != assertedIsRelevant)
+        boolean assertedRelevancy = (relevant.equals("true") || relevant.equals("1"));
+        if (node.isRelevant() != assertedRelevancy)
             throw new RelevantAssertionError("Relevant for '" + node.getName() + "' did not evaluate as expected." +
-                "\nExpected: " + String.valueOf(assertedIsRelevant) +
+                "\nExpected: " + String.valueOf(assertedRelevancy) +
                 "\nGot: " + String.valueOf(node.isRelevant()));
         nodeTestResults.put("relevant", node.getName());
         nodeTestResults.put("relevantAssertion", String.valueOf(node.isRelevant()));
@@ -1045,16 +1049,20 @@ public class XFormTest {
         }
 
         for (TreeElement node : arbitraryNodeset) {
-            TreeElement activeInstanceNode = formDef.getMainInstance().resolveReference(
-                formEntryController.getModel().getFormIndex().getReference());
-            int arbitraryNodesetIndex = nodeIndexLookup.get(node.getName());
-            int activeInstanceIndex = nodeIndexLookup.get(activeInstanceNode.getName());
-
             if (currentRepeatNum == 1)  // Only needed once per repeat group.
                 trackAndValidateRepeatNode(node, testFieldName);
+
             testAssertions(node, testFieldName);
-            if (activeInstanceIndex == arbitraryNodesetIndex)  // this may need work
-                step();
+
+            if (!formEntryController.getModel().getFormIndex().isEndOfFormIndex()) {
+                TreeElement activeInstanceNode = formDef.getMainInstance().resolveReference(
+                        formEntryController.getModel().getFormIndex().getReference());
+                int activeInstanceIndex = nodeIndexLookup.get(activeInstanceNode.getName());
+                int arbitraryNodesetIndex = nodeIndexLookup.get(node.getName());
+                if (activeInstanceIndex == arbitraryNodesetIndex)  // this may need work
+                    step();
+            }
+
             if (currentEventState.equals("EVENT_PROMPT_NEW_REPEAT")) {
                 handleRepeatNavigation();
                 handleRepeatProcessingRecursively(testFieldName);

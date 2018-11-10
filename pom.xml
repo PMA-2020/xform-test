@@ -6,7 +6,7 @@
   <!-- Be sure to update version in build.gradle to match -->
   <!-- snapshot release = x.x.x-SNAPSHOT -->
   <!-- production release = x.x.x -->
-  <version>0.3.0</version>
+  <version>0.3.1</version>
   <packaging>jar</packaging>
   <name>XFormTest</name>
   <description>A test suite for Xforms.</description>

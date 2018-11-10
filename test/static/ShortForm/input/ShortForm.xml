@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>demo-form-v1</h:title>
+    <model>
+      <itext>
+        <translation default="true()" lang="English">
+          <text id="/ShortForm/start:label">
+            <value>-</value>
+          </text>
+          <text id="/ShortForm/end:label">
+            <value>-</value>
+          </text>
+          <text id="/ShortForm/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/ShortForm/simserial:label">
+            <value>-</value>
+          </text>
+          <text id="/ShortForm/phonenumber:label">
+            <value>-</value>
+          </text>
+          <text id="/ShortForm/name:label">
+            <value>1. What is your name?</value>
+          </text>
+          <text id="/ShortForm/drink:label">
+            <value>2. What's your favorite drink?</value>
+          </text>
+          <text id="/ShortForm/sex:label">
+            <value>3. Are you male or female?</value>
+          </text>
+          <text id="/ShortForm/sex/m:label">
+            <value>Male</value>
+          </text>
+          <text id="/ShortForm/sex/f:label">
+            <value>Female</value>
+          </text>
+          <text id="/ShortForm/ever_birth:label">
+            <value>4. Have you ever given birth?</value>
+          </text>
+          <text id="/ShortForm/ever_birth/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/ShortForm/ever_birth/no:label">
+            <value>No</value>
+          </text>
+        </translation>
+        <translation lang="Français">
+          <text id="/ShortForm/name:label">
+            <value>1. Quel est ton nom?</value>
+          </text>
+          <text id="/ShortForm/drink:label">
+            <value>2. Quelle est votre boisson préférée?</value>
+          </text>
+          <text id="/ShortForm/sex:label">
+            <value>3. Êtes-vous un homme ou une femme?</value>
+          </text>
+          <text id="/ShortForm/sex/m:label">
+            <value>Mâle</value>
+          </text>
+          <text id="/ShortForm/sex/f:label">
+            <value>Femelle</value>
+          </text>
+          <text id="/ShortForm/ever_birth:label">
+            <value>4. As-tu déjà accouché?</value>
+          </text>
+          <text id="/ShortForm/ever_birth/yes:label">
+            <value>Oui</value>
+          </text>
+          <text id="/ShortForm/ever_birth/no:label">
+            <value>Non</value>
+          </text>
+          <text id="/ShortForm/start:label">
+            <value>-</value>
+          </text>
+          <text id="/ShortForm/end:label">
+            <value>-</value>
+          </text>
+          <text id="/ShortForm/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/ShortForm/simserial:label">
+            <value>-</value>
+          </text>
+          <text id="/ShortForm/phonenumber:label">
+            <value>-</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <ShortForm id="demo-form-v1">
+          <start/>
+          <end/>
+          <deviceid/>
+          <simserial/>
+          <phonenumber/>
+          <name/>
+          <drink/>
+          <sex/>
+          <ever_birth/>
+          <meta>
+            <instanceID/>
+          </meta>
+        </ShortForm>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/ShortForm/start" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/ShortForm/end" type="dateTime"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/ShortForm/deviceid" type="string"/>
+      <bind jr:preload="property" jr:preloadParams="simserial" nodeset="/ShortForm/simserial" type="string"/>
+      <bind jr:preload="property" jr:preloadParams="phonenumber" nodeset="/ShortForm/phonenumber" type="string"/>
+      <bind nodeset="/ShortForm/name" test1="Joe" type="string"/>
+      <bind nodeset="/ShortForm/drink" test1="coffee" type="string"/>
+      <bind nodeset="/ShortForm/sex" test1="m" type="select1"/>
+      <bind nodeset="/ShortForm/ever_birth" relevant=" /ShortForm/sex  != 'm'" test1="relevant: false" type="select1"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/ShortForm/meta/instanceID" readonly="true()" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/ShortForm/name">
+      <label ref="jr:itext('/ShortForm/name:label')"/>
+    </input>
+    <input ref="/ShortForm/drink">
+      <label ref="jr:itext('/ShortForm/drink:label')"/>
+    </input>
+    <select1 ref="/ShortForm/sex">
+      <label ref="jr:itext('/ShortForm/sex:label')"/>
+      <item>
+        <label ref="jr:itext('/ShortForm/sex/m:label')"/>
+        <value>m</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/ShortForm/sex/f:label')"/>
+        <value>f</value>
+      </item>
+    </select1>
+    <select1 ref="/ShortForm/ever_birth">
+      <label ref="jr:itext('/ShortForm/ever_birth:label')"/>
+      <item>
+        <label ref="jr:itext('/ShortForm/ever_birth/yes:label')"/>
+        <value>yes</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/ShortForm/ever_birth/no:label')"/>
+        <value>no</value>
+      </item>
+    </select1>
+  </h:body>
+</h:html>

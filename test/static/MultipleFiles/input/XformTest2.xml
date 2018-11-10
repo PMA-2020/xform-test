@@ -1,0 +1,442 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>IDR1-Selection-v1</h:title>
+    <model>
+      <itext>
+        <translation default="true()" lang="English">
+          <text id="/XformTest2/wrong_date_error:jr:constraintMsg">
+            <value>2018-06-10 &lt;&gt; 2019-06-10</value>
+          </text>
+          <text id="/XformTest2/wrong_date_error:label">
+            <value>Your phone's system date and time appear to be incorrect. Please exit ODK and change the system date and time in the Settings menu.</value>
+          </text>
+          <text id="/XformTest2/your_name_check:label">
+            <value> A. Your name: <output value=" /XformTest2/your_name "/>Is this your name? </value>
+          </text>
+          <text id="/XformTest2/your_name_check/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/XformTest2/your_name_check/no:label">
+            <value>No</value>
+          </text>
+          <text id="/XformTest2/name_typed:label">
+            <value>A. Enter your name below.</value>
+          </text>
+          <text id="/XformTest2/name_typed:hint">
+            <value>Please record your name</value>
+          </text>
+          <text id="/XformTest2/date_group/system_date:label">
+            <value>B. Current date and time.</value>
+          </text>
+          <text id="/XformTest2/date_group/system_date_check:label">
+            <value>Is this date and time correct?</value>
+          </text>
+          <text id="/XformTest2/date_group/system_date_check/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/XformTest2/date_group/system_date_check/no:label">
+            <value>No</value>
+          </text>
+          <text id="/XformTest2/manual_date:jr:constraintMsg">
+            <value>2018-06-10 &lt;&gt; 2019-06-10</value>
+          </text>
+          <text id="/XformTest2/manual_date:label">
+            <value>C. Record the correct date and time.</value>
+          </text>
+          <text id="/XformTest2/level1:label">
+            <value>D. Region</value>
+          </text>
+          <text id="/XformTest2/level1:hint">
+            <value>Please select the name of the region where the household is located.</value>
+          </text>
+          <text id="/XformTest2/level2:label">
+            <value>D. Locality</value>
+          </text>
+          <text id="/XformTest2/level2:hint">
+            <value>Please select the name of the district where the household is located.</value>
+          </text>
+          <text id="/XformTest2/EA:label">
+            <value>D. Enumeration area</value>
+          </text>
+          <text id="/XformTest2/EA:hint">
+            <value>Based on your selection of the locality, the EA number is below. Select the option to acknowledge.</value>
+          </text>
+          <text id="/XformTest2/RE_name:label">
+            <value>E. Name of RE</value>
+          </text>
+          <text id="/XformTest2/HH_selectionprompt:label">
+            <value>For every randomly selected household in this EA, enter the serial number, structure number, and household number.</value>
+          </text>
+          <text id="/XformTest2/HH_selectionrpt:label">
+            <value>Randomly selected household</value>
+          </text>
+          <text id="/XformTest2/HH_selectionrpt/HH_selectiongrp/serial:label">
+            <value>Q1. Serial Number</value>
+          </text>
+          <text id="/XformTest2/HH_selectionrpt/HH_selectiongrp/structure:label">
+            <value>Q2. Structure Number</value>
+          </text>
+          <text id="/XformTest2/HH_selectionrpt/HH_selectiongrp/household:label">
+            <value>Q3. Household Number</value>
+          </text>
+          <text id="/XformTest2/HH_selectioncheck_grp/HH_selectioncheck_list:label">
+            <value> Q4. Review the households you selected: 
+
+Serial: Structure-HH
+<output value=" /XformTest2/all_selected_HH "/> </value></text>
+          <text id="/XformTest2/HH_selectioncheck_grp/HH_selectioncheck:label">
+            <value>Q5. Are all selected households correct and is the selection complete?</value>
+          </text>
+          <text id="/XformTest2/HH_selectioncheck_grp/HH_selectioncheck/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/XformTest2/HH_selectioncheck_grp/HH_selectioncheck/no:label">
+            <value>No</value>
+          </text>
+          <text id="/XformTest2/goback:label">
+            <value>GO BACK: update the selection to the correct households.</value>
+          </text>
+          <text id="/XformTest2/too_few:label">
+            <value> WARNING: You have only selected <output value=" /XformTest2/num_HH_selected "/>. EAs usually contain <output value=" /XformTest2/max_num_HH "/> except in special cases. 
+
+Did you correctly enter the selected households? </value>
+          </text>
+          <text id="/XformTest2/too_few/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/XformTest2/too_few/no:label">
+            <value>No</value>
+          </text>
+          <text id="/XformTest2/too_few_confirm:label">
+            <value> Is the Central Staff aware that you have selected <output value=" /XformTest2/num_HH_selected "/> households? </value>
+          </text>
+          <text id="/XformTest2/too_few_confirm/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/XformTest2/too_few_confirm/no:label">
+            <value>No</value>
+          </text>
+          <text id="/XformTest2/goback_2:label">
+            <value>CONTACT CENTRAL STAFF 
+
+or 
+
+GO BACK: update the selection to the correct households.</value>
+          </text>
+          <text id="/XformTest2/too_many:label">
+            <value> You have selected <output value=" /XformTest2/num_HH_selected "/>. You cannot select more than <output value=" /XformTest2/max_num_HH "/>. Go back and correct the selection. 
+
+The selection must be randomly generated. </value>
+          </text>
+          <text id="/XformTest2/SDP_selection_prompt:label">
+            <value>Now you will enter up to three selected private SDPs.</value>
+          </text>
+          <text id="/XformTest2/SDP_selection_prompt:hint">
+            <value>If you were unable to select 3 SDPs, enter -77 for any missing SDPs</value>
+          </text>
+          <text id="/XformTest2/SDP_1:label">
+            <value>First SDP:</value>
+          </text>
+          <text id="/XformTest2/SDP_1:hint">
+            <value>Enter -77 for not applicable</value>
+          </text>
+          <text id="/XformTest2/SDP_2:label">
+            <value>Second SDP:</value>
+          </text>
+          <text id="/XformTest2/SDP_2:hint">
+            <value>Enter -77 for not applicable</value>
+          </text>
+          <text id="/XformTest2/SDP_3:label">
+            <value>Third SDP:</value>
+          </text>
+          <text id="/XformTest2/SDP_3:hint">
+            <value>Enter -77 for not applicable</value>
+          </text>
+          <text id="/XformTest2/SDP_check:jr:constraintMsg">
+            <value>Go back and correct the listing.</value>
+          </text>
+          <text id="/XformTest2/SDP_check:label">
+            <value> You selected these facilities: 
+<output value=" /XformTest2/SDP_1 "/> <output value=" /XformTest2/SDP_2 "/>
+               
+<output value=" /XformTest2/SDP_3 "/>
+Is this correct? </value>
+          </text>
+          <text id="/XformTest2/SDP_check/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/XformTest2/SDP_check/no:label">
+            <value>No</value>
+          </text>
+          <text id="/XformTest2/start:label">
+            <value>-</value>
+          </text>
+          <text id="/XformTest2/end:label">
+            <value>-</value>
+          </text>
+          <text id="/XformTest2/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/XformTest2/simserial:label">
+            <value>-</value>
+          </text>
+          <text id="/XformTest2/phonenumber:label">
+            <value>-</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <XformTest2 id="sel-idr1-v1">
+          <wrong_date_error/>
+          <your_name/>
+          <your_name_check/>
+          <name_typed/>
+          <date_group>
+            <system_date/>
+            <system_date_check/>
+          </date_group>
+          <manual_date/>
+          <this_country/>
+          <level1/>
+          <level2/>
+          <EA/>
+          <RE_name/>
+          <HH_selectionprompt/>
+          <HH_selectionrpt jr:template="">
+            <HH_selectiongrp>
+              <serial/>
+              <structure/>
+              <household/>
+            </HH_selectiongrp>
+            <HH_selectionconcat/>
+          </HH_selectionrpt>
+          <max_num_HH/>
+          <num_HH_selected/>
+          <all_selected_HH/>
+          <HH_selectioncheck_grp>
+            <HH_selectioncheck_list/>
+            <HH_selectioncheck/>
+          </HH_selectioncheck_grp>
+          <goback/>
+          <too_few/>
+          <too_few_confirm/>
+          <goback_2/>
+          <too_many/>
+          <SDP_selection_prompt/>
+          <SDP_1/>
+          <SDP_2/>
+          <SDP_3/>
+          <SDP_check/>
+          <start/>
+          <end/>
+          <deviceid/>
+          <simserial/>
+          <phonenumber/>
+          <meta>
+            <instanceID/>
+            <instanceName/>
+          </meta>
+        </XformTest2>
+      </instance>
+      <instance id="imei.csv" src="jr://file-csv/imei.csv.csv">
+        <root>
+          <item>
+            <name>_</name>
+            <label>_</label>
+          </item>
+        </root>
+      </instance>
+      <bind jr:constraintMsg="jr:itext('/XformTest2/wrong_date_error:jr:constraintMsg')" nodeset="/XformTest2/wrong_date_error" readonly="true()" relevant="today() &lt; date(&quot;2018-06-10&quot;) or today() &gt; date(&quot;2019-06-10&quot;)" required="true()" type="string" xtest-linearAssert="relevant: 0"/>
+      <bind calculate="pulldata('imei.csv','re_name','imei_key',concat('Z', /XformTest2/deviceid ))" nodeset="/XformTest2/your_name" relevant="0" type="string" xtest-linearAssert="relevant: 0"/>
+      <bind nodeset="/XformTest2/your_name_check" relevant=" /XformTest2/your_name  != ''" required="true()" type="select1" xtest-linearAssert="{relevant: 0}"/>
+      <bind constraint="string-length(.) &lt;= 15" nodeset="/XformTest2/name_typed" relevant="( /XformTest2/your_name_check  = 'no') or  /XformTest2/your_name  = ''" required="true()" type="string" xtest-linearAssert="relevant: 1, value: Joe, constraint: null"/>
+      <bind nodeset="/XformTest2/date_group" relevant="today() &gt; date(&quot;2018-06-10&quot;) and today() &lt; date(&quot;2019-06-10&quot;)" xtest-linearAssert="relevant: 1"/>
+      <bind nodeset="/XformTest2/date_group/system_date" readonly="true()" type="dateTime"/>
+      <bind nodeset="/XformTest2/date_group/system_date_check" required="true()" type="select1" xtest-linearAssert="true()"/>
+      <bind constraint=". &gt; date(&quot;2018-06-10&quot;) and . &lt; date(&quot;2019-06-10&quot;)" jr:constraintMsg="jr:itext('/XformTest2/manual_date:jr:constraintMsg')" nodeset="/XformTest2/manual_date" relevant=" /XformTest2/date_group/system_date_check  = 'no' or today() &lt; date(&quot;2018-06-10&quot;) or today() &gt; date(&quot;2019-06-10&quot;)" required="true()" type="dateTime" xtest-linearAssert="relevant: 0"/>
+      <bind calculate="Country" nodeset="/XformTest2/this_country" type="string" xtest-linearAssert="value: Country, relevant: 1"/>
+      <bind nodeset="/XformTest2/level1" required="true()" type="string" xtest-linearAssert="location_1a"/>
+      <bind nodeset="/XformTest2/level2" required="true()" type="string" xtest-linearAssert="location_2a"/>
+      <bind nodeset="/XformTest2/EA" required="true()" type="string" xtest-linearAssert="EA_location_a"/>
+      <bind nodeset="/XformTest2/RE_name" required="true()" type="string" xtest-linearAssert="Joe"/>
+      <bind nodeset="/XformTest2/HH_selectionprompt" readonly="true()" type="string" xtest-linearAssert="relevant: 1"/>
+      <bind nodeset="/XformTest2/HH_selectionrpt" xtest-linearAssert="relevant: 1"/>
+      <bind nodeset="/XformTest2/HH_selectionrpt/HH_selectiongrp" xtest-linearAssert="relevant: 1"/>
+      <bind nodeset="/XformTest2/HH_selectionrpt/HH_selectiongrp/serial" required="true()" type="int" xtest-linearAssert="[252, 777]"/>
+      <bind nodeset="/XformTest2/HH_selectionrpt/HH_selectiongrp/structure" required="true()" type="int" xtest-linearAssert="[123, 999]"/>
+      <bind nodeset="/XformTest2/HH_selectionrpt/HH_selectiongrp/household" required="true()" type="int" xtest-linearAssert="[636, 444]"/>
+      <bind calculate="concat( /XformTest2/HH_selectionrpt/HH_selectiongrp/serial ,': ', /XformTest2/HH_selectionrpt/HH_selectiongrp/structure ,'-', /XformTest2/HH_selectionrpt/HH_selectiongrp/household ,'&amp;#x0a;')" nodeset="/XformTest2/HH_selectionrpt/HH_selectionconcat" type="string" xtest-linearAssert="[252\: 123-636&amp;#x0a;, 777\: 999-444&amp;#x0a;]"/>
+      <bind calculate="35" nodeset="/XformTest2/max_num_HH" type="string" xtest-linearAssert="35"/>
+      <bind calculate="(count( /XformTest2/HH_selectionrpt ))" nodeset="/XformTest2/num_HH_selected" type="string" xtest-linearAssert="2"/>
+      <bind calculate="join('', /XformTest2/HH_selectionrpt/HH_selectionconcat )" nodeset="/XformTest2/all_selected_HH" type="string" xtest-linearAssert="252\: 123-636&amp;#x0a;777\: 999-444&amp;#x0a;"/>
+      <bind nodeset="/XformTest2/HH_selectioncheck_grp" xtest-linearAssert="relevant: 1"/>
+      <bind nodeset="/XformTest2/HH_selectioncheck_grp/HH_selectioncheck_list" readonly="true()" type="string" xtest-linearAssert="relevant: 1"/>
+      <bind nodeset="/XformTest2/HH_selectioncheck_grp/HH_selectioncheck" required="true()" type="select1" xtest-linearAssert="true()"/>
+      <bind nodeset="/XformTest2/goback" readonly="true()" relevant=" /XformTest2/HH_selectioncheck_grp/HH_selectioncheck  = 'no'" required="true()" type="string" xtest-linearAssert="relevant: 0"/>
+      <bind nodeset="/XformTest2/too_few" relevant=" /XformTest2/num_HH_selected  &lt;  /XformTest2/max_num_HH " required="true()" type="select1" xtest-linearAssert="true()"/>
+      <bind nodeset="/XformTest2/too_few_confirm" relevant=" /XformTest2/too_few  = 'yes'" required="true()" type="select1" xtest-linearAssert="true()"/>
+      <bind nodeset="/XformTest2/goback_2" readonly="true()" relevant="( /XformTest2/too_few_confirm  = 'no') or ( /XformTest2/too_few  = 'no')" required="true()" type="string" xtest-linearAssert="relevant: 0"/>
+      <bind nodeset="/XformTest2/too_many" readonly="true()" relevant=" /XformTest2/num_HH_selected  &gt;  /XformTest2/max_num_HH " required="true()" type="string" xtest-linearAssert="relevant: 0"/>
+      <bind nodeset="/XformTest2/SDP_selection_prompt" readonly="true()" type="string" xtest-linearAssert="relevant: 1"/>
+      <bind constraint="(. &gt; 0 ) or (. = '-77')" nodeset="/XformTest2/SDP_1" required="true()" type="int" xtest-linearAssert="1"/>
+      <bind constraint="(. &gt; 0 ) or (. = '-77')" nodeset="/XformTest2/SDP_2" required="true()" type="int" xtest-linearAssert="2"/>
+      <bind constraint="(. &gt; 0 ) or (. = '-77')" nodeset="/XformTest2/SDP_3" required="true()" type="int" xtest-linearAssert="-77"/>
+      <bind constraint="(. = 'yes')" jr:constraintMsg="jr:itext('/XformTest2/SDP_check:jr:constraintMsg')" nodeset="/XformTest2/SDP_check" required="true()" type="select1" xtest-linearAssert="true()"/>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/XformTest2/start" type="dateTime" xtest-linearAssert="relevant: 1"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/XformTest2/end" type="dateTime" xtest-linearAssert="relevant: 1"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/XformTest2/deviceid" type="string" xtest-linearAssert="relevant: 1"/>
+      <bind jr:preload="property" jr:preloadParams="simserial" nodeset="/XformTest2/simserial" type="string" xtest-linearAssert="relevant: 1"/>
+      <bind jr:preload="property" jr:preloadParams="phonenumber" nodeset="/XformTest2/phonenumber" type="string" xtest-linearAssert="relevant: 1"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/XformTest2/meta/instanceID" readonly="true()" type="string"/>
+      <bind calculate="concat(&quot;Selection:&quot;, /XformTest2/EA )" nodeset="/XformTest2/meta/instanceName" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/XformTest2/wrong_date_error">
+      <label ref="jr:itext('/XformTest2/wrong_date_error:label')"/>
+    </input>
+    <select1 ref="/XformTest2/your_name_check">
+      <label ref="jr:itext('/XformTest2/your_name_check:label')"/>
+      <item>
+        <label ref="jr:itext('/XformTest2/your_name_check/yes:label')"/>
+        <value>yes</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/XformTest2/your_name_check/no:label')"/>
+        <value>no</value>
+      </item>
+    </select1>
+    <input ref="/XformTest2/name_typed">
+      <label ref="jr:itext('/XformTest2/name_typed:label')"/>
+      <hint ref="jr:itext('/XformTest2/name_typed:hint')"/>
+    </input>
+    <group appearance="field-list" ref="/XformTest2/date_group">
+      <input appearance="no-calendar" ref="/XformTest2/date_group/system_date">
+        <label ref="jr:itext('/XformTest2/date_group/system_date:label')"/>
+      </input>
+      <select1 ref="/XformTest2/date_group/system_date_check">
+        <label ref="jr:itext('/XformTest2/date_group/system_date_check:label')"/>
+        <item>
+          <label ref="jr:itext('/XformTest2/date_group/system_date_check/yes:label')"/>
+          <value>yes</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/XformTest2/date_group/system_date_check/no:label')"/>
+          <value>no</value>
+        </item>
+      </select1>
+    </group>
+    <input appearance="no-calendar" ref="/XformTest2/manual_date">
+      <label ref="jr:itext('/XformTest2/manual_date:label')"/>
+    </input>
+    <input query="instance('level1_list')/root/item[filter_list= /XformTest2/this_country ]" ref="/XformTest2/level1">
+      <label ref="jr:itext('/XformTest2/level1:label')"/>
+      <hint ref="jr:itext('/XformTest2/level1:hint')"/>
+    </input>
+    <input query="instance('level2_list')/root/item[filter_list= /XformTest2/level1 ]" ref="/XformTest2/level2">
+      <label ref="jr:itext('/XformTest2/level2:label')"/>
+      <hint ref="jr:itext('/XformTest2/level2:hint')"/>
+    </input>
+    <input query="instance('EA_list')/root/item[filter_list= /XformTest2/level2 ]" ref="/XformTest2/EA">
+      <label ref="jr:itext('/XformTest2/EA:label')"/>
+      <hint ref="jr:itext('/XformTest2/EA:hint')"/>
+    </input>
+    <input ref="/XformTest2/RE_name">
+      <label ref="jr:itext('/XformTest2/RE_name:label')"/>
+    </input>
+    <input ref="/XformTest2/HH_selectionprompt">
+      <label ref="jr:itext('/XformTest2/HH_selectionprompt:label')"/>
+    </input>
+    <group ref="/XformTest2/HH_selectionrpt">
+      <label ref="jr:itext('/XformTest2/HH_selectionrpt:label')"/>
+      <repeat nodeset="/XformTest2/HH_selectionrpt">
+        <group appearance="field-list" ref="/XformTest2/HH_selectionrpt/HH_selectiongrp">
+          <input ref="/XformTest2/HH_selectionrpt/HH_selectiongrp/serial">
+            <label ref="jr:itext('/XformTest2/HH_selectionrpt/HH_selectiongrp/serial:label')"/>
+          </input>
+          <input ref="/XformTest2/HH_selectionrpt/HH_selectiongrp/structure">
+            <label ref="jr:itext('/XformTest2/HH_selectionrpt/HH_selectiongrp/structure:label')"/>
+          </input>
+          <input ref="/XformTest2/HH_selectionrpt/HH_selectiongrp/household">
+            <label ref="jr:itext('/XformTest2/HH_selectionrpt/HH_selectiongrp/household:label')"/>
+          </input>
+        </group>
+      </repeat>
+    </group>
+    <group appearance="field-list" ref="/XformTest2/HH_selectioncheck_grp">
+      <input ref="/XformTest2/HH_selectioncheck_grp/HH_selectioncheck_list">
+        <label ref="jr:itext('/XformTest2/HH_selectioncheck_grp/HH_selectioncheck_list:label')"/>
+      </input>
+      <select1 ref="/XformTest2/HH_selectioncheck_grp/HH_selectioncheck">
+        <label ref="jr:itext('/XformTest2/HH_selectioncheck_grp/HH_selectioncheck:label')"/>
+        <item>
+          <label ref="jr:itext('/XformTest2/HH_selectioncheck_grp/HH_selectioncheck/yes:label')"/>
+          <value>yes</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/XformTest2/HH_selectioncheck_grp/HH_selectioncheck/no:label')"/>
+          <value>no</value>
+        </item>
+      </select1>
+    </group>
+    <input ref="/XformTest2/goback">
+      <label ref="jr:itext('/XformTest2/goback:label')"/>
+    </input>
+    <select1 ref="/XformTest2/too_few">
+      <label ref="jr:itext('/XformTest2/too_few:label')"/>
+      <item>
+        <label ref="jr:itext('/XformTest2/too_few/yes:label')"/>
+        <value>yes</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/XformTest2/too_few/no:label')"/>
+        <value>no</value>
+      </item>
+    </select1>
+    <select1 ref="/XformTest2/too_few_confirm">
+      <label ref="jr:itext('/XformTest2/too_few_confirm:label')"/>
+      <item>
+        <label ref="jr:itext('/XformTest2/too_few_confirm/yes:label')"/>
+        <value>yes</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/XformTest2/too_few_confirm/no:label')"/>
+        <value>no</value>
+      </item>
+    </select1>
+    <input ref="/XformTest2/goback_2">
+      <label ref="jr:itext('/XformTest2/goback_2:label')"/>
+    </input>
+    <input ref="/XformTest2/too_many">
+      <label ref="jr:itext('/XformTest2/too_many:label')"/>
+    </input>
+    <input ref="/XformTest2/SDP_selection_prompt">
+      <label ref="jr:itext('/XformTest2/SDP_selection_prompt:label')"/>
+      <hint ref="jr:itext('/XformTest2/SDP_selection_prompt:hint')"/>
+    </input>
+    <input ref="/XformTest2/SDP_1">
+      <label ref="jr:itext('/XformTest2/SDP_1:label')"/>
+      <hint ref="jr:itext('/XformTest2/SDP_1:hint')"/>
+    </input>
+    <input ref="/XformTest2/SDP_2">
+      <label ref="jr:itext('/XformTest2/SDP_2:label')"/>
+      <hint ref="jr:itext('/XformTest2/SDP_2:hint')"/>
+    </input>
+    <input ref="/XformTest2/SDP_3">
+      <label ref="jr:itext('/XformTest2/SDP_3:label')"/>
+      <hint ref="jr:itext('/XformTest2/SDP_3:hint')"/>
+    </input>
+    <select1 ref="/XformTest2/SDP_check">
+      <label ref="jr:itext('/XformTest2/SDP_check:label')"/>
+      <item>
+        <label ref="jr:itext('/XformTest2/SDP_check/yes:label')"/>
+        <value>yes</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/XformTest2/SDP_check/no:label')"/>
+        <value>no</value>
+      </item>
+    </select1>
+  </h:body>
+</h:html>
