@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>IDR1-Selection-v1</h:title>
+    <model>
+      <itext>
+        <translation default="true()" lang="English">
+          <text id="/MultipleTestCases/wrong_date_error:jr:constraintMsg">
+            <value>2018-06-10 &lt;&gt; 2019-06-10</value>
+          </text>
+          <text id="/MultipleTestCases/wrong_date_error:label">
+            <value>Your phone's system date and time appear to be incorrect. Please exit ODK and change the system date and time in the Settings menu.</value>
+          </text>
+          <text id="/MultipleTestCases/your_name_check:label">
+            <value> A. Your name: <output value=" /MultipleTestCases/your_name "/>Is this your name? </value>
+          </text>
+          <text id="/MultipleTestCases/your_name_check/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/MultipleTestCases/your_name_check/no:label">
+            <value>No</value>
+          </text>
+          <text id="/MultipleTestCases/name_typed:label">
+            <value>A. Enter your name below.</value>
+          </text>
+          <text id="/MultipleTestCases/name_typed:hint">
+            <value>Please record your name</value>
+          </text>
+          <text id="/MultipleTestCases/date_group/system_date:label">
+            <value>B. Current date and time.</value>
+          </text>
+          <text id="/MultipleTestCases/date_group/system_date_check:label">
+            <value>Is this date and time correct?</value>
+          </text>
+          <text id="/MultipleTestCases/date_group/system_date_check/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/MultipleTestCases/date_group/system_date_check/no:label">
+            <value>No</value>
+          </text>
+          <text id="/MultipleTestCases/manual_date:jr:constraintMsg">
+            <value>2018-06-10 &lt;&gt; 2019-06-10</value>
+          </text>
+          <text id="/MultipleTestCases/manual_date:label">
+            <value>C. Record the correct date and time.</value>
+          </text>
+          <text id="/MultipleTestCases/level1:label">
+            <value>D. Region</value>
+          </text>
+          <text id="/MultipleTestCases/level1:hint">
+            <value>Please select the name of the region where the household is located.</value>
+          </text>
+          <text id="/MultipleTestCases/level2:label">
+            <value>D. Locality</value>
+          </text>
+          <text id="/MultipleTestCases/level2:hint">
+            <value>Please select the name of the district where the household is located.</value>
+          </text>
+          <text id="/MultipleTestCases/EA:label">
+            <value>D. Enumeration area</value>
+          </text>
+          <text id="/MultipleTestCases/EA:hint">
+            <value>Based on your selection of the locality, the EA number is below. Select the option to acknowledge.</value>
+          </text>
+          <text id="/MultipleTestCases/RE_name:label">
+            <value>E. Name of RE</value>
+          </text>
+          <text id="/MultipleTestCases/HH_selectionprompt:label">
+            <value>For every randomly selected household in this EA, enter the serial number, structure number, and household number.</value>
+          </text>
+          <text id="/MultipleTestCases/HH_selectionrpt:label">
+            <value>Randomly selected household</value>
+          </text>
+          <text id="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/serial:label">
+            <value>Q1. Serial Number</value>
+          </text>
+          <text id="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/structure:label">
+            <value>Q2. Structure Number</value>
+          </text>
+          <text id="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/household:label">
+            <value>Q3. Household Number</value>
+          </text>
+          <text id="/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck_list:label">
+            <value> Q4. Review the households you selected: 
+
+Serial: Structure-HH
+<output value=" /MultipleTestCases/all_selected_HH "/> </value></text>
+          <text id="/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck:label">
+            <value>Q5. Are all selected households correct and is the selection complete?</value>
+          </text>
+          <text id="/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck/no:label">
+            <value>No</value>
+          </text>
+          <text id="/MultipleTestCases/goback:label">
+            <value>GO BACK: update the selection to the correct households.</value>
+          </text>
+          <text id="/MultipleTestCases/too_few:label">
+            <value> WARNING: You have only selected <output value=" /MultipleTestCases/num_HH_selected "/>. EAs usually contain <output value=" /MultipleTestCases/max_num_HH "/> except in special cases. 
+
+Did you correctly enter the selected households? </value>
+          </text>
+          <text id="/MultipleTestCases/too_few/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/MultipleTestCases/too_few/no:label">
+            <value>No</value>
+          </text>
+          <text id="/MultipleTestCases/too_few_confirm:label">
+            <value> Is the Central Staff aware that you have selected <output value=" /MultipleTestCases/num_HH_selected "/> households? </value>
+          </text>
+          <text id="/MultipleTestCases/too_few_confirm/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/MultipleTestCases/too_few_confirm/no:label">
+            <value>No</value>
+          </text>
+          <text id="/MultipleTestCases/goback_2:label">
+            <value>CONTACT CENTRAL STAFF 
+
+or 
+
+GO BACK: update the selection to the correct households.</value>
+          </text>
+          <text id="/MultipleTestCases/too_many:label">
+            <value> You have selected <output value=" /MultipleTestCases/num_HH_selected "/>. You cannot select more than <output value=" /MultipleTestCases/max_num_HH "/>. Go back and correct the selection. 
+
+The selection must be randomly generated. </value>
+          </text>
+          <text id="/MultipleTestCases/SDP_selection_prompt:label">
+            <value>Now you will enter up to three selected private SDPs.</value>
+          </text>
+          <text id="/MultipleTestCases/SDP_selection_prompt:hint">
+            <value>If you were unable to select 3 SDPs, enter -77 for any missing SDPs</value>
+          </text>
+          <text id="/MultipleTestCases/SDP_1:label">
+            <value>First SDP:</value>
+          </text>
+          <text id="/MultipleTestCases/SDP_1:hint">
+            <value>Enter -77 for not applicable</value>
+          </text>
+          <text id="/MultipleTestCases/SDP_2:label">
+            <value>Second SDP:</value>
+          </text>
+          <text id="/MultipleTestCases/SDP_2:hint">
+            <value>Enter -77 for not applicable</value>
+          </text>
+          <text id="/MultipleTestCases/SDP_3:label">
+            <value>Third SDP:</value>
+          </text>
+          <text id="/MultipleTestCases/SDP_3:hint">
+            <value>Enter -77 for not applicable</value>
+          </text>
+          <text id="/MultipleTestCases/SDP_check:jr:constraintMsg">
+            <value>Go back and correct the listing.</value>
+          </text>
+          <text id="/MultipleTestCases/SDP_check:label">
+            <value> You selected these facilities: 
+<output value=" /MultipleTestCases/SDP_1 "/> <output value=" /MultipleTestCases/SDP_2 "/>
+               
+<output value=" /MultipleTestCases/SDP_3 "/>
+Is this correct? </value>
+          </text>
+          <text id="/MultipleTestCases/SDP_check/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/MultipleTestCases/SDP_check/no:label">
+            <value>No</value>
+          </text>
+          <text id="/MultipleTestCases/start:label">
+            <value>-</value>
+          </text>
+          <text id="/MultipleTestCases/end:label">
+            <value>-</value>
+          </text>
+          <text id="/MultipleTestCases/deviceid:label">
+            <value>-</value>
+          </text>
+          <text id="/MultipleTestCases/simserial:label">
+            <value>-</value>
+          </text>
+          <text id="/MultipleTestCases/phonenumber:label">
+            <value>-</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <MultipleTestCases id="sel-idr1-v1">
+          <wrong_date_error/>
+          <your_name/>
+          <your_name_check/>
+          <name_typed/>
+          <date_group>
+            <system_date/>
+            <system_date_check/>
+          </date_group>
+          <manual_date/>
+          <this_country/>
+          <level1/>
+          <level2/>
+          <EA/>
+          <RE_name/>
+          <HH_selectionprompt/>
+          <HH_selectionrpt jr:template="">
+            <HH_selectiongrp>
+              <serial/>
+              <structure/>
+              <household/>
+            </HH_selectiongrp>
+            <HH_selectionconcat/>
+          </HH_selectionrpt>
+          <max_num_HH/>
+          <num_HH_selected/>
+          <all_selected_HH/>
+          <HH_selectioncheck_grp>
+            <HH_selectioncheck_list/>
+            <HH_selectioncheck/>
+          </HH_selectioncheck_grp>
+          <goback/>
+          <too_few/>
+          <too_few_confirm/>
+          <goback_2/>
+          <too_many/>
+          <SDP_selection_prompt/>
+          <SDP_1/>
+          <SDP_2/>
+          <SDP_3/>
+          <SDP_check/>
+          <start/>
+          <end/>
+          <deviceid/>
+          <simserial/>
+          <phonenumber/>
+          <meta>
+            <instanceID/>
+            <instanceName/>
+          </meta>
+        </MultipleTestCases>
+      </instance>
+      <instance id="imei.csv" src="jr://file-csv/imei.csv.csv">
+        <root>
+          <item>
+            <name>_</name>
+            <label>_</label>
+          </item>
+        </root>
+      </instance>
+      <bind jr:constraintMsg="jr:itext('/MultipleTestCases/wrong_date_error:jr:constraintMsg')" nodeset="/MultipleTestCases/wrong_date_error" readonly="true()" relevant="today() &lt; date(&quot;2018-06-10&quot;) or today() &gt; date(&quot;2019-06-10&quot;)" required="true()" type="string" xtest-linearAssert="relevant: 0" xtest-linearAssert2="relevant: 0"/>
+      <bind calculate="1" nodeset="/MultipleTestCases/your_name" relevant="0" type="string" xtest-linearAssert="relevant: 0" xtest-linearAssert2="relevant: 0"/>
+      <bind nodeset="/MultipleTestCases/your_name_check" relevant=" /MultipleTestCases/your_name  != ''" required="true()" type="select1" xtest-linearAssert="{relevant: 0}" xtest-linearAssert2="{relevant: 0}"/>
+      <bind constraint="string-length(.) &lt;= 15" nodeset="/MultipleTestCases/name_typed" relevant="( /MultipleTestCases/your_name_check  = 'no') or  /MultipleTestCases/your_name  = ''" required="true()" type="string" xtest-linearAssert="relevant: 1, value: Joe, constraint: null" xtest-linearAssert2="relevant: 1, value: Joe, constraint: null"/>
+      <bind nodeset="/MultipleTestCases/date_group" relevant="today() &gt; date(&quot;2018-06-10&quot;) and today() &lt; date(&quot;2019-06-10&quot;)" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind nodeset="/MultipleTestCases/date_group/system_date" readonly="true()" type="dateTime"/>
+      <bind nodeset="/MultipleTestCases/date_group/system_date_check" required="true()" type="select1" xtest-linearAssert="true()" xtest-linearAssert2="true()"/>
+      <bind constraint=". &gt; date(&quot;2018-06-10&quot;) and . &lt; date(&quot;2019-06-10&quot;)" jr:constraintMsg="jr:itext('/MultipleTestCases/manual_date:jr:constraintMsg')" nodeset="/MultipleTestCases/manual_date" relevant=" /MultipleTestCases/date_group/system_date_check  = 'no' or today() &lt; date(&quot;2018-06-10&quot;) or today() &gt; date(&quot;2019-06-10&quot;)" required="true()" type="dateTime" xtest-linearAssert="relevant: 0" xtest-linearAssert2="relevant: 0"/>
+      <bind calculate="Country" nodeset="/MultipleTestCases/this_country" type="string" xtest-linearAssert="value: Country, relevant: 1" xtest-linearAssert2="value: Country, relevant: 1"/>
+      <bind nodeset="/MultipleTestCases/level1" required="true()" type="string" xtest-linearAssert="location_1a" xtest-linearAssert2="location_1a"/>
+      <bind nodeset="/MultipleTestCases/level2" required="true()" type="string" xtest-linearAssert="location_2a" xtest-linearAssert2="location_2a"/>
+      <bind nodeset="/MultipleTestCases/EA" required="true()" type="string" xtest-linearAssert="EA_location_a" xtest-linearAssert2="EA_location_a"/>
+      <bind nodeset="/MultipleTestCases/RE_name" required="true()" type="string" xtest-linearAssert="Joe" xtest-linearAssert2="Joe"/>
+      <bind nodeset="/MultipleTestCases/HH_selectionprompt" readonly="true()" type="string" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind nodeset="/MultipleTestCases/HH_selectionrpt" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind nodeset="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind nodeset="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/serial" required="true()" type="int" xtest-linearAssert="[252, 777]" xtest-linearAssert2="[252, 777]"/>
+      <bind nodeset="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/structure" required="true()" type="int" xtest-linearAssert="[123, 999]" xtest-linearAssert2="[123, 999]"/>
+      <bind nodeset="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/household" required="true()" type="int" xtest-linearAssert="[636, 444]" xtest-linearAssert2="[636, 444]"/>
+      <bind calculate="concat( /MultipleTestCases/HH_selectionrpt/HH_selectiongrp/serial ,': ', /MultipleTestCases/HH_selectionrpt/HH_selectiongrp/structure ,'-', /MultipleTestCases/HH_selectionrpt/HH_selectiongrp/household ,'&amp;#x0a;')" nodeset="/MultipleTestCases/HH_selectionrpt/HH_selectionconcat" type="string" xtest-linearAssert="[252\: 123-636&amp;#x0a;, 777\: 999-444&amp;#x0a;]" xtest-linearAssert2="[252\: 123-636&amp;#x0a;, 777\: 999-444&amp;#x0a;]"/>
+      <bind calculate="35" nodeset="/MultipleTestCases/max_num_HH" type="string" xtest-linearAssert="35" xtest-linearAssert2="35"/>
+      <bind calculate="(count( /MultipleTestCases/HH_selectionrpt ))" nodeset="/MultipleTestCases/num_HH_selected" type="string" xtest-linearAssert="2" xtest-linearAssert2="2"/>
+      <bind calculate="join('', /MultipleTestCases/HH_selectionrpt/HH_selectionconcat )" nodeset="/MultipleTestCases/all_selected_HH" type="string" xtest-linearAssert="252\: 123-636&amp;#x0a;777\: 999-444&amp;#x0a;" xtest-linearAssert2="252\: 123-636&amp;#x0a;777\: 999-444&amp;#x0a;"/>
+      <bind nodeset="/MultipleTestCases/HH_selectioncheck_grp" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind nodeset="/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck_list" readonly="true()" type="string" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind nodeset="/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck" required="true()" type="select1" xtest-linearAssert="true()" xtest-linearAssert2="true()"/>
+      <bind nodeset="/MultipleTestCases/goback" readonly="true()" relevant=" /MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck  = 'no'" required="true()" type="string" xtest-linearAssert="relevant: 0" xtest-linearAssert2="relevant: 0"/>
+      <bind nodeset="/MultipleTestCases/too_few" relevant=" /MultipleTestCases/num_HH_selected  &lt;  /MultipleTestCases/max_num_HH " required="true()" type="select1" xtest-linearAssert="true()" xtest-linearAssert2="true()"/>
+      <bind nodeset="/MultipleTestCases/too_few_confirm" relevant=" /MultipleTestCases/too_few  = 'yes'" required="true()" type="select1" xtest-linearAssert="true()" xtest-linearAssert2="true()"/>
+      <bind nodeset="/MultipleTestCases/goback_2" readonly="true()" relevant="( /MultipleTestCases/too_few_confirm  = 'no') or ( /MultipleTestCases/too_few  = 'no')" required="true()" type="string" xtest-linearAssert="relevant: 0" xtest-linearAssert2="relevant: 0"/>
+      <bind nodeset="/MultipleTestCases/too_many" readonly="true()" relevant=" /MultipleTestCases/num_HH_selected  &gt;  /MultipleTestCases/max_num_HH " required="true()" type="string" xtest-linearAssert="relevant: 0" xtest-linearAssert2="relevant: 0"/>
+      <bind nodeset="/MultipleTestCases/SDP_selection_prompt" readonly="true()" type="string" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind constraint="(. &gt; 0 ) or (. = '-77')" nodeset="/MultipleTestCases/SDP_1" required="true()" type="int" xtest-linearAssert="1" xtest-linearAssert2="1"/>
+      <bind constraint="(. &gt; 0 ) or (. = '-77')" nodeset="/MultipleTestCases/SDP_2" required="true()" type="int" xtest-linearAssert="2" xtest-linearAssert2="2"/>
+      <bind constraint="(. &gt; 0 ) or (. = '-77')" nodeset="/MultipleTestCases/SDP_3" required="true()" type="int" xtest-linearAssert="-77" xtest-linearAssert2="-77"/>
+      <bind constraint="(. = 'yes')" jr:constraintMsg="jr:itext('/MultipleTestCases/SDP_check:jr:constraintMsg')" nodeset="/MultipleTestCases/SDP_check" required="true()" type="select1" xtest-linearAssert="true()" xtest-linearAssert2="true()"/>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/MultipleTestCases/start" type="dateTime" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/MultipleTestCases/end" type="dateTime" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/MultipleTestCases/deviceid" type="string" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind jr:preload="property" jr:preloadParams="simserial" nodeset="/MultipleTestCases/simserial" type="string" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind jr:preload="property" jr:preloadParams="phonenumber" nodeset="/MultipleTestCases/phonenumber" type="string" xtest-linearAssert="relevant: 1" xtest-linearAssert2="relevant: 1"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/MultipleTestCases/meta/instanceID" readonly="true()" type="string"/>
+      <bind calculate="concat(&quot;Selection:&quot;, /MultipleTestCases/EA )" nodeset="/MultipleTestCases/meta/instanceName" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/MultipleTestCases/wrong_date_error">
+      <label ref="jr:itext('/MultipleTestCases/wrong_date_error:label')"/>
+    </input>
+    <select1 ref="/MultipleTestCases/your_name_check">
+      <label ref="jr:itext('/MultipleTestCases/your_name_check:label')"/>
+      <item>
+        <label ref="jr:itext('/MultipleTestCases/your_name_check/yes:label')"/>
+        <value>yes</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/MultipleTestCases/your_name_check/no:label')"/>
+        <value>no</value>
+      </item>
+    </select1>
+    <input ref="/MultipleTestCases/name_typed">
+      <label ref="jr:itext('/MultipleTestCases/name_typed:label')"/>
+      <hint ref="jr:itext('/MultipleTestCases/name_typed:hint')"/>
+    </input>
+    <group appearance="field-list" ref="/MultipleTestCases/date_group">
+      <input appearance="no-calendar" ref="/MultipleTestCases/date_group/system_date">
+        <label ref="jr:itext('/MultipleTestCases/date_group/system_date:label')"/>
+      </input>
+      <select1 ref="/MultipleTestCases/date_group/system_date_check">
+        <label ref="jr:itext('/MultipleTestCases/date_group/system_date_check:label')"/>
+        <item>
+          <label ref="jr:itext('/MultipleTestCases/date_group/system_date_check/yes:label')"/>
+          <value>yes</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/MultipleTestCases/date_group/system_date_check/no:label')"/>
+          <value>no</value>
+        </item>
+      </select1>
+    </group>
+    <input appearance="no-calendar" ref="/MultipleTestCases/manual_date">
+      <label ref="jr:itext('/MultipleTestCases/manual_date:label')"/>
+    </input>
+    <input query="instance('level1_list')/root/item[filter_list= /MultipleTestCases/this_country ]" ref="/MultipleTestCases/level1">
+      <label ref="jr:itext('/MultipleTestCases/level1:label')"/>
+      <hint ref="jr:itext('/MultipleTestCases/level1:hint')"/>
+    </input>
+    <input query="instance('level2_list')/root/item[filter_list= /MultipleTestCases/level1 ]" ref="/MultipleTestCases/level2">
+      <label ref="jr:itext('/MultipleTestCases/level2:label')"/>
+      <hint ref="jr:itext('/MultipleTestCases/level2:hint')"/>
+    </input>
+    <input query="instance('EA_list')/root/item[filter_list= /MultipleTestCases/level2 ]" ref="/MultipleTestCases/EA">
+      <label ref="jr:itext('/MultipleTestCases/EA:label')"/>
+      <hint ref="jr:itext('/MultipleTestCases/EA:hint')"/>
+    </input>
+    <input ref="/MultipleTestCases/RE_name">
+      <label ref="jr:itext('/MultipleTestCases/RE_name:label')"/>
+    </input>
+    <input ref="/MultipleTestCases/HH_selectionprompt">
+      <label ref="jr:itext('/MultipleTestCases/HH_selectionprompt:label')"/>
+    </input>
+    <group ref="/MultipleTestCases/HH_selectionrpt">
+      <label ref="jr:itext('/MultipleTestCases/HH_selectionrpt:label')"/>
+      <repeat nodeset="/MultipleTestCases/HH_selectionrpt">
+        <group appearance="field-list" ref="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp">
+          <input ref="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/serial">
+            <label ref="jr:itext('/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/serial:label')"/>
+          </input>
+          <input ref="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/structure">
+            <label ref="jr:itext('/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/structure:label')"/>
+          </input>
+          <input ref="/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/household">
+            <label ref="jr:itext('/MultipleTestCases/HH_selectionrpt/HH_selectiongrp/household:label')"/>
+          </input>
+        </group>
+      </repeat>
+    </group>
+    <group appearance="field-list" ref="/MultipleTestCases/HH_selectioncheck_grp">
+      <input ref="/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck_list">
+        <label ref="jr:itext('/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck_list:label')"/>
+      </input>
+      <select1 ref="/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck">
+        <label ref="jr:itext('/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck:label')"/>
+        <item>
+          <label ref="jr:itext('/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck/yes:label')"/>
+          <value>yes</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/MultipleTestCases/HH_selectioncheck_grp/HH_selectioncheck/no:label')"/>
+          <value>no</value>
+        </item>
+      </select1>
+    </group>
+    <input ref="/MultipleTestCases/goback">
+      <label ref="jr:itext('/MultipleTestCases/goback:label')"/>
+    </input>
+    <select1 ref="/MultipleTestCases/too_few">
+      <label ref="jr:itext('/MultipleTestCases/too_few:label')"/>
+      <item>
+        <label ref="jr:itext('/MultipleTestCases/too_few/yes:label')"/>
+        <value>yes</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/MultipleTestCases/too_few/no:label')"/>
+        <value>no</value>
+      </item>
+    </select1>
+    <select1 ref="/MultipleTestCases/too_few_confirm">
+      <label ref="jr:itext('/MultipleTestCases/too_few_confirm:label')"/>
+      <item>
+        <label ref="jr:itext('/MultipleTestCases/too_few_confirm/yes:label')"/>
+        <value>yes</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/MultipleTestCases/too_few_confirm/no:label')"/>
+        <value>no</value>
+      </item>
+    </select1>
+    <input ref="/MultipleTestCases/goback_2">
+      <label ref="jr:itext('/MultipleTestCases/goback_2:label')"/>
+    </input>
+    <input ref="/MultipleTestCases/too_many">
+      <label ref="jr:itext('/MultipleTestCases/too_many:label')"/>
+    </input>
+    <input ref="/MultipleTestCases/SDP_selection_prompt">
+      <label ref="jr:itext('/MultipleTestCases/SDP_selection_prompt:label')"/>
+      <hint ref="jr:itext('/MultipleTestCases/SDP_selection_prompt:hint')"/>
+    </input>
+    <input ref="/MultipleTestCases/SDP_1">
+      <label ref="jr:itext('/MultipleTestCases/SDP_1:label')"/>
+      <hint ref="jr:itext('/MultipleTestCases/SDP_1:hint')"/>
+    </input>
+    <input ref="/MultipleTestCases/SDP_2">
+      <label ref="jr:itext('/MultipleTestCases/SDP_2:label')"/>
+      <hint ref="jr:itext('/MultipleTestCases/SDP_2:hint')"/>
+    </input>
+    <input ref="/MultipleTestCases/SDP_3">
+      <label ref="jr:itext('/MultipleTestCases/SDP_3:label')"/>
+      <hint ref="jr:itext('/MultipleTestCases/SDP_3:hint')"/>
+    </input>
+    <select1 ref="/MultipleTestCases/SDP_check">
+      <label ref="jr:itext('/MultipleTestCases/SDP_check:label')"/>
+      <item>
+        <label ref="jr:itext('/MultipleTestCases/SDP_check/yes:label')"/>
+        <value>yes</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/MultipleTestCases/SDP_check/no:label')"/>
+        <value>no</value>
+      </item>
+    </select1>
+  </h:body>
+</h:html>
