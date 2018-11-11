@@ -236,12 +236,12 @@ class MultipleTestCases(XFormsTest):
 
 
 # TODO
-class ValueAssertionError(XFormsTest):
-    """Can run CLI on multiple files at once?"""
-
-    def test_cli(self):
-        """Simple smoke test to see that CLI runs without error."""
-        self.standard_cli_test()
+# class ValueAssertionError(XFormsTest):
+#     """Can run CLI on multiple files at once?"""
+#
+#     def test_cli(self):
+#         """Simple smoke test to see that CLI runs without error."""
+#         self.standard_cli_test()
 
 
 if __name__ == '__main__':

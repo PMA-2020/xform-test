@@ -16,7 +16,6 @@ package org.pma2020.xform_test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -69,20 +68,13 @@ class XmlModifier {
       return newFilePath;
     }
 
-    /*
-    * Originally, I wanted a separate methods to get a list of nodes and then manipulate nodes. This would also allow
+    /** Originally, I wanted a separate methods to get a list of nodes and then manipulate nodes. This would also allow
     * me to optionally print warnings outside of this method. To save time, this has not yet been implemented. -jef,
-    * 2018/08/14
-    * */
-    // public ArrayList<String> getNodesWhereAttrContainsStr(String attributeName, String word) {
-    // public void XmlModifier modifyNodeAttributesByFindReplace(ArrayList<String> nodes, String find, String replace) {
-    @SuppressWarnings("SameParameterValue")
-    void modifyNodeAttributesByFindReplace(String attributeName, String find, String replace) {
-        ArrayList<String> xPathsToModifiedNodes = new ArrayList<>();
-        // Filter by "bind" elements
+    * 2018/08/14 */
+    boolean modifyNodeAttributesByFindReplace(String attributeName, String find, String replace) {
+        boolean modificationMade = false;
         NodeList bindElements = xmlDom.getElementsByTagName("bind");
 
-        // Iterate and modify
         for (int i = 0; i < bindElements.getLength(); i++) {
             Node childNode = bindElements.item(i);
             NamedNodeMap attributes = childNode.getAttributes();
@@ -90,22 +82,11 @@ class XmlModifier {
             if (calculateAttr != null) {
                 if (calculateAttr.getNodeValue().contains(find)) {
                     calculateAttr.setNodeValue(replace);
-                    xPathsToModifiedNodes.add(attributes.getNamedItem("nodeset").getNodeValue());
+                    modificationMade = true;
                 }
             }
         }
-        // Print warnings
-        System.out.println("WARNING: Xform-test doesn't support the following features on following attributes.");
-        String attributeFeatures =
-            "  " +attributeName+":\n" +
-            "    "+find+"\n";
-        System.out.println(attributeFeatures);
-        System.out.println("Any nodes containing these features on corresponding attributes have had attribute values" +
-            " set to the following value: "+replace+".");
-        System.out.println("The following nodes were affected: ");
-        for (String xPath : xPathsToModifiedNodes) {
-            System.out.println(xPath);
-        }
-        System.out.println();
+
+        return modificationMade;
     }
 }

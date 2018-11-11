@@ -6,7 +6,7 @@
   <!-- Be sure to update version in build.gradle to match -->
   <!-- snapshot release = x.x.x-SNAPSHOT -->
   <!-- production release = x.x.x -->
-  <version>0.3.1</version>
+  <version>0.3.2</version>
   <packaging>jar</packaging>
   <name>XFormTest</name>
   <description>A test suite for Xforms.</description>
@@ -49,6 +49,12 @@
       <groupId>org.opendatakit</groupId>
       <artifactId>opendatakit-javarosa</artifactId>
       <version>2.11.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

@@ -28,6 +28,8 @@ package org.pma2020.xform_test;
 // @Whenever: Validate things like this: "yes, relevant: 0"
 // @Whenever: Remove '-modified' xml.
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.javarosa.core.model.DataType;
 import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.FormIndex;
@@ -62,6 +64,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 // #to-do this might be useful for unit testing my own framework
 //import org.javarosa.xform_test.FormParseInit;
@@ -73,14 +76,14 @@ import static java.util.Collections.unmodifiableList;
 
 // #to-do: Add documentation: https://www.youtube.com/watch?v=heh4OeB9A-c&feature=youtu.be&t=33m57s
 // #to-do: Make JavaDoc
-/** XForm-test is a tool for creating and running tests to ensure the quality and stability of XForms.
+/** XFormTest is a tool for creating and running tests to ensure the quality and stability of XForms.
  * Documentation: http://xform-test.pma2020.org/ */
 @SuppressWarnings("unchecked")
 public class XFormTest {
     private static final List<String> validXformTestBindNames = unmodifiableList(asList(
-            "xform-test",
-            "xtest",
-            "test"
+        "xform-test",
+        "xtest",
+        "test"
     ));
     private static final List<String> validAssertionFields = unmodifiableList(asList(
         "constraint",
@@ -97,6 +100,14 @@ public class XFormTest {
         "instanceID",
         "instanceName"
     ));
+    private static final Map<String, Map<String, String>> unsupportedFeatures;
+    static {
+        Map<String, Map<String, String>> mapping = new HashMap<>();
+        Map<String, String> calculateFindReplaces = new HashMap<>();
+        calculateFindReplaces.put("pulldata", "1");
+        mapping.put("calculate", calculateFindReplaces);
+        unsupportedFeatures = mapping;
+    }
     private static final Map<Integer, String> formEntryControllerEntryStatusMapping;
     static {
         Map<Integer, String> mapping = new HashMap<>();
@@ -120,7 +131,7 @@ public class XFormTest {
     /** References: (1) XLSForm Types - http://xlsform.org/en/#question-types
      * ...(2) XForm-to-JavaRosa mappings - org.javarosa.xform.parse.TypeMappings.typeMappings */
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private static final HashMap<Integer, String> javarosaValToDefMapping = new HashMap<>();
+    private static final Map<Integer, String> javarosaValToDefMapping = new HashMap<>();
     static {
         for (DataType datatype : DataType.class.getEnumConstants()) {
             javarosaValToDefMapping.put(datatype.value, datatype.name());
@@ -171,6 +182,8 @@ public class XFormTest {
             "end")));
         javarosaToXlsformTypeMapping = Collections.unmodifiableMap(mapping);
     }
+    @SuppressWarnings("FieldCanBeLocal")
+    private static boolean reportOnTestType = false;
 
 // #to-do utilize this
 //    public static final int CONTROL_UNTYPED         = ControlType.UNTYPED.value;
@@ -199,11 +212,9 @@ public class XFormTest {
     private String thisRepeatInstanceAssertionStr = "";
     private int currentRepeatTotIterationsAsserted = 0;
     private int currentRepeatNum = 0;
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private ArrayList<String> warnings = new ArrayList<>();  // remove comment when warnings is used
+    private Map warnings = new HashMap();
     private ArrayList<HashMap<String, String>> testCases = new ArrayList<>();
     private HashMap<String, XPathConditional> calculateList;
-
 
     /** Runs XFormTest spec tests on valid XForm XML files.
      *
@@ -214,19 +225,15 @@ public class XFormTest {
         try {
             for (String file : args)
                 validateFile(file);
-
-                System.out.println("\nRunning XForm Test");
-                System.out.println("http://xform-test.pma2020.org");
-
-                for (String file : args) {
-                    runTestsOnFile(file);
-                }
+            for (String file : args) {
+                XFormTest testCase = new XFormTest();
+                testCase.runTestsOnFile(file);
+            }
         } catch (AssertionSyntaxException | AssertionTypeException| MissingAssertionError |
                 RelevantAssertionError | XformTestIllegalArgumentException err) {
             System.err.println(err.getClass().getSimpleName() + ": " + err.getMessage());
         }
     }
-
 
     /** Runs all applicable tests on a single file.
      *
@@ -241,9 +248,8 @@ public class XFormTest {
      * questions, no value can be entered, so such an assertion is inherently invalid.
      * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
      * @throws RelevantAssertionError if relevant did not evaluate as expected. */
-    private static void runTestsOnFile(String filePath) throws MissingAssertionError, RelevantAssertionError,
+    private void runTestsOnFile(String filePath) throws MissingAssertionError, RelevantAssertionError,
             AssertionTypeException, AssertionSyntaxException {
-        System.out.println("1. Loading form:\n" + filePath);
         ArrayList<String> testFieldNames = testFieldNames(filePath);
         List<String> testTypesToRun = unmodifiableList(Collections.singletonList("linearAssertionTest"));
         for (String testType : testTypesToRun) {
@@ -253,7 +259,7 @@ public class XFormTest {
                     FormEntryController formEntryController = testCase.setUpAndGetController(filePath);
                     ArrayList<TreeElement> instanceNodes = instanceNodes(formEntryController);
                     ArrayList<TreeElement> formElements = instanceNodesToFormElements(instanceNodes);
-                    HashMap<String, String> results = testCase.linearAssertionTest(formElements, testFieldName);
+                    Map results = testCase.linearAssertionTest(formElements, testFieldName);
                     printResults(testType, results);
                 }
             }
@@ -326,18 +332,35 @@ public class XFormTest {
         return fpi;
     }
 
-    /** Removes pulldata(), an ODK Collect client-specific function not yet supported by XFormTest.
-     * @param filePath The plain text path to a valid XForm XML file.
-     * @return plain text path to a new XForm XML file that no longer contains 'pulldata()'.
+    /** Creates new file with <code>unsupportedFeatures</code> removed.
      *
      * Side effects: Creates a new file.
      *
-     * #to-do: Make a map of all invalid {attr: feature}s to be removed. */
-    private static String removePullData(String filePath) {
+     * @param filePath The plain text path to a valid XForm XML file.
+     *
+     * @return map with two things: (1) plain text path to a new XForm XML file with <code>unsupportedFeatures</code>
+     * removed, and (2) a list of all <code>correctionsMade</code> based on <code>unsupportedFeatures</code>. */
+    private static HashMap handleUnsupportedFeatures(String filePath) {
+        HashMap results = new HashMap();
+        HashMap<String, List> correctionsMade = new HashMap();
+        results.put("correctionsMade", correctionsMade);
         XmlModifier xml = new XmlModifier(filePath);
-        xml.modifyNodeAttributesByFindReplace("calculate", "pulldata", "1");
+
+        unsupportedFeatures.forEach((attr, features) ->
+            features.forEach((find, replace) -> {
+                boolean correctionMade = xml.modifyNodeAttributesByFindReplace(attr, find, replace);
+                if (correctionMade) {
+                    if (correctionsMade.get(attr) == null || correctionsMade.get(attr).isEmpty())
+                        correctionsMade.put(attr, new ArrayList());
+                    correctionsMade.get(attr).add(find);
+                }
+            })
+        );
+
         xml.writeToFile();
-        return xml.getnewFilePath();
+        results.put("modifiedFilePath", xml.getnewFilePath());
+
+        return results;
     }
 
     /** Initializes a FormDef object, but silences all terminal output during the process.
@@ -358,12 +381,17 @@ public class XFormTest {
      * @return formEntryController JavaRosa's controller class for doing form entry.
      *
      * Side effects:
-     *   - formDef mutation: Initializes.
-     *   - calculateList mutation: Initializes.
-         - formEntryController mutation: Initializes */
+     *   - <code>formDef</code> mutation: Initializes.
+     *   - <code>calculateList</code> mutation: Initializes.
+     *   - <code>formEntryController</code> mutation: Initializes
+     *   - warnings mutation: Adds <code>correctionsMade</code> */
     private FormEntryController setUpAndGetController(String xmlFilePathStr) {
         setUpMockClient();
-        String newXmlFilePath = removePullData(xmlFilePathStr);
+        Map results = handleUnsupportedFeatures(xmlFilePathStr);
+        String newXmlFilePath = (String) results.get("modifiedFilePath");
+        Map correctionsMade = (Map) results.get("correctionsMade");
+        if (!correctionsMade.isEmpty())
+            warnings.put("correctionsMade", results.get("correctionsMade"));
         Path xmlFilePath = Paths.get(newXmlFilePath);
         FormParseInit fpi = squelchedFormParseInit(xmlFilePath);
         formDef = fpi.getFormDef();
@@ -380,15 +408,60 @@ public class XFormTest {
      * @param results The test results.
      *
      * Side effects: Prints to the terminal. */
-    private static void printResults(String testType, HashMap<String, String> results) {
-        System.out.println("\nXForm Test '" + testType + "' result: 100% (n=" + results.get("numTestcases")
-                + ") of tests passed!");
-        System.out.println("Test case summary: ");
-        System.out.println(results.get("testCases"));
-        if (!results.get("warnings").equals("")) {
-            System.out.println("\nWarnings: ");
-            System.out.println(results.get("warnings"));
+    private void printResults(String testType, Map results) {
+        Map resultsData = new HashMap();
+
+        if (reportOnTestType)
+            resultsData.put("testType", testType);
+
+        resultsData.put("success", String.valueOf(true));
+        resultsData.put("successMsg", "SUCCESS!\n\n" +
+                "100% (n=" + results.get("numTestcases") +") of tests passed!\n\n" +
+                "Test case summary:\n" +
+                results.get("testCases"));
+
+        resultsData.put("failures", String.valueOf(false));
+        resultsData.put("failuresMsg", "");
+
+        resultsData.put("errors", String.valueOf(false));
+        resultsData.put("errorsMsg", "");
+
+        StringBuilder warningMsg = new StringBuilder();
+        Map warnings = (Map) results.get("warnings");
+        if (!warnings.isEmpty()) {
+            resultsData.put("warnings", String.valueOf(!results.get("warnings").equals("{}")));
+            warningMsg.append("WARNINGS\n\n" +
+                    "XformTest currently does not support some features of the XForm spec, as well as other " +
+                    "features that are specific to clients such as ODK Collect, SurveyCTO, etc. " +
+                    "The following is a list of attributes and unsupported features of those attributes " +
+                    "that have been found and replaced with some other text in the form " +
+                    "'unsupportedFeatureFound: replacedWithText'.\n\n");
+            Map unsupportedFoundReplaced = new HashMap();
+            Map correctionsMade = (Map) warnings.get("correctionsMade");
+            correctionsMade.forEach((attr, featuresReplaced) -> {
+                List<String> findReplaces = new ArrayList();
+                unsupportedFoundReplaced.put(attr, findReplaces);
+                for (String feature : (List<String>) featuresReplaced) {
+                    //noinspection SuspiciousMethodCalls
+                    findReplaces.add(feature + ": " + unsupportedFeatures.get(attr).get(feature));
+                }
+            });
+            for (String attr : (Set<String>) unsupportedFoundReplaced.keySet()) {
+                warningMsg.append(attr);
+                warningMsg.append(":\n");
+                for (String findReplaceText : (List<String>) unsupportedFoundReplaced.get(attr)) {
+                    warningMsg.append("  ");
+                    warningMsg.append(findReplaceText);
+                    warningMsg.append("\n");
+                }
+            }
         }
+        resultsData.put("warningsMsg", warningMsg);
+
+        // TODO: This doesn't look great in the CLI.
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String prettyJsonString = gson.toJson(resultsData);
+        System.out.println(prettyJsonString);
     }
 
     /** Takes a nested tree structure of TreeElement's recurses through it, eventually returning a flat list.
@@ -1004,7 +1077,7 @@ public class XFormTest {
 
     /** Tests assertions on a given node.
      *
-     * @param node The TreeElement instance node which contains xform-test bind information.
+     * @param node The TreeElement instance node which contain XFormTest bind information.
      * @param testFieldName Name of test field <bind/> element (XLSForm column).
      *
      * @throws AssertionSyntaxException if invalid syntax via usage of comma within values rather than exclusively as an
@@ -1079,7 +1152,7 @@ public class XFormTest {
     /** Runs a XFormTest 'linear assertion test'.
      *
      * # Background
-     * XForm-test introduces a specific kind of test called the ‘linear scenario test’. A linear scenario test defined
+     * XFormTest introduces a specific kind of test called the ‘linear scenario test’. A linear scenario test defined
      * as a set of unit tests or test assertions that are specifically designed to be executed in a linear sequence, one
      * after the other. The reason it can be important to test a set of questions answers or assertions linearly is due
      * to interdependencies. In forms of any non-trivial complexity, there exist many questions which are dependent on
@@ -1124,18 +1197,18 @@ public class XFormTest {
      *   TreeElement .setValue() && .constraint || .getConstraint()?
      * #to-do: relevant assertions
      *   boolean relevantEval = state.isIndexRelevant(); */
-    private HashMap<String, String> linearAssertionTest(ArrayList<TreeElement> formElements, String testFieldName)
+    private Map linearAssertionTest(ArrayList<TreeElement> formElements, String testFieldName)
             throws AssertionSyntaxException, AssertionTypeException, MissingAssertionError, RelevantAssertionError {
-        HashMap<String, String> results = new HashMap<>();
-        System.out.println("2. Running test: linear assertion test");
+        Map results = new HashMap<>();
+
         step();
         boolean success = processNodes(formElements, testFieldName);
 
-        String exitCode = success ? "0" : "1";
-        results.put("exitCode", exitCode);
+        results.put("exitCode", success ? "0" : "1");
         results.put("testCases", String.valueOf(testCases));
         results.put("numTestcases", String.valueOf(testCases.size()));
-        results.put("warnings", warnings.isEmpty() ? "" : String.valueOf(warnings));
+        results.put("warnings", warnings);
+
         return results;
     }
 }

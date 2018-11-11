@@ -10,6 +10,9 @@ dist/
 *.iml
 out
 
+# python
+__pycache__
+
 # java
 *.class
 

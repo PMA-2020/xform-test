@@ -2,9 +2,8 @@
 build-docs-no-open build-docs docs-push-production docs-push-staging \
 docs-push create-docs docs-create docs-build docs test-unit-tests \
 test-files-to-static-doc-files push-docs push-docs-staging docs-open \
-push-docs-production get-latest-jar run build-run run-only \
-build jar xform-test xform-test-only test run test-only run-only \
-prep-release install release
+push-docs-production get-latest-jar build jar limited-test limited-test-only \
+test prep-release install release
 
 # TODO: Should be able to pass arguments.
 # Test
@@ -15,18 +14,15 @@ update-xml:
 	xls2xform test/static/MultipleFiles/input/src/XFormTest1.xlsx test/static/MultipleFiles/input/XFormTest1.xml; \
 	xls2xform test/static/MultipleFiles/input/src/XFormTest2.xlsx test/static/MultipleFiles/input/XFormTest2.xml; \
 	xls2xform test/static/NA/input/src/NA.xlsx test/static/NA/input/NA.xml
-xform-test-only:
+limited-test-one-only:
 	java -jar build/libs/xform-test*.jar test/static/XformTest/input/XFormTest1.xml
-xform-test:
+limited-tests:
 	make update-xml; \
 	make build; \
     make jar; \
     make xform-test-only
-test: xform-test
-test-only: xform-test-only
-run: xform-test
-run-only: xform-test-only
-
+test:
+	python3 -m unittest discover -v test/
 # Install
 make install:
 	rm /Library/Java/Executables/xform-test.jar; \
