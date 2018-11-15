@@ -80,15 +80,65 @@ import static java.util.Collections.unmodifiableList;
  * Documentation: http://xform-test.pma2020.org/ */
 @SuppressWarnings("unchecked")
 public class XFormTest {
+    private static final List<String> validAssertionFields = unmodifiableList(asList(
+            "constraint",
+            "relevant",
+            "value"
+    ));
+    private static final Map<String, String> errorMessages;
+    static {
+        Map<String, String> mapping = new HashMap<>();
+        String excDetails = "\n\nErrored on: " +
+                "\n - Node name: " + "%s" +
+                "\n - Assertion text: " + "%s";
+        mapping.put("unableToEnterValueError", "Asserted enterable value '%s' was not able to be entered on node %s.");
+        mapping.put("invalidFieldExc", "In parsing assertions, an invalid field name was found. Valid field names " +
+                "are: " + validAssertionFields + excDetails + "\n - Field: " + "%s");
+        mapping.put("valueAssertionExcNote", "Invalid assertion type: value assertion. Question/prompt '%s' " +
+                "of type 'note' is read only. It is impossible to assert enterable value of assertion '%s'." +
+                excDetails);
+        mapping.put("valueAssertionExcReadOnly", "Invalid assertion type: value assertion. Question/prompt '%s' " +
+                "is read only. It is impossible to assert enterable value of assertion '%s'." + excDetails);
+        mapping.put("ValueAssertionError",
+                "Asserted expected value '%s' did not match actual value of node '%s' on node %s.");
+        mapping.put("UnableToEvaluateError", "Could not evaluate calculate because relevant evaluated to false.");
+        mapping.put("invalidCalculateUsageError", 
+                "Node passed to assertCaculateEval() does not represent an instance of an XLSForm calculate.");
+        mapping.put("invalidCalculateAssertionError", "Calculate '%s' did not evaluate as expected." +
+                "\nExpected: %s" +
+                "\nGot: %s");        
+        mapping.put("XformTestIllegalArgumentException", "Error: Non-XML file passed as argument. " +
+                "Please pass only XML files. \n\nErrored on the following file:\n");
+        mapping.put("commaColonExc", "The comma ',' character is currently reserved for syntax usage only, for the " +
+                "purpose of delimiting multiple assertions. The colon ':' character is currently reserved also for " +
+                "syntax usage only, for the purpose of delimiting assertion type from assertion value. " +
+                "If the literal text of your assertions contain commas or colons, please remove them, as such usage" +
+                "is currently unsupported. If you experience this issue and feel that support for literal usage of " +
+                "these characters in your assertions would be helpful, please file an issue: " +
+                "https://github.com/PMA-2020/xform-test/issues/new" + excDetails);
+        mapping.put("NodeNotFoundException", "Node '%s' was not found in form '%s'.");
+        mapping.put("MissingAssertionError", "Missing assertion error: Question '" + "%s" + "' was absent of any " +
+                "assertions. XFormTest requires that at the very least, every answerable, required question includes " +
+                "a value assertion for a linear scenario test to be considered valid. If you do not expect this " +
+                "question to be relevant, and left off an assertion for that reason, please insert 'relevant: 0' " +
+                "as the assertion.");
+        mapping.put("relevantFalseError", "\nThis is because the question relevant evaluated to false.");
+        mapping.put("choiceNotFoundError", " This choice option was not found in the list of options.");
+        mapping.put("inconsistentRelevantSyntaxError", "An inconsistent number of repeat instances were implicitly " +
+                "asserted. Check each question's assertion syntax (e.g. [<assertions>, <assertions, ...]) and " +
+                "make sure they all have the same number of commas.");
+        mapping.put("RelevantSyntaxException", "Relevant statement syntax on '%s' was invalid." +
+                "\nExpected: true || 1 || false || 0" +
+                "\nGot: %s");
+        mapping.put("RelevantAssertionError", "Relevant for '%s' did not evaluate as expected." +
+                "\nExpected: %s" +
+                "\nGot: %s");
+        errorMessages = mapping;
+    }
     private static final List<String> validXformTestBindNames = unmodifiableList(asList(
         "xform-test",
         "xtest",
         "test"
-    ));
-    private static final List<String> validAssertionFields = unmodifiableList(asList(
-        "constraint",
-        "relevant",
-        "value"
     ));
     private static final List<String> nonInteractiveInstanceNodes = unmodifiableList(asList(
         "start",
@@ -307,8 +357,7 @@ public class XFormTest {
      * @throws XformTestIllegalArgumentException if file is not valid. */
     private static void validateFile(String fileName) throws XformTestIllegalArgumentException {
        if (!fileName.endsWith(".xml"))
-           throw new XformTestIllegalArgumentException("Error: Non-XML file passed as argument. Please pass only XML files." +
-                   "\n\nErrored on the following file:\n" +
+           throw new XformTestIllegalArgumentException(errorMessages.get("XformTestIllegalArgumentException") +
                    fileName);
     }
 
@@ -544,11 +593,7 @@ public class XFormTest {
      * #to-do: Throw error there is a value assertion in read_only question. */
     private HashMap<String, String> nodeAssertions(TreeElement node, String testFieldName) throws AssertionSyntaxException,
             AssertionTypeException, MissingAssertionError {
-        String missingAssertionError = "Missing assertion error: Question '" + node.getName() + "' was absent of any " +
-                "assertions. XFormTest requires that at the very least, every answerable, required question includes " +
-                "a value assertion for a linear scenario test to be considered valid. If you do not expect this " +
-                "question to be relevant, and left off an assertion for that reason, please insert 'relevant: 0' " +
-                "as the assertion.";
+        String missingAssertionError = String.format(errorMessages.get("MissingAssertionError"), node.getName());
         boolean isReadOnly = !node.isEnabled();
         HashMap<String, String> assertions = new HashMap<>();
         for (String field : validAssertionFields)
@@ -593,25 +638,6 @@ public class XFormTest {
         int numCommas = Math.toIntExact(assertionsStr.chars().filter(num -> num == ',').count());
         int numColons = Math.toIntExact(assertionsStr.chars().filter(num -> num == ':').count());
 
-        String excDetails = "\n\nErrored on: " +
-            "\n - Node name: " + node.getName() +
-            "\n - Assertion text: " + assertionsStr;
-        String commaColonExc = "The comma ',' character is currently reserved for syntax usage only, for the " +
-            "purpose of delimiting multiple assertions. The colon ':' character is currently reserved also for syntax" +
-            "usage only, for the purpose of delimiting assertion type from assertion value. " +
-            "If the literal text of your assertions contain commas or colons, please remove them, as such usage" +
-            "is currently unsupported. If you experience this issue and feel that support for literal usage of these" +
-            "characters in your assertions would be helpful, please file an issue: " +
-            "https://github.com/PMA-2020/xform-test/issues/new" + excDetails;
-        String invalidFieldExc = "In parsing assertions, an invalid field name was found. Valid field names are: " +
-                validAssertionFields + excDetails;
-        String valueAssertionExcNote= "Invalid assertion type: value assertion. Question/prompt '" + node.getName() +
-                "' of type 'note' is read only. It is impossible to assert enterable value of assertion '%s'." +
-                excDetails;
-        String valueAssertionExcReadOnly = "Invalid assertion type: value assertion. Question/prompt '" +
-                node.getName() + "' is read only. It is impossible to assert enterable value of assertion " +
-                "'%s'." + excDetails;
-
         // single assertions & edge cases
         // The "ConstantConditions" inspection is wrong? Seems like a bug in IntelliJ upon my inspection.
         //noinspection ConstantConditions,StatementWithEmptyBody
@@ -620,9 +646,11 @@ public class XFormTest {
         } else if (numCommas == 0 && numColons == 0) {  // single un-named value assertion
             if (!assertionsStr.equals("")) {
                 if (xlsformType(node).equals("note"))
-                    throw new AssertionTypeException(String.format(valueAssertionExcNote, assertionsStr));
+                    throw new AssertionTypeException(
+                            String.format(errorMessages.get("valueAssertionExcNote"), assertionsStr));
                 else if (isReadOnly )
-                    throw new AssertionTypeException(String.format(valueAssertionExcReadOnly, assertionsStr));
+                    throw new AssertionTypeException(
+                            String.format(errorMessages.get("valueAssertionExcReadOnly"), assertionsStr));
             }
             assertions.put("value", assertionsStr);
         } else if (numCommas == 0 && numColons > 0) {  // single named assertion
@@ -631,7 +659,7 @@ public class XFormTest {
         // multiple assertions
         } else if (numCommas > 0 && numColons > 0) {
             if (numColons > numCommas + 1 || numColons < numCommas)
-                throw new AssertionSyntaxException(commaColonExc);
+                throw new AssertionSyntaxException(errorMessages.get("commaColonExc"));
 
             // split & trim
             if (assertionsStr.indexOf(',') != -1) {
@@ -655,7 +683,7 @@ public class XFormTest {
             boolean validField = validAssertionFields.stream().anyMatch(str -> str.trim().
                     equals(finalKeyToSatisfyOddJavaRule));
             if (!validField)
-                throw new AssertionSyntaxException(invalidFieldExc + "\n - Field: " + key);
+                throw new AssertionSyntaxException(String.format(errorMessages.get("invalidFieldExc"), key));
             assertions.put(key, val);
         }
         thisRepeatInstanceAssertionStr = "";
@@ -769,7 +797,7 @@ public class XFormTest {
         TreeReference ref = node.getRef();
         QuestionDef q = FormDef.findQuestionByRef(ref, formDef);
         if (q == null)
-            throw new NullPointerException("Node '" + node.getName() + "' was not found in form '" + formDef + "'.");
+            throw new NullPointerException(String.format(errorMessages.get("NodeNotFoundException"), node.getName(), formDef));
         List<SelectChoice> choices;
         ItemsetBinding itemset = q.getDynamicChoices();
 
@@ -791,8 +819,8 @@ public class XFormTest {
     public static void assertValueMatches(TreeElement node, String value) throws ValueAssertionError {
         String nodeValue = node.getValue().getDisplayText();
         if (!nodeValue.equals(value))
-            throw new ValueAssertionError("Asserted expected value '" + value + "' did not match actual value of node" +
-                " '" + nodeValue + "' on node " + node.getName() + ".");
+            throw new ValueAssertionError(
+                    String.format(errorMessages.get("ValueAssertionError"), value, nodeValue, node.getName()));
     }
 
     /** Asserts value evaluates as expected on a calculate.
@@ -835,11 +863,10 @@ public class XFormTest {
 //        StringData c = new StringData(value);
 
         if (!xlsformType(node).equals("calculate"))
-            throw new RuntimeException("Node passed to assertCaculateEval() does not represent an instance of an " +
-                "XLSForm calculate.");
+            throw new RuntimeException(errorMessages.get("invalidCalculateUsageError"));
 
         if (!node.isRelevant())
-            throw new ValueAssertionError("Could not evaluate calculate because relevant evaluated to false.");
+            throw new ValueAssertionError(errorMessages.get("UnableToEvaluateError"));
 
         // to-do need not from calculate list but elsewhere?
         // to-do just pass it and get value?
@@ -861,12 +888,11 @@ public class XFormTest {
 
             // to-do: this from form entry controller answer question?
             // TreeElement element = model.getTreeElement(index);
-
+            
             //noinspection PointlessBooleanExpression,ConstantConditions
             if (!String.valueOf(result2).equals(value) && false)  // #to-do: Remove '&& false' when ready.
-                throw new ValueAssertionError("Calculate '" + node.getName() + "' did not evaluate as expected." +
-                        "\nExpected: " + value +
-                        "\nGot: " + String.valueOf(result));
+                throw new ValueAssertionError(String.format(errorMessages.get("invalidCalculateAssertionError"), 
+                        node.getName(), value, String.valueOf(result)));
         } catch (XPathTypeMismatchException e) {
             // TODO: This happens when I make a value assertion on a repeat instance. If I do this, it does not
             // automatically know which instance, so I need to add indexed-repeat(.) maybe, or something like that,
@@ -879,13 +905,13 @@ public class XFormTest {
      * @param value The value expected to be enterable on a node.
      * @throws ValueAssertionError if value cannot be entered on a node, for whatever reason. */
     private void assertCanEnterValue(TreeElement node, String value) throws ValueAssertionError {
-        String err = "Asserted enterable value '" + value + "' was not able to be entered on node "+node.getName()+".";
+        String err = String.format(errorMessages.get("unableToEnterValueError"), value, node.getName());
         if (!node.isRelevant())
-            throw new ValueAssertionError(err + "\nThis is because the question relevant evaluated to false.");
-
+            throw new ValueAssertionError(err + "\n" + errorMessages.get("relevantFalseError"));
+        
         if ((xlsformType(node).equals("select_one") || xlsformType(node).equals("select_multiple"))
             && !validChoiceOption(node, value))
-            throw new ValueAssertionError(err + " This choice option was not found in the list of options.");
+            throw new ValueAssertionError(err + errorMessages.get("choiceNotFoundError"));
 
         // convert to integer / decimal if needed
         boolean isLong = false;
@@ -916,7 +942,8 @@ public class XFormTest {
         String entryStatus = formEntryControllerEntryStatusMapping.get(entryStatusCode);
         if (!entryStatus.equals("ANSWER_OK")) {
             if (entryStatus.equals("ANSWER_CONSTRAINT_VIOLATED")) {
-                String constraintSyntaxTxt = (String) getPrivateProperty(node.getConstraint().constraint, "xpath");
+                String constraintSyntaxTxt =
+                         (String) getPrivateProperty(node.getConstraint().constraint, "xpath");
                 err += " The constraint '" + constraintSyntaxTxt + "' was violated.";
             }
             throw new ValueAssertionError(err);
@@ -1011,9 +1038,7 @@ public class XFormTest {
             if (currentRepeatTotIterationsAsserted == 0)
                 currentRepeatTotIterationsAsserted = numIterationsAsserted;
             else if (currentRepeatTotIterationsAsserted != numIterationsAsserted)
-                throw new AssertionSyntaxException("An inconsistent number of repeat instances were implicitly " +
-                    "asserted. Check each question's assertion syntax (e.g. [<assertions>, <assertions, ...]) and " +
-                    "make sure they all have the same number of commas.");
+                throw new AssertionSyntaxException(errorMessages.get("inconsistentRelevantSyntaxError"));
         }
     }
 
@@ -1062,14 +1087,12 @@ public class XFormTest {
         boolean relevantSyntaxValid = (relevant.equals("true") || relevant.equals("1") ||
             relevant.equals("false") || relevant.equals("0"));
         if (!relevantSyntaxValid)
-            throw new AssertionSyntaxException("Relevant statement syntax on'" + node.getName() + "' was invalid." +
-                "\nExpected: " + "true || 1 || false || 0" +
-                "\nGot: " + relevant);
+            throw new AssertionSyntaxException(String.format(errorMessages.get("RelevantSyntaxException"),
+                    node.getName(), relevant));
         boolean assertedRelevancy = (relevant.equals("true") || relevant.equals("1"));
         if (node.isRelevant() != assertedRelevancy)
-            throw new RelevantAssertionError("Relevant for '" + node.getName() + "' did not evaluate as expected." +
-                "\nExpected: " + String.valueOf(assertedRelevancy) +
-                "\nGot: " + String.valueOf(node.isRelevant()));
+            throw new RelevantAssertionError(String.format(errorMessages.get("RelevantAssertionError"),
+                    node.getName(), String.valueOf(assertedRelevancy), String.valueOf(node.isRelevant())));
         nodeTestResults.put("relevant", node.getName());
         nodeTestResults.put("relevantAssertion", String.valueOf(node.isRelevant()));
         testCases.add(nodeTestResults);
