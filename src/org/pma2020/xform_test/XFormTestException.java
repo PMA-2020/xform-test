@@ -16,8 +16,8 @@
 
 package org.pma2020.xform_test;
 
-class MissingAssertionError extends XFormTestException {
-    MissingAssertionError(String message) {
+class XFormTestException extends Exception {
+    XFormTestException(String message) {
         super(message);
     }
 }

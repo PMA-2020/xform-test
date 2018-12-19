@@ -16,9 +16,7 @@
 
 package org.pma2020.xform_test;
 
-import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
-
-class ValueAssertionError extends ValueException {
+class ValueAssertionError extends XFormTestException {
     ValueAssertionError(String message) {
         super(message);
     }

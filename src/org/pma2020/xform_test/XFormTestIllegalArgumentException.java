@@ -16,8 +16,8 @@
 
 package org.pma2020.xform_test;
 
-class XformTestIllegalArgumentException extends IllegalArgumentException {
-    XformTestIllegalArgumentException(String message) {
+class XFormTestIllegalArgumentException extends XFormTestException {
+    XFormTestIllegalArgumentException(String message) {
         super(message);
     }
 }

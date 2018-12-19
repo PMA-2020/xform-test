@@ -48,7 +48,7 @@ def latest_jar(directory):
     else:
         latest_version_num = ''
         for file in files:
-            version = search('[0-9]\.[0-9]\.[0-9]', file)[0]
+            version = search(r'[0-9]\.[0-9]\.[0-9]', file)[0]
             path_version_map[version] = file
         for k, v in path_version_map.items():
             if latest_version_num == '':
@@ -164,7 +164,7 @@ class CliTest(unittest.TestCase):
                 os.remove(file)
 
 
-class XFormsTest(CliTest):
+class ConvertFirstTest(CliTest):
     """Augments CliTest with methods for handling XForms and XLSForms."""
 
     @staticmethod
@@ -184,17 +184,6 @@ class XFormsTest(CliTest):
                                and not os.path.isdir(x)]
         return sans_temps_and_dirs
 
-    def update_xml_files(self):
-        """Update XML files."""
-        path = self.input_path() + 'src/'
-        for in_file in self.input_src_files(path):
-            in_filename = ntpath.basename(in_file)
-            out_filename = in_filename.replace('.xlsx', '.xml')
-            out_file = in_file.replace(in_filename, '../'+out_filename)
-            command = ['xls2xform', in_file, out_file]
-            process = subprocess.Popen(command)
-            process.wait()
-
     @staticmethod
     def delete_if_bad_extension(files, ok_extensions):
         """Remove files with bad extension
@@ -211,27 +200,81 @@ class XFormsTest(CliTest):
             if not any([file.endswith(x) for x in ok_extensions]):
                 os.remove(file)
 
+    @staticmethod
+    def convert_command(in_file, out_file):
+        """This isn't actually implemented because this is an abstract base.
+
+        This will actually be overridden in child class.
+        """
+        return []
+
+    def update_xml_files(self):
+        """Update XML files."""
+        path = self.input_path() + 'src/'
+        with open(os.devnull, 'w') as null:
+            for in_file in self.input_src_files(path):
+                in_filename = ntpath.basename(in_file)
+                out_filename = in_filename.replace('.xlsx', '.xml')
+                out_file = in_file.replace(in_filename, '../' + out_filename)
+                command = self.convert_command(in_file, out_file)
+                process = subprocess.Popen(command, stdout=null)
+                process.wait()
+        null.close()
+
     def setUp(self):
         """setUp"""
         self.update_xml_files()
-        XFormsTest.delete_if_bad_extension(files=self.input_files(),
-                                           ok_extensions=['.xml'])
+        StandardXLSFormTest.delete_if_bad_extension(files=self.input_files(),
+                                                    ok_extensions=['.xml'])
 
 
-class MultipleFiles(XFormsTest):
+class StandardXLSFormTest(ConvertFirstTest):
+    """Tests for standard XLSForm spec files, as for most ODK forms."""
+
+    @staticmethod
+    def convert_command(in_file: '', out_file: '') -> []:
+        """Convert xls/xlsx to xml."""
+        return ['xls2xform', in_file, out_file]
+
+
+class JHUCollectTest(ConvertFirstTest):
+    """Tests for JHU Collect."""
+
+    @staticmethod
+    def convert_command(in_file: '', out_file: '') -> []:
+        """Convert xls/xlsx to xml."""
+        # 	python2 -m qtools2.convert -r test/static/CRVS/input/src/ET*.xlsx
+        # 	mv test/static/CRVS/input/src/*.xml test/static/CRVS/input
+        filename_after_convert = in_file.replace('.xlsx', '.xml')\
+            .replace('.xls', '.xml')
+        command = ['python2', '-m', 'qtools2.convert', '-r', in_file, ';'] + \
+                  ['mv', filename_after_convert, out_file]
+        return command
+
+
+class MultipleFiles(StandardXLSFormTest):
     """Can run CLI on multiple files at once?"""
 
     def test_cli(self):
         """Simple smoke test to see that CLI runs without error."""
-        super(XFormsTest, self).setUp()
+        super(StandardXLSFormTest, self).setUp()
         self.standard_cli_test()
 
 
-class MultipleTestCases(XFormsTest):
+class MultipleTestCases(StandardXLSFormTest):
     """Can run CLI on multiple files at once?"""
 
     def test_cli(self):
         """Simple smoke test to see that CLI runs without error."""
+        self.standard_cli_test()
+
+
+class CRVS(JHUCollectTest):
+    """Would XFormTest actually work on a real scenario like PMA2020 CRVS?"""
+
+    def test_cli(self):
+        """Simple smoke test to see that CLI runs without error."""
+        super(JHUCollectTest, self).setUp()
         self.standard_cli_test()
 
 

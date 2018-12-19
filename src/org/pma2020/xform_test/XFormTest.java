@@ -30,6 +30,8 @@ package org.pma2020.xform_test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.javarosa.core.model.DataType;
 import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.FormIndex;
@@ -53,11 +55,9 @@ import org.javarosa.form.api.FormEntryModel;
 import org.javarosa.xpath.XPathConditional;
 import org.javarosa.xpath.XPathTypeMismatchException;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.Field;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,6 +65,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.io.FilenameUtils;
 
 // #to-do this might be useful for unit testing my own framework
 //import org.javarosa.xform_test.FormParseInit;
@@ -81,9 +83,9 @@ import static java.util.Collections.unmodifiableList;
 @SuppressWarnings("unchecked")
 public class XFormTest {
     private static final List<String> validAssertionFields = unmodifiableList(asList(
-            "constraint",
-            "relevant",
-            "value"
+        "constraint",
+        "relevant",
+        "value"
     ));
     private static final Map<String, String> errorMessages;
     static {
@@ -107,7 +109,7 @@ public class XFormTest {
         mapping.put("invalidCalculateAssertionError", "Calculate '%s' did not evaluate as expected." +
                 "\nExpected: %s" +
                 "\nGot: %s");        
-        mapping.put("XformTestIllegalArgumentException", "Error: Non-XML file passed as argument. " +
+        mapping.put("XFormTestIllegalArgumentException", "Error: Non-XML file passed as argument. " +
                 "Please pass only XML files. \n\nErrored on the following file:\n");
         mapping.put("commaColonExc", "The comma ',' character is currently reserved for syntax usage only, for the " +
                 "purpose of delimiting multiple assertions. The colon ':' character is currently reserved also for " +
@@ -270,26 +272,49 @@ public class XFormTest {
      *
      * @param args Plain text paths to valid XForm XML files. */
     public static void main(String[] args) {
+        ArrayList<List> results = new ArrayList<>();
+        ArrayList<String> filePaths = new ArrayList<>();
+
         if (args.length == 0)
             System.err.println("XFormTestError: Must pass one or more files as arguments.");
+
+        // get list of files
+        for (String filePath : args) {
+            String parentDir = String.valueOf(Paths.get(filePath).getParent());
+            String filenameOrGlobPattern = filePath.replace(parentDir + "/", "");
+            FileFilter fileFilter = new WildcardFileFilter(filenameOrGlobPattern);
+            File dir = new File(parentDir);
+            File[] files = dir.listFiles(fileFilter);
+            assert files != null;  // #to-do: Return custom error text about file not found or malformed glob pattern.
+            for (File file : files)
+                filePaths.add(file.getAbsolutePath());
+        }
+
         try {
-            for (String file : args)
-                validateFile(file);
-            for (String file : args) {
+            // run tests
+            for (String filePath : filePaths)
+                validateFile(filePath);
+            for (String file : filePaths) {
                 XFormTest testCase = new XFormTest();
-                testCase.runTestsOnFile(file);
+                List fileResults = testCase.runTestsOnFile(file);
+                results = (ArrayList<List>) ListUtils.union(results, fileResults);
             }
-        } catch (AssertionSyntaxException | AssertionTypeException| MissingAssertionError |
-                RelevantAssertionError | XformTestIllegalArgumentException err) {
-            System.err.println(err.getClass().getSimpleName() + ": " + err.getMessage());
+            // print results
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            String prettyJsonString = gson.toJson(results);
+            System.out.println(prettyJsonString);
+
+        } catch (XFormTestException err) {
+            System.err.println(err.getMessage());
+            // TODO: Delete any 'modified' files that were created.
         }
     }
 
     /** Runs all applicable tests on a single file.
      *
-     * Side effects: Prints test results.
+     * @param filePath Plain text path to valid XForm XML file.
      *
-     * @param filePath Plain text paths to valid XForm XML file.
+     * @return list of results for all test cases run on file.
      *
      * @throws AssertionSyntaxException if invalid syntax via usage of comma within values rather than exclusively as an
      * assertion field delimiter.
@@ -297,23 +322,33 @@ public class XFormTest {
      * asserted. This can happen if, for example, a value assertion is made on a read_only question. For read_only
      * questions, no value can be entered, so such an assertion is inherently invalid.
      * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
-     * @throws RelevantAssertionError if relevant did not evaluate as expected. */
-    private void runTestsOnFile(String filePath) throws MissingAssertionError, RelevantAssertionError,
-            AssertionTypeException, AssertionSyntaxException {
-        ArrayList<String> testFieldNames = testFieldNames(filePath);
-        List<String> testTypesToRun = unmodifiableList(Collections.singletonList("linearAssertionTest"));
-        for (String testType : testTypesToRun) {
-            if (testType.equals("linearAssertionTest")) {
-                for (String testFieldName : testFieldNames) {
-                    XFormTest testCase = new XFormTest();
-                    FormEntryController formEntryController = testCase.setUpAndGetController(filePath);
-                    ArrayList<TreeElement> instanceNodes = instanceNodes(formEntryController);
-                    ArrayList<TreeElement> formElements = instanceNodesToFormElements(instanceNodes);
-                    Map results = testCase.linearAssertionTest(formElements, testFieldName);
-                    printResults(testType, results);
+     * @throws RelevantAssertionError if relevant did not evaluate as expected.
+     * @throws ValueAssertionError if value expected does not match value that exists on node. */
+    private ArrayList<Map> runTestsOnFile(String filePath) throws XFormTestException {
+
+            ArrayList<Map> testCaseResultsList = new ArrayList<>();
+            ArrayList<String> testFieldNames = testFieldNames(filePath);
+            List<String> testTypesToRun = unmodifiableList(Collections.singletonList("linearAssertionTest"));
+            for (String testType : testTypesToRun) {
+                if (testType.equals("linearAssertionTest")) {
+                    for (String testCaseFieldName : testFieldNames) {
+                        XFormTest testCase = new XFormTest();
+                        String fileName = FilenameUtils.removeExtension(new File(filePath).getName());
+                        FormEntryController formEntryController = testCase.setUpAndGetController(filePath);
+                        ArrayList<TreeElement> instanceNodes = instanceNodes(formEntryController);
+                        ArrayList<TreeElement> formElements = instanceNodesToFormElements(instanceNodes);
+                        try {
+                            Map results = testCase.linearAssertionTest(formElements, testCaseFieldName);
+                            Map testCaseResults = testCaseResults(testType, results, testCaseFieldName, fileName);
+                            testCaseResultsList.add(testCaseResults);
+                        } catch (XFormTestException err) {
+                            throw new XFormTestException("Test case '" + testCaseFieldName + "' in file '" + fileName +
+                                    "' failed.\n" + err.getClass().getSimpleName() + ": " + err.getMessage());
+                        }
+                    }
                 }
             }
-        }
+            return testCaseResultsList;
     }
 
     /** Given a list of XForm form elements, find all the <bind/> attributes that are valid XFormTest fields.
@@ -354,10 +389,10 @@ public class XFormTest {
 
     /** Validates file and throws error early if it detects file is not valid.
      * @param fileName path to file to be validated.
-     * @throws XformTestIllegalArgumentException if file is not valid. */
-    private static void validateFile(String fileName) throws XformTestIllegalArgumentException {
+     * @throws XFormTestIllegalArgumentException if file is not valid. */
+    private static void validateFile(String fileName) throws XFormTestIllegalArgumentException {
        if (!fileName.endsWith(".xml"))
-           throw new XformTestIllegalArgumentException(errorMessages.get("XformTestIllegalArgumentException") +
+           throw new XFormTestIllegalArgumentException(errorMessages.get("XFormTestIllegalArgumentException") +
                    fileName);
     }
 
@@ -426,23 +461,31 @@ public class XFormTest {
     }
 
     /** Sets up some initial class properties.
-     * @param xmlFilePathStr The plain text path to a valid XForm XML file.
+     *
+     * @param filePath The plain text path to a valid XForm XML file.
+     *
      * @return formEntryController JavaRosa's controller class for doing form entry.
      *
      * Side effects:
-     *   - <code>formDef</code> mutation: Initializes.
-     *   - <code>calculateList</code> mutation: Initializes.
-     *   - <code>formEntryController</code> mutation: Initializes
-     *   - warnings mutation: Adds <code>correctionsMade</code> */
-    private FormEntryController setUpAndGetController(String xmlFilePathStr) {
+     *   1. <code>formDef</code> mutation: Initializes.
+     *   2. <code>calculateList</code> mutation: Initializes.
+     *   3. <code>formEntryController</code> mutation: Initializes
+     *   4. warnings mutation: Adds <code>correctionsMade</code>
+     *   5. File system: creates a new file
+     *   6. File system: deletes file created in (5) */
+    private FormEntryController setUpAndGetController(String filePath) {
         setUpMockClient();
-        Map results = handleUnsupportedFeatures(xmlFilePathStr);
-        String newXmlFilePath = (String) results.get("modifiedFilePath");
-        Map correctionsMade = (Map) results.get("correctionsMade");
+        Map modifiedFileResults = handleUnsupportedFeatures(filePath);
+        Map correctionsMade = (Map) modifiedFileResults.get("correctionsMade");
+        String modifiedFilePath = (String) modifiedFileResults.get("modifiedFilePath");
         if (!correctionsMade.isEmpty())
-            warnings.put("correctionsMade", results.get("correctionsMade"));
-        Path xmlFilePath = Paths.get(newXmlFilePath);
-        FormParseInit fpi = squelchedFormParseInit(xmlFilePath);
+            warnings.put("correctionsMade", modifiedFileResults.get("correctionsMade"));
+        FormParseInit fpi = squelchedFormParseInit(Paths.get(modifiedFilePath));
+
+        File toDelete = new File(modifiedFilePath);
+        //noinspection ResultOfMethodCallIgnored
+        toDelete.delete();
+
         formDef = fpi.getFormDef();
         calculateList = calculateList(formDef);
         squelchedFormDefInit();
@@ -455,11 +498,17 @@ public class XFormTest {
     /** Prints results of a test.
      * @param testType The type of test that was run.
      * @param results The test results.
+     * @param testCaseFieldName The test case field name, as in what comes after <code>bind::</code> in an excel file,
+     *                          e.g. <code>bind::test1</code>, or simply the node attribute name itself in an XML file,
+     *                          e.g. <code>test1</code>.
+     * @param fileName name of file being tested, without file extension.
      *
-     * Side effects: Prints to the terminal. */
-    private void printResults(String testType, Map results) {
+     * @return Map of results. */
+    private Map testCaseResults(String testType, Map results, String testCaseFieldName, String fileName) {
         Map resultsData = new HashMap();
 
+        resultsData.put("filename", fileName);
+        resultsData.put("testCaseFieldName", testCaseFieldName);
         if (reportOnTestType)
             resultsData.put("testType", testType);
 
@@ -507,10 +556,10 @@ public class XFormTest {
         }
         resultsData.put("warningsMsg", warningMsg);
 
-        // TODO: This doesn't look great in the CLI.
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String prettyJsonString = gson.toJson(resultsData);
-        System.out.println(prettyJsonString);
+        return resultsData;
+//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//        String prettyJsonString = gson.toJson(resultsData);
+//        System.out.println(prettyJsonString);
     }
 
     /** Takes a nested tree structure of TreeElement's recurses through it, eventually returning a flat list.
@@ -591,8 +640,8 @@ public class XFormTest {
      *
      * #to-do: HashMap<String, Assertion>: ConstraintAssertion, RelevantAssertion, ValueAssertion
      * #to-do: Throw error there is a value assertion in read_only question. */
-    private HashMap<String, String> nodeAssertions(TreeElement node, String testFieldName) throws AssertionSyntaxException,
-            AssertionTypeException, MissingAssertionError {
+    private HashMap<String, String> nodeAssertions(TreeElement node, String testFieldName) throws
+            AssertionSyntaxException, AssertionTypeException, MissingAssertionError {
         String missingAssertionError = String.format(errorMessages.get("MissingAssertionError"), node.getName());
         boolean isReadOnly = !node.isEnabled();
         HashMap<String, String> assertions = new HashMap<>();
@@ -1010,9 +1059,10 @@ public class XFormTest {
      * asserted. This can happen if, for example, a value assertion is made on a read_only question. For read_only
      * questions, no value can be entered, so such an assertion is inherently invalid.
      * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
-     * @throws RelevantAssertionError if relevant did not evaluate as expected. */
+     * @throws RelevantAssertionError if relevant did not evaluate as expected.
+     * @throws ValueAssertionError if value expected does not match value that exists on node. */
     private void handleRepeatProcessingRecursively(String testFieldName) throws AssertionTypeException,
-            AssertionSyntaxException, MissingAssertionError, RelevantAssertionError {
+            AssertionSyntaxException, MissingAssertionError, RelevantAssertionError, ValueAssertionError {
         boolean moreRepeatsRemain = currentRepeatNum <= currentRepeatTotIterationsAsserted;
         boolean repeatNodesInInstanceHaveBeenCheckedOnce = currentRepeatNum > 1;
         if (repeatNodesInInstanceHaveBeenCheckedOnce && moreRepeatsRemain)
@@ -1050,9 +1100,12 @@ public class XFormTest {
     }
 
     /** Runs assertion test on asserted values for a given node, and updates running testCases for report.
+     *
      * @param node Instance XForm node containing XFormTest assertion bind.
-     * @param value A value assertion on the XFormTest assertion bind. */
-    private void handleValueAssertion(TreeElement node, String value) {
+     * @param value A value assertion on the XFormTest assertion bind.
+     *
+     * @throws ValueAssertionError if value expected does not match value that exists on node.*/
+    private void handleValueAssertion(TreeElement node, String value) throws ValueAssertionError {
         HashMap<String, String> nodeTestResults = new HashMap<>();
         FormEntryModel model = formEntryController.getModel();
         FormIndex index = model.getFormIndex();
@@ -1109,10 +1162,10 @@ public class XFormTest {
      * asserted. This can happen if, for example, a value assertion is made on a read_only question. For read_only
      * questions, no value can be entered, so such an assertion is inherently invalid.
      * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
-     * @throws RelevantAssertionError if relevant did not evaluate as expected. */
+     * @throws RelevantAssertionError if relevant did not evaluate as expected.
+     * @throws ValueAssertionError if value expected does not match value that exists on node. */
     private void testAssertions(TreeElement node, String testFieldName) throws AssertionTypeException,
-            AssertionSyntaxException,
-            MissingAssertionError, RelevantAssertionError {
+            AssertionSyntaxException,  MissingAssertionError, RelevantAssertionError, ValueAssertionError {
         HashMap<String, String> assertions = nodeAssertions(node, testFieldName);
 
         if (!assertions.get("value").equals(""))
@@ -1136,9 +1189,11 @@ public class XFormTest {
      * asserted. This can happen if, for example, a value assertion is made on a read_only question. For read_only
      * questions, no value can be entered, so such an assertion is inherently invalid.
      * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
-     * @throws RelevantAssertionError if relevant did not evaluate as expected. */
+     * @throws RelevantAssertionError if relevant did not evaluate as expected.
+     * @throws ValueAssertionError if value expected does not match value that exists on node. */
     private boolean processNodes(ArrayList<TreeElement> arbitraryNodeset, String testFieldName) throws
-            AssertionSyntaxException, AssertionTypeException, MissingAssertionError, RelevantAssertionError {
+            AssertionSyntaxException, AssertionTypeException, MissingAssertionError, RelevantAssertionError,
+            ValueAssertionError {
         HashMap<String, Integer> nodeIndexLookup = new HashMap<>();
         for (int i=0; i<arbitraryNodeset.size(); i++) {
             nodeIndexLookup.put(arbitraryNodeset.get(i).getName(), i);
@@ -1210,6 +1265,7 @@ public class XFormTest {
      * questions, no value can be entered, so such an assertion is inherently invalid.
      * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
      * @throws RelevantAssertionError if relevant did not evaluate as expected.
+     * @throws ValueAssertionError if value expected does not match value that exists on node.
      *
      * #to-do: Need to try this only if detecting that it is a repeat group first.
      * #to-do: error out on currently unsupported assertions
@@ -1221,7 +1277,8 @@ public class XFormTest {
      * #to-do: relevant assertions
      *   boolean relevantEval = state.isIndexRelevant(); */
     private Map linearAssertionTest(ArrayList<TreeElement> formElements, String testFieldName)
-            throws AssertionSyntaxException, AssertionTypeException, MissingAssertionError, RelevantAssertionError {
+            throws AssertionSyntaxException, AssertionTypeException, MissingAssertionError, RelevantAssertionError,
+            ValueAssertionError {
         Map results = new HashMap<>();
 
         step();

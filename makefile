@@ -3,7 +3,7 @@ build-docs-no-open build-docs docs-push-production docs-push-staging \
 docs-push create-docs docs-create docs-build docs test-unit-tests \
 test-files-to-static-doc-files push-docs push-docs-staging docs-open \
 push-docs-production get-latest-jar build jar limited-test limited-test-only \
-test prep-release install release
+test prep-release install release test-crvs crvs-test crvs
 
 # TODO: Should be able to pass arguments.
 # Test
@@ -23,6 +23,13 @@ limited-tests:
     make xform-test-only
 test:
 	python3 -m unittest discover -v test/
+crvs-test:
+	@echo Currently need to have QTools2 installed globally for this test to work.
+	python2 -m qtools2.convert -r test/static/CRVS/input/src/ET*.xlsx
+	mv test/static/CRVS/input/src/*.xml test/static/CRVS/input
+test-crvs: crvs-test
+crvs: crvs-test
+
 # Install
 make install:
 	rm /Library/Java/Executables/xform-test.jar; \

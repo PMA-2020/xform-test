@@ -16,7 +16,7 @@
 
 package org.pma2020.xform_test;
 
-class RelevantAssertionError extends Exception {
+class RelevantAssertionError extends XFormTestException {
     RelevantAssertionError(String message) {
         super(message);
     }
