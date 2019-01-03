@@ -1,19 +1,3 @@
-/*
- * Copyright Joe Flack
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.pma2020.xform_test;
 // TODO's
 // @0.1Release: Look over #to-do's.
@@ -26,7 +10,7 @@ package org.pma2020.xform_test;
 // @Whenever: Better handling of commas and string literals.
 // @Whenever: Handle an assertion like this; 2 string literals in a repeat: [252: 123-636&#x0a;, 777: 999-444&#x0a;]
 // @Whenever: Validate things like this: "yes, relevant: 0"
-// @Whenever: Remove '-modified' xml.
+// @Next release - delete the 'modified' xml immediately after being read into memory instead.
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -42,9 +26,13 @@ import org.javarosa.core.model.QuestionDef;
 import org.javarosa.core.model.QuickTriggerable;
 import org.javarosa.core.model.condition.EvaluationContext;
 import org.javarosa.core.model.condition.Triggerable;
+import org.javarosa.core.model.data.DateData;
 import org.javarosa.core.model.data.IntegerData;
 import org.javarosa.core.model.data.LongData;
+import org.javarosa.core.model.data.SelectMultiData;
+import org.javarosa.core.model.data.SelectOneData;
 import org.javarosa.core.model.data.StringData;
+import org.javarosa.core.model.data.helper.Selection;
 import org.javarosa.core.model.instance.DataInstance;
 import org.javarosa.core.model.instance.InstanceInitializationFactory;
 import org.javarosa.core.model.instance.TreeElement;
@@ -55,16 +43,26 @@ import org.javarosa.form.api.FormEntryModel;
 import org.javarosa.xpath.XPathConditional;
 import org.javarosa.xpath.XPathTypeMismatchException;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -82,66 +80,100 @@ import static java.util.Collections.unmodifiableList;
  * Documentation: http://xform-test.pma2020.org/ */
 @SuppressWarnings("unchecked")
 public class XFormTest {
-    private static final List<String> validAssertionFields = unmodifiableList(asList(
-        "constraint",
-        "relevant",
-        "value"
+    private static final List<String> validAssertions = unmodifiableList(asList(
+            // "constraint",  // #to-do: Boolean. Asserts constraint violation. Hasn't yet been implemented.
+            // "error", // #to-do: String. Asserts that a value entered will error. Hasn't been implemented.
+            "relevant",  // Boolean. Will the question appear?
+            "value" // String. What value would you have entered on this node for this test case?
     ));
+    private static final List<String> validDirectives = unmodifiableList(Collections.singletonList(
+            "set-value" // String. Overrides evaluation of calculate fields. Sets value specified on node.
+    ));
+    private static final List<String> validAssertionsAndStaticDirectives;
+    static {
+        List<String> list = new ArrayList<>();
+        list.addAll(validAssertions);
+        list.addAll(validDirectives);
+        validAssertionsAndStaticDirectives = list;
+    }
     private static final Map<String, String> errorMessages;
     static {
-        Map<String, String> mapping = new HashMap<>();
+        Map<String, String> errors = new HashMap<>();
         String excDetails = "\n\nErrored on: " +
                 "\n - Node name: " + "%s" +
                 "\n - Assertion text: " + "%s";
-        mapping.put("unableToEnterValueError", "Asserted enterable value '%s' was not able to be entered on node %s.");
-        mapping.put("invalidFieldExc", "In parsing assertions, an invalid field name was found. Valid field names " +
-                "are: " + validAssertionFields + excDetails + "\n - Field: " + "%s");
-        mapping.put("valueAssertionExcNote", "Invalid assertion type: value assertion. Question/prompt '%s' " +
+        errors.put("unableToEnterValueError", "Asserted enterable value '%s' was not able to be entered on node %s.");
+        errors.put("invalidFieldExc", "In parsing assertions, an invalid field name was found. Valid field names " +
+                "are: " + validAssertionsAndStaticDirectives + excDetails + "\n - Field: " + "%s");
+        errors.put("valueAssertionExcNote", "Invalid assertion type: value assertion. Question/prompt '%s' " +
                 "of type 'note' is read only. It is impossible to assert enterable value of assertion '%s'." +
                 excDetails);
-        mapping.put("valueAssertionExcReadOnly", "Invalid assertion type: value assertion. Question/prompt '%s' " +
-                "is read only. It is impossible to assert enterable value of assertion '%s'." + excDetails);
-        mapping.put("ValueAssertionError",
+        errors.put("valueAssertionExcReadOnly", "Invalid assertion type: value assertion. Question/prompt " +
+                "is read only. It is impossible to assert enterable value." + excDetails);
+        errors.put("ValueAssertionError",
                 "Asserted expected value '%s' did not match actual value of node '%s' on node %s.");
-        mapping.put("UnableToEvaluateError", "Could not evaluate calculate because relevant evaluated to false.");
-        mapping.put("invalidCalculateUsageError", 
+        errors.put("UnableToEvaluateError", "Could not evaluate calculate because relevant evaluated to false.");
+        errors.put("invalidCalculateUsageError",
                 "Node passed to assertCaculateEval() does not represent an instance of an XLSForm calculate.");
-        mapping.put("invalidCalculateAssertionError", "Calculate '%s' did not evaluate as expected." +
+        errors.put("invalidCalculateAssertionError", "Calculate '%s' did not evaluate as expected." +
                 "\nExpected: %s" +
                 "\nGot: %s");        
-        mapping.put("XFormTestIllegalArgumentException", "Error: Non-XML file passed as argument. " +
+        errors.put("XFormTestIllegalArgumentException", "Non-XML file passed as argument. " +
                 "Please pass only XML files. \n\nErrored on the following file:\n");
-        mapping.put("commaColonExc", "The comma ',' character is currently reserved for syntax usage only, for the " +
+        errors.put("commaColonExc", "The comma ',' character is currently reserved for syntax usage only, for the " +
                 "purpose of delimiting multiple assertions. The colon ':' character is currently reserved also for " +
                 "syntax usage only, for the purpose of delimiting assertion type from assertion value. " +
                 "If the literal text of your assertions contain commas or colons, please remove them, as such usage" +
                 "is currently unsupported. If you experience this issue and feel that support for literal usage of " +
                 "these characters in your assertions would be helpful, please file an issue: " +
                 "https://github.com/PMA-2020/xform-test/issues/new" + excDetails);
-        mapping.put("NodeNotFoundException", "Node '%s' was not found in form '%s'.");
-        mapping.put("MissingAssertionError", "Missing assertion error: Question '" + "%s" + "' was absent of any " +
+        errors.put("NodeNotFoundException", "Node '%s' was not found in form '%s'.");
+        errors.put("MissingAssertionError", "Question '" + "%s" + "' was absent of any " +
                 "assertions. XFormTest requires that at the very least, every answerable, required question includes " +
                 "a value assertion for a linear scenario test to be considered valid. If you do not expect this " +
                 "question to be relevant, and left off an assertion for that reason, please insert 'relevant: 0' " +
                 "as the assertion.");
-        mapping.put("relevantFalseError", "\nThis is because the question relevant evaluated to false.");
-        mapping.put("choiceNotFoundError", " This choice option was not found in the list of options.");
-        mapping.put("inconsistentRelevantSyntaxError", "An inconsistent number of repeat instances were implicitly " +
+        errors.put("relevantFalseError", "\nThis is because the question relevant evaluated to false.");
+        errors.put("choiceNotFoundError", " This choice option was not found in the list of options.");
+        errors.put("inconsistentRelevantSyntaxError", "An inconsistent number of repeat instances were implicitly " +
                 "asserted. Check each question's assertion syntax (e.g. [<assertions>, <assertions, ...]) and " +
                 "make sure they all have the same number of commas.");
-        mapping.put("RelevantSyntaxException", "Relevant statement syntax on '%s' was invalid." +
+        errors.put("RelevantSyntaxException", "Relevant statement syntax on '%s' was invalid." +
                 "\nExpected: true || 1 || false || 0" +
                 "\nGot: %s");
-        mapping.put("RelevantAssertionError", "Relevant for '%s' did not evaluate as expected." +
+        errors.put("RelevantAssertionError", "Relevant for '%s' did not evaluate as expected." +
                 "\nExpected: %s" +
                 "\nGot: %s");
-        errorMessages = mapping;
+        // TODO: translate below added new errors
+        String evalOverrideDescriptions = "(1) the general-purpose 'set-value' directive, e.g. 'set-value: VALUE', or" +
+                " (2) the function-specific evaluation overrides of the form 'funcName(): VALUE'";
+        errors.put("invalidOverrideSyntax", "The field '%s' was declared, but is not a recognized " +
+                "assertion or directive.\n" +
+                "- List of valid assertions: " + validAssertions + "\n" +
+                "- List of valid static directives: " + validDirectives + "\n" +
+                "- Syntax for an evaluation override directive: functionName(): valueToOverrideWith");
+        errors.put("conflictingDirectivesError", "A node was found where more than one type of value override " +
+                "directives were used. Only one can be used per node, either " + evalOverrideDescriptions + ". " +
+                "Please edit the node to only use one of these overrides, and try again.\n" +
+                "- Name of offending node: %s");
+        errors.put("OverrideDirectivesUsageException", "An evaluation override was used on a non-calculate node. " +
+                "Neither " + evalOverrideDescriptions + " should be used except on a calculate.\n" +
+                "- Name of offending node: %s");
+        errorMessages = errors;
     }
     private static final List<String> validXformTestBindNames = unmodifiableList(asList(
         "xform-test",
         "xtest",
         "test"
     ));
+    /* TODO: Actually, it looks like these can be custom. For example, in JHU Collect, we have a "logging"
+        feature. If in settings, the 'logging' field is set to 'TRUE', the following will display in meta in XML:
+        <meta>
+            <instanceID/>
+            <instanceName/>
+            <logging/>
+        </meta>
+        Therefore, a good method to solve custom meta is to simply ignore every node who's parent is "meta". */
     private static final List<String> nonInteractiveInstanceNodes = unmodifiableList(asList(
         "start",
         "end",
@@ -150,15 +182,26 @@ public class XFormTest {
         "simserial",
         "meta",
         "instanceID",
-        "instanceName"
+        "instanceName",
+        "logging"
     ));
-    private static final Map<String, Map<String, String>> unsupportedFeatures;
+    // Note: This is confusing as is. These are only partly regular expressions, and then more regexp logic
+    // is tacked on later in multiple places. Should refactor.
+    private static final Map<String, String> unsupportedFeatureFindReplaces;
     static {
-        Map<String, Map<String, String>> mapping = new HashMap<>();
-        Map<String, String> calculateFindReplaces = new HashMap<>();
-        calculateFindReplaces.put("pulldata", "1");
-        mapping.put("calculate", calculateFindReplaces);
-        unsupportedFeatures = mapping;
+        Map<String, String> mapping = new HashMap<>();
+        // mapping.put("pulldata\\(.*\\)", "1");
+        mapping.put("pulldata\\(.*\\)", "'pulldata\\(.*\\)'");  // Will wrap what is found in single quotes
+        mapping.put("trim\\(.*\\)", "*");  // Will replace with *
+        unsupportedFeatureFindReplaces = mapping;
+    }
+    private static final Map<String, String> converterIssueCorrections;
+    static {
+        Map<String, String> mapping = new HashMap<>();
+        // e.g. literal test1="true()"
+        mapping.put("true\\(\\)", "yes");
+        mapping.put("false\\(\\)", "no");
+        converterIssueCorrections = mapping;
     }
     private static final Map<Integer, String> formEntryControllerEntryStatusMapping;
     static {
@@ -265,13 +308,16 @@ public class XFormTest {
     private int currentRepeatTotIterationsAsserted = 0;
     private int currentRepeatNum = 0;
     private Map warnings = new HashMap();
-    private ArrayList<HashMap<String, String>> testCases = new ArrayList<>();
+    private ArrayList<HashMap<String, Object>> testCases = new ArrayList<>();
     private HashMap<String, XPathConditional> calculateList;
+    private ArrayList<String> testFieldNames;
 
     /** Runs XFormTest spec tests on valid XForm XML files.
      *
-     * @param args Plain text paths to valid XForm XML files. */
-    public static void main(String[] args) {
+     * @param args Plain text paths to valid XForm XML files.
+     *
+     * @throws IOException if (a) file not found when reading, (b) unable to write temporary file */
+    public static void main(String[] args) throws IOException {
         ArrayList<List> results = new ArrayList<>();
         ArrayList<String> filePaths = new ArrayList<>();
 
@@ -305,8 +351,15 @@ public class XFormTest {
             System.out.println(prettyJsonString);
 
         } catch (XFormTestException err) {
+            // Delete temp files
+            for (String filePath : filePaths) {
+                String modifiedFilePath = filePath.replace(".xml", "-modified.xml");
+                File modifiedFile = new File(modifiedFilePath);
+                //noinspection ResultOfMethodCallIgnored  // Returns 'true' if delete successful, else false.
+                modifiedFile.delete();
+            }
+            // System.err.println(err.getClass().getSimpleName() + ": " + err.getMessage());
             System.err.println(err.getMessage());
-            // TODO: Delete any 'modified' files that were created.
         }
     }
 
@@ -323,32 +376,41 @@ public class XFormTest {
      * questions, no value can be entered, so such an assertion is inherently invalid.
      * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
      * @throws RelevantAssertionError if relevant did not evaluate as expected.
-     * @throws ValueAssertionError if value expected does not match value that exists on node. */
-    private ArrayList<Map> runTestsOnFile(String filePath) throws XFormTestException {
+     * @throws ValueAssertionError if value expected does not match value that exists on node.
+     * @throws IOException if (a) file not found when reading, (b) unable to write temporary file */
+    private ArrayList<Map> runTestsOnFile(String filePath) throws XFormTestException, IOException {
+        String correctedFilePath = fixAndSaveXForm(filePath);
+        testFieldNames = testFieldNamesList(correctedFilePath);
+        if (testFieldNames.size() < 1) {
+            // TODO: Translate this error to French
+            throw new XFormTestException("MisisngColumnsError: No test columns were found.\n" +
+                "- Did you forget to put 'bind::' at the front of the column name?\n" +
+                "- Is your column named exactly as one of the following?: " + validXformTestBindNames);
+        }
 
-            ArrayList<Map> testCaseResultsList = new ArrayList<>();
-            ArrayList<String> testFieldNames = testFieldNames(filePath);
-            List<String> testTypesToRun = unmodifiableList(Collections.singletonList("linearAssertionTest"));
-            for (String testType : testTypesToRun) {
-                if (testType.equals("linearAssertionTest")) {
-                    for (String testCaseFieldName : testFieldNames) {
-                        XFormTest testCase = new XFormTest();
-                        String fileName = FilenameUtils.removeExtension(new File(filePath).getName());
-                        FormEntryController formEntryController = testCase.setUpAndGetController(filePath);
-                        ArrayList<TreeElement> instanceNodes = instanceNodes(formEntryController);
-                        ArrayList<TreeElement> formElements = instanceNodesToFormElements(instanceNodes);
-                        try {
-                            Map results = testCase.linearAssertionTest(formElements, testCaseFieldName);
-                            Map testCaseResults = testCaseResults(testType, results, testCaseFieldName, fileName);
-                            testCaseResultsList.add(testCaseResults);
-                        } catch (XFormTestException err) {
-                            throw new XFormTestException("Test case '" + testCaseFieldName + "' in file '" + fileName +
-                                    "' failed.\n" + err.getClass().getSimpleName() + ": " + err.getMessage());
-                        }
+        ArrayList<Map> testCaseResultsList = new ArrayList<>();
+        List<String> testTypesToRun = unmodifiableList(Collections.singletonList("linearAssertionTest"));
+        String fileName = FilenameUtils.removeExtension(new File(filePath).getName());
+        for (String testType : testTypesToRun) {
+            if (testType.equals("linearAssertionTest")) {
+                for (String testCaseFieldName : testFieldNames) {
+                    XFormTest testCase = new XFormTest();
+                    FormEntryController formEntryController = testCase.setUpAndGetController(correctedFilePath);
+                    ArrayList<TreeElement> instanceNodes = instanceNodes(formEntryController);
+                    ArrayList<TreeElement> formElements = instanceNodesToFormElements(instanceNodes);
+                    try {
+                        Map results = testCase.linearAssertionTest(formElements, testCaseFieldName);
+                        Map testCaseResults = testCaseResults(testType, results, testCaseFieldName, fileName);
+                        testCaseResultsList.add(testCaseResults);
+                    } catch (XFormTestException err) {
+                        throw new XFormTestException("Test case '" + testCaseFieldName + "' in file '" + fileName +
+                                "' failed.\n" + err.getClass().getSimpleName() + ": " + err.getMessage());
                     }
                 }
             }
-            return testCaseResultsList;
+        }
+
+        return testCaseResultsList;
     }
 
     /** Given a list of XForm form elements, find all the <bind/> attributes that are valid XFormTest fields.
@@ -356,7 +418,7 @@ public class XFormTest {
      * @param filePath Plain text paths to valid XForm XML file.
      *
      * @return a list of valid XFormTest fields*/
-    private static ArrayList<String> testFieldNames(String filePath) {
+    private static ArrayList<String> testFieldNamesList(String filePath) {
         ArrayList<String> fieldNames = new ArrayList<>();
         XFormTest tempInstance = new XFormTest();
 
@@ -403,7 +465,9 @@ public class XFormTest {
     }
 
     /** Creates a new FormParseInit object, but silences all terminal output during the process.
+     *
      * @param path Path object referencing a valid XForm XML file.
+     *
      * @return an instantiated FormParseInit object. */
     private static FormParseInit squelchedFormParseInit(Path path) {
         PrintStream originalStream = System.out;
@@ -416,35 +480,107 @@ public class XFormTest {
         return fpi;
     }
 
-    /** Creates new file with <code>unsupportedFeatures</code> removed.
+    /** Fixes issues with source XML files that must be corrected before test can be run.
+     *
+     * Side effects:
+     * - Writes a new file (callee)
+     *
+     * @param filePath Path to XML file
+     *
+     * @return Path to corrected file
+     *
+     * @throws IOException if (a) file not found when reading, (b) unable to write temporary file */
+    private String fixAndSaveXForm(String filePath) throws IOException {
+        XmlModifier xml = new XmlModifier(filePath);
+
+        // 1. Handle unsupported features
+        // TODO
+        //  1. Calculate name appears as: ''pulldata\(.*\)''
+        //  2. I think in test field, set-value 'pulldata: xxx' is causing error. Maybe replace it with something else?
+        ArrayList<String> correctionsMade = handleUnsupportedFeatures(xml);
+        if (correctionsMade.size() > 0)
+            warnings.put("correctionsMade", correctionsMade);
+
+        // TODO: Temp; refactor uncertain
+        // 1.5 set field names
+        xml.writeToFile();
+        String filePath2 = xml.getnewFilePath();
+
+        ArrayList<String> fieldNames = new ArrayList<>();
+        XFormTest tempInstance = new XFormTest();
+
+        // Silence stdout while doing this first setup.
+        PrintStream originalStream = System.out;
+        PrintStream dummyStream = new PrintStream(new OutputStream(){
+            public void write(int b) {}  // NO-OP
+        });
+        System.setOut(dummyStream);
+        FormEntryController tempFormEntryController = tempInstance.setUpAndGetController(filePath2 );
+        System.setOut(originalStream);
+
+        ArrayList<TreeElement> tempInstanceNodes = instanceNodes(tempFormEntryController);
+        ArrayList<TreeElement> tempFormElements = instanceNodesToFormElements(tempInstanceNodes);
+
+        for (TreeElement ele : tempFormElements) {
+            for (TreeElement attr : ele.getBindAttributes()) {
+                String attrName = attr.getName();
+                if (!fieldNames.contains(attrName)) {
+                    for (String validName : validXformTestBindNames) {
+                        if (attrName.startsWith(validName))
+                            fieldNames.add(attrName);
+                    }
+                }
+            }
+        }
+
+        testFieldNames = fieldNames;
+        // TODO: end temp
+
+        // 2. Fix form converter issues
+        fixConverterIssues(xml);
+        // 3. Save
+        xml.writeToFile();
+
+        return xml.getnewFilePath();
+    }
+
+    /** Fixes issues caused by XLSX to XForm converters
+     *
+     * @param xml XmlModifier instance ready for fixes */
+    private void fixConverterIssues(XmlModifier xml) {
+        // TODO #now: fix no --> false() and yes --> true()
+        //  1. Add field name and "s
+        //  2. add checkEscaping param
+        // Example good and bad: required="true()" test1="\false()" test1="false()" test1="value: false()"
+        Map<String, String> correctionsToMake = new HashMap<>();
+        converterIssueCorrections.forEach((find, replace) -> {
+            for (String testFieldName : testFieldNames) {
+                String opener = testFieldName + "=\"";
+                String closer = "\"";
+                String newFind = opener + find + closer;
+                String newReplace = opener + replace + closer;
+                correctionsToMake.put(newFind, newReplace);
+            }
+        });
+        correctionsToMake.forEach(xml::findReplace);
+    }
+
+    /** Creates new file with <code>unsupportedFeatureFindReplaces</code> removed.
      *
      * Side effects: Creates a new file.
      *
-     * @param filePath The plain text path to a valid XForm XML file.
+     * @param xml An XmlModifier class ready to run some modifications
      *
-     * @return map with two things: (1) plain text path to a new XForm XML file with <code>unsupportedFeatures</code>
-     * removed, and (2) a list of all <code>correctionsMade</code> based on <code>unsupportedFeatures</code>. */
-    private static HashMap handleUnsupportedFeatures(String filePath) {
-        HashMap results = new HashMap();
-        HashMap<String, List> correctionsMade = new HashMap();
-        results.put("correctionsMade", correctionsMade);
-        XmlModifier xml = new XmlModifier(filePath);
+     * @return List of modifications made */
+    private static ArrayList<String> handleUnsupportedFeatures(XmlModifier xml) {
+        ArrayList<String> modificationsMade = new ArrayList<>();
+        unsupportedFeatureFindReplaces.forEach((find, replace) -> {
+            boolean modificationMade = xml.findReplace(find, replace);
+            if (modificationMade)
+                modificationsMade.add(find);
+        });
 
-        unsupportedFeatures.forEach((attr, features) ->
-            features.forEach((find, replace) -> {
-                boolean correctionMade = xml.modifyNodeAttributesByFindReplace(attr, find, replace);
-                if (correctionMade) {
-                    if (correctionsMade.get(attr) == null || correctionsMade.get(attr).isEmpty())
-                        correctionsMade.put(attr, new ArrayList());
-                    correctionsMade.get(attr).add(find);
-                }
-            })
-        );
-
-        xml.writeToFile();
-        results.put("modifiedFilePath", xml.getnewFilePath());
-
-        return results;
+        return modificationsMade;
     }
 
     /** Initializes a FormDef object, but silences all terminal output during the process.
@@ -462,6 +598,9 @@ public class XFormTest {
 
     /** Sets up some initial class properties.
      *
+     * TODO 2019.04.26-jef: At time of this writing, this is called twice. It feels like these instance attributes
+     * should only be set once.
+     *
      * @param filePath The plain text path to a valid XForm XML file.
      *
      * @return formEntryController JavaRosa's controller class for doing form entry.
@@ -469,30 +608,17 @@ public class XFormTest {
      * Side effects:
      *   1. <code>formDef</code> mutation: Initializes.
      *   2. <code>calculateList</code> mutation: Initializes.
-     *   3. <code>formEntryController</code> mutation: Initializes
-     *   4. warnings mutation: Adds <code>correctionsMade</code>
-     *   5. File system: creates a new file
-     *   6. File system: deletes file created in (5) */
+     *   3. <code>formEntryController</code> mutation: Initializes */
     private FormEntryController setUpAndGetController(String filePath) {
         setUpMockClient();
-        Map modifiedFileResults = handleUnsupportedFeatures(filePath);
-        Map correctionsMade = (Map) modifiedFileResults.get("correctionsMade");
-        String modifiedFilePath = (String) modifiedFileResults.get("modifiedFilePath");
-        if (!correctionsMade.isEmpty())
-            warnings.put("correctionsMade", modifiedFileResults.get("correctionsMade"));
-        FormParseInit fpi = squelchedFormParseInit(Paths.get(modifiedFilePath));
-
-        File toDelete = new File(modifiedFilePath);
-        //noinspection ResultOfMethodCallIgnored
-        toDelete.delete();
-
+        FormParseInit fpi = squelchedFormParseInit(Paths.get(filePath));
         formDef = fpi.getFormDef();
         calculateList = calculateList(formDef);
         squelchedFormDefInit();
         FormEntryModel formEntryModel = new FormEntryModel(formDef);
         formEntryController = new FormEntryController(formEntryModel);
-        return formEntryController;
 
+        return formEntryController;
     }
 
     /** Prints results of a test.
@@ -534,24 +660,31 @@ public class XFormTest {
                     "The following is a list of attributes and unsupported features of those attributes " +
                     "that have been found and replaced with some other text in the form " +
                     "'unsupportedFeatureFound: replacedWithText'.\n\n");
-            Map unsupportedFoundReplaced = new HashMap();
-            Map correctionsMade = (Map) warnings.get("correctionsMade");
-            correctionsMade.forEach((attr, featuresReplaced) -> {
-                List<String> findReplaces = new ArrayList();
-                unsupportedFoundReplaced.put(attr, findReplaces);
-                for (String feature : (List<String>) featuresReplaced) {
-                    //noinspection SuspiciousMethodCalls
-                    findReplaces.add(feature + ": " + unsupportedFeatures.get(attr).get(feature));
-                }
-            });
-            for (String attr : (Set<String>) unsupportedFoundReplaced.keySet()) {
-                warningMsg.append(attr);
-                warningMsg.append(":\n");
-                for (String findReplaceText : (List<String>) unsupportedFoundReplaced.get(attr)) {
-                    warningMsg.append("  ");
-                    warningMsg.append(findReplaceText);
-                    warningMsg.append("\n");
-                }
+//            Map unsupportedFoundReplaced = new HashMap();
+            ArrayList<String> correctionsMade = (ArrayList<String>) warnings.get("correctionsMade");
+//            correctionsMade.forEach((attr, featuresReplaced) -> {
+//                List<String> findReplaces = new ArrayList();
+//                unsupportedFoundReplaced.put(attr, findReplaces);
+//                for (String feature : (List<String>) featuresReplaced) {
+//                    //noinspection SuspiciousMethodCalls
+//                    findReplaces.add(feature + ": " + unsupportedFeatureFindReplaces.get(attr).get(feature));
+//                }
+//            });
+//            for (String attr : (Set<String>) unsupportedFoundReplaced.keySet()) {
+//                warningMsg.append(attr);
+//                warningMsg.append(":\n");
+//                for (String findReplaceText : (List<String>) unsupportedFoundReplaced.get(attr)) {
+//                    warningMsg.append("  ");
+//                    warningMsg.append(findReplaceText);
+//                    warningMsg.append("\n");
+//                }
+//            }
+            for (String replaced : correctionsMade) {
+                warningMsg.append("  ");
+                warningMsg.append(replaced);
+                warningMsg.append(": ");
+                warningMsg.append(unsupportedFeatureFindReplaces.get(replaced));
+                warningMsg.append("\n");
             }
         }
         resultsData.put("warningsMsg", warningMsg);
@@ -624,6 +757,52 @@ public class XFormTest {
         return formElements;
     }
 
+    /** Reformats an assertion string
+     *
+     * @param str assertion string taken from a node
+     *
+     * @return formatted string */
+    private static String formatAssertionStr(String str) {
+        String naToken = ".";
+        String emptyStringToken1 = "\"\"";
+        String emptyStringToken2 = "''";
+
+        // re-format dates
+        str = str.replace(" 00:00:00", "");
+
+        // re-format n/a character and empty string
+        if (str.equals(naToken))
+            str = "";  // 2019-05-22, changed from: str = null;
+        else if (str.equals(emptyStringToken1) || str.equals(emptyStringToken2))
+            str = "";
+
+        return str;
+    }
+
+    /** Extracts a assertion string from a given node.
+     *
+     * @param node node containing assertion attribute
+     * @param testFieldName Name of test field <bind/> element (XLSForm column).
+     *
+     * @return Assertion string */
+    private String extractAssertionStr(TreeElement node, String testFieldName) {
+        String assertionStr;
+
+        if (thisRepeatInstanceAssertionStr.equals("")) {
+            assertionStr = node.getBindAttributeValue(null, testFieldName);
+            if (assertionStr != null) {
+                if (assertionStr.charAt(0) == '{')
+                    assertionStr = assertionStr.substring(1);
+                if (assertionStr.charAt(assertionStr.length() -1) == '}')
+                    assertionStr = assertionStr.substring(0, assertionStr.length() - 1);
+            }
+
+        } else
+            assertionStr = thisRepeatInstanceAssertionStr;
+
+        return assertionStr;
+    }
+
     /** Returns a map of all valid XFormTest-spec assertions on a given node.
      *
      * @param node An sub-node within XForm <instance/> node, e.g. "<myQuestionNode/>".
@@ -637,73 +816,72 @@ public class XFormTest {
      * asserted. This can happen if, for example, a value assertion is made on a read_only question. For read_only
      * questions, no value can be entered, so such an assertion is inherently invalid.
      * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
+     * @throws OverrideDirectivesUsageException if override was used on a non-calculate node
      *
      * #to-do: HashMap<String, Assertion>: ConstraintAssertion, RelevantAssertion, ValueAssertion
      * #to-do: Throw error there is a value assertion in read_only question. */
-    private HashMap<String, String> nodeAssertions(TreeElement node, String testFieldName) throws
-            AssertionSyntaxException, AssertionTypeException, MissingAssertionError {
-        String missingAssertionError = String.format(errorMessages.get("MissingAssertionError"), node.getName());
-        boolean isReadOnly = !node.isEnabled();
-        HashMap<String, String> assertions = new HashMap<>();
-        for (String field : validAssertionFields)
-            assertions.put(field, "");
+    private Map nodeAssertions(TreeElement node, String testFieldName) throws
+            AssertionSyntaxException, AssertionTypeException, MissingAssertionError, OverrideDirectivesUsageException {
+        String nodeType = xlsformType(node);
         List<String> assertionList = new ArrayList<>();
+        Map<String, Object> assertionMap = new HashMap<>();
+        for (String field : validAssertionsAndStaticDirectives)
+            assertionMap.put(field, "");
+        boolean isReadOnly = !node.isEnabled();
+        String missingAssertionError = String.format(errorMessages.get("MissingAssertionError"), node.getName());
 
-        String assertionsStr;
-        if (thisRepeatInstanceAssertionStr.equals("")) {
-            assertionsStr = node.getBindAttributeValue(null, testFieldName);
-            if (assertionsStr == null) {
-                if (!xlsformType(node).equals("note") && !isReadOnly && node.isRequired())
-                    throw new MissingAssertionError(missingAssertionError);
-                return assertions;
-            }
-            if (assertionsStr.charAt(0) == '{')
-                assertionsStr = assertionsStr.substring(1);
-            if (assertionsStr.charAt(assertionsStr.length() -1) == '}')
-                assertionsStr = assertionsStr.substring(0, assertionsStr.length() - 1);
-        } else
-            assertionsStr = thisRepeatInstanceAssertionStr;
+        String assertionStr = extractAssertionStr(node, testFieldName);
+        if (assertionStr == null) {
+            if (!nodeType.equals("note") && !nodeType.equals("geopoint") && !isReadOnly && node.isRequired())
+                throw new MissingAssertionError(missingAssertionError);
+            return new HashMap<>();
+        }
+        assertionStr = formatAssertionStr(assertionStr);
 
-        // re-format dates
-        assertionsStr = assertionsStr.replace(" 00:00:00", "");
-        // re-format n/a character
-        String na_char = ".";
-        if (assertionsStr.equals(na_char))
-            assertionsStr = "";
 
+        boolean falsyAssertion = assertionStr == null || assertionStr.equals("");
         boolean isRepeatMemberWithUnsplitAssertions = false;
-        if (!assertionsStr.equals(""))
-            isRepeatMemberWithUnsplitAssertions = assertionsStr.charAt(0) == ('[');
+
+        if (!falsyAssertion)
+            isRepeatMemberWithUnsplitAssertions = assertionStr.charAt(0) == ('[');
         if (isRepeatMemberWithUnsplitAssertions) {
             // split
             List<String> instanceAssertionsList =
-                unmodifiableList(Arrays.asList(assertionsStr.split("\\s*,\\s*")));
+                unmodifiableList(Arrays.asList(assertionStr.split("\\s*,\\s*")));
             thisRepeatInstanceAssertionStr = instanceAssertionsList.get(currentRepeatNum -1)
                 .replace("[", "")
                 .replace("]", "");
             return nodeAssertions(node, testFieldName);
         }
 
-        int numCommas = Math.toIntExact(assertionsStr.chars().filter(num -> num == ',').count());
-        int numColons = Math.toIntExact(assertionsStr.chars().filter(num -> num == ':').count());
+        int numCommas = 0;
+        int numColons = 0;
+        if (!falsyAssertion) {
+            numCommas = Math.toIntExact(assertionStr.chars().filter(num -> num == ',').count());
+            numColons = Math.toIntExact(assertionStr.chars().filter(num -> num == ':').count());
+        }
 
         // single assertions & edge cases
         // The "ConstantConditions" inspection is wrong? Seems like a bug in IntelliJ upon my inspection.
-        //noinspection ConstantConditions,StatementWithEmptyBody
-        if (assertionsStr.length() == 0 && node.isRequired() && !(xlsformType(node).equals("note") || isReadOnly )) {
+        // //spection ConstantConditions,StatementWithEmptyBody
+        if (falsyAssertion
+                && node.isRequired()
+                && !(nodeType.equals("note") || nodeType.equals("geopoint") || isReadOnly )) {
             throw new MissingAssertionError(missingAssertionError);
         } else if (numCommas == 0 && numColons == 0) {  // single un-named value assertion
-            if (!assertionsStr.equals("")) {
-                if (xlsformType(node).equals("note"))
+            if (!falsyAssertion) {
+                if (nodeType.equals("note"))
                     throw new AssertionTypeException(
-                            String.format(errorMessages.get("valueAssertionExcNote"), assertionsStr));
-                else if (isReadOnly )
-                    throw new AssertionTypeException(
-                            String.format(errorMessages.get("valueAssertionExcReadOnly"), assertionsStr));
+                        String.format(errorMessages.get("valueAssertionExcNote"), assertionStr));
+                // TODO: What if read only, but they have a default value and also assert it?
+                // date / dateTime default value to current date / dateTime
+                else if (isReadOnly && !nodeType.equals("date") && !nodeType.equals("dateTime"))
+                    throw new AssertionTypeException(String.format(errorMessages.get("valueAssertionExcReadOnly"),
+                        node.getName(), assertionStr));
             }
-            assertions.put("value", assertionsStr);
+            assertionMap.put("value", assertionStr);
         } else if (numCommas == 0 && numColons > 0) {  // single named assertion
-            assertionList.add(assertionsStr);
+            assertionList.add(assertionStr);
 
         // multiple assertions
         } else if (numCommas > 0 && numColons > 0) {
@@ -711,16 +889,42 @@ public class XFormTest {
                 throw new AssertionSyntaxException(errorMessages.get("commaColonExc"));
 
             // split & trim
-            if (assertionsStr.indexOf(',') != -1) {
-                String[] unTrimmedAssertionList = assertionsStr.split(",");
+            if (assertionStr.indexOf(',') != -1) {
+                String[] unTrimmedAssertionList = assertionStr.split(",");
                 for (String assertion : unTrimmedAssertionList) {
                     assertionList.add(assertion.trim());
                 }
             }
         }
 
-        // build hashmap of assertions
+        assertionMap = assertionListToMap(assertionList, node, assertionMap);
+        thisRepeatInstanceAssertionStr = "";
+
+        return assertionMap;
+    }
+
+    /** Handles any edge cases in assertion text that would otherwise cause issues, by modifying said text.
+     *
+     * @param assertionList A collection of assertions which may or may not contain edge cases.
+     * @param node An sub-node within XForm <instance/> node, e.g. "<myQuestionNode/>".
+     * @param existingMap an assertion map if any to be supplied, else <code>null</code>.
+     *
+     * @return A collection of assertions.
+     *
+     * @throws AssertionSyntaxException if invalid syntax via usage of comma within values rather than exclusively as an
+     * assertion field delimiter.
+     *
+     * #to-do move any edge cases to a static map variable at top of class and loop through them here. */
+    private Map<String, Object> assertionListToMap(List<String> assertionList, TreeElement node, Map<String, Object>
+            existingMap) throws AssertionSyntaxException, OverrideDirectivesUsageException {
+        Map<String, Object> assertionMap;
+        if (existingMap == null)
+            assertionMap = new HashMap<>();
+        else
+            assertionMap = existingMap;
+
         for (String assertion : assertionList) {
+            boolean isCalculateAssertion = false;
             String[] keyAndVal = assertion.split(":");
             String key = keyAndVal[0].trim();
             String val = keyAndVal[1].trim();
@@ -728,23 +932,133 @@ public class XFormTest {
                 key = "value";
                 val = assertion.replace("\\:", ":");
             }
+            // My IDE asked for this: String used in lambda should be final or effectively final.
             String finalKeyToSatisfyOddJavaRule = key;
-            boolean validField = validAssertionFields.stream().anyMatch(str -> str.trim().
+            boolean recognizedField = validAssertionsAndStaticDirectives.stream().anyMatch(str -> str.trim().
                     equals(finalKeyToSatisfyOddJavaRule));
+            if (!recognizedField) {
+                // logic to check calc assertion
+                ArrayList<String> matches = new ArrayList<>();
+                Matcher matcher = Pattern.compile("^[a-z]*\\(\\)").matcher(key);
+                while(matcher.find())
+                    matches.add(matcher.group());
+
+                if (matches.size() > 0)
+                    isCalculateAssertion = key  // if adheres exactly to syntax 'funcName()'
+                            .replace(matches.get(0), "").equals("");
+            }
+            boolean validField = recognizedField || isCalculateAssertion;
             if (!validField)
-                throw new AssertionSyntaxException(String.format(errorMessages.get("invalidFieldExc"), key));
-            assertions.put(key, val);
+                throw new AssertionSyntaxException(String.format(errorMessages.get("invalidFieldExc"),
+                        node.getName(), assertion, key));
+            assertionMap.put(key, val);
         }
-        thisRepeatInstanceAssertionStr = "";
-        return normalizedAssertions(assertions);
+
+        Map<String, Object> assertionMap2 = extractEvaluationOverrides(node, assertionMap);
+        validateSetvalueDirective(node, assertionMap2);
+
+        return assertionMapTextReplacements(assertionMap2);
+    }
+
+    /** Given map of assertions and directives, returns just a list of the evaluation overrides.
+     *
+     * @param assertions map of assertions and directives
+     *
+     * @return list of evaluation overrides, if any
+     *
+     * @throws AssertionSyntaxException if not valid syntax for evaluation override
+     * @throws OverrideDirectivesUsageException if override was used on a non-calculate node */
+    private Map<String, Object> extractEvaluationOverrides(TreeElement node, Map<String, Object> assertions)
+            throws AssertionSyntaxException, OverrideDirectivesUsageException {
+        List<String> overridesFound = new ArrayList<>();
+
+        Map<String, Object> assertionsCopy = new HashMap<>();
+        for (String key : assertions.keySet())
+            assertionsCopy.put(key, assertions.get(key));
+
+        Iterator it = assertionsCopy.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            String key = (String) pair.getKey();
+
+            boolean isPossibleOverride = true;
+            for (String field : validAssertionsAndStaticDirectives) {
+                if (field.equals(key))
+                    isPossibleOverride = false;
+            }
+            if (isPossibleOverride)
+                overridesFound.add(key);
+
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
+        validateEvaluationOverrides(node, overridesFound);
+
+        Map<String, String> overrideKeyVals = new HashMap<>();
+        for (String override : overridesFound) {
+            overrideKeyVals.put(override.replace("()", ""), (String) assertions.get(override));
+            assertions.remove(override);
+        }
+        assertions.put("evaluationOverrides", overrideKeyVals);
+
+        return assertions;
+    }
+
+    /** Validates a list of directives on a given node to make sure that they are all of the appropriate
+     * syntax for an evaluation override, i.e. <code>funcName()</code>.
+     *
+     * @param overrides A list of possible overrides
+     *
+     * @throws AssertionSyntaxException if not valid syntax for evaluation override
+     * @throws OverrideDirectivesUsageException if override was used on a non-calculate node
+     *
+     * #to-do: validate the override against actual text in the calculate to make sure it's there */
+    private void validateEvaluationOverrides(TreeElement node, List<String> overrides)
+            throws AssertionSyntaxException, OverrideDirectivesUsageException {
+        if (overrides.size() == 0)
+            return;
+
+        if (!xlsformType(node).equals("calculate"))
+            throw new OverrideDirectivesUsageException(
+                    String.format(errorMessages.get("OverrideDirectivesUsageException"), node.getName()));
+
+        for (String field : overrides)
+            if (!field.endsWith("()"))
+                throw new AssertionSyntaxException(String.format(errorMessages.get("invalidOverrideSyntax"), field));
+    }
+
+    /** Validates edge cases where user has declared "setValue" directive alongside 1 or more evaluation override
+     * directives.
+     *
+     * @param node An sub-node within XForm <instance/> node, e.g. "<myQuestionNode/>".
+     * @param assertions A collection of assertions which may or may not contain edge cases.
+     *
+     * @throws AssertionSyntaxException if more than 1 unique evaluation override directive type used
+     * @throws OverrideDirectivesUsageException if override was used on a non-calculate node */
+    private void validateSetvalueDirective(TreeElement node, Map<String, Object> assertions)
+            throws AssertionSyntaxException, OverrideDirectivesUsageException {
+        int intendedUniqueDirectivesUsed = 0;
+
+        if (assertions.containsKey("set-value") && !assertions.get("set-value").equals(""))
+            intendedUniqueDirectivesUsed += 1;
+        Map<String, Object> overrides = (Map<String, Object>) assertions.get("evaluationOverrides");
+        intendedUniqueDirectivesUsed += overrides.size();
+
+        if (intendedUniqueDirectivesUsed > 0 && !xlsformType(node).equals("calculate"))
+            throw new OverrideDirectivesUsageException(
+                    String.format(errorMessages.get("OverrideDirectivesUsageException"), node.getName()));
+        else if (intendedUniqueDirectivesUsed > 1)
+            throw new AssertionSyntaxException(
+                    String.format(errorMessages.get("conflictingDirectivesError"), node.getName()));
     }
 
     /** Handles any edge cases in assertion text that would otherwise cause issues, by modifying said text.
+     *
      * @param assertions A collection of assertions which may or may not contain edge cases.
      * @return A collection of assertions.
      *
      * #to-do move any edge cases to a static map variable at top of class and loop through them here. */
-    private static HashMap<String, String> normalizedAssertions(HashMap<String, String> assertions) {
+    private static Map<String, Object> assertionMapTextReplacements(Map<String, Object> assertions) {
         if (assertions.get("value").equals("true()"))
             assertions.put("value", "yes");
         return assertions;
@@ -785,8 +1099,9 @@ public class XFormTest {
                 currentEventState.equals("EVENT_PROMPT_NEW_REPEAT") ||
                 currentEventState.equals("EVENT_REPEAT_JUNCTURE"))
                 xlsformType = "begin repeat";
-        } else if (javarosaType.equals("MULTIPLE_ITEMS")) {  // #to-do Determine which is: select_one || select_multiple
-            return String.valueOf(javarosaToXlsformTypeMapping.get(javarosaType));
+        // TODO: 2019-06-10. CHOICE = select_one? MULTIPLE_ITEMS = select_multiple? Is this done?
+//        } else if (javarosaType.equals("MULTIPLE_ITEMS")) {  // #to-do Determine which is: select_one || select_multiple
+//            return String.valueOf(javarosaToXlsformTypeMapping.get(javarosaType));
         } else {
             List<String> allPossibleXlsformTypes = javarosaToXlsformTypeMapping.get(javarosaType);
 
@@ -808,6 +1123,22 @@ public class XFormTest {
             if (xlsformType.equals("text") && !node.isEnabled())
                 xlsformType = "note";  // in actuality could also be read_only text.
         }
+
+        // Note 2019-06-10: No longer needed?
+        //        // Convert to integer, decimal, or date if needed
+        //        try {
+        //            Long.parseLong(value);
+        //            dataType = "long";
+        //        } catch (Exception e) {
+        //            try {
+        //                Integer.parseInt(value);
+        //                dataType = "int";
+        //            } catch (Exception e2) {
+        //                // no-op
+        //            }
+        //        }
+        //
+
         return xlsformType;
     }
 
@@ -862,21 +1193,38 @@ public class XFormTest {
 
     /** Asserts that a node's value matches what is expected.
      * @param node An XForm instance node.
-     * @param value The value expected.
+     * @param expectedValue The value expected.
      * @throws ValueAssertionError if value expected does not match value that exists on node. */
     @SuppressWarnings({"WeakerAccess"})  // #note-1 why are these warnings here? What if intend to be public?
-    public static void assertValueMatches(TreeElement node, String value) throws ValueAssertionError {
-        String nodeValue = node.getValue().getDisplayText();
-        if (!nodeValue.equals(value))
-            throw new ValueAssertionError(
-                    String.format(errorMessages.get("ValueAssertionError"), value, nodeValue, node.getName()));
+    public static void assertValueMatches(TreeElement node, String expectedValue) throws ValueAssertionError {
+        boolean match = false;
+        Object actualValue = node.getValue();
+        String actualValueStr = node.getValue().getDisplayText();
+
+        if (actualValue.getClass() == DateData.class) {
+            try {
+                Date expectedDateValue = new SimpleDateFormat("yyyy-MM-dd").parse(expectedValue);
+                Date actualDateValue = (Date) getPrivateProperty(actualValue, "d");
+                match = expectedDateValue.equals(actualDateValue);
+            } catch (ParseException e) {
+                // no-op
+            }
+        } else {
+            match = actualValueStr.equals(expectedValue);
+        }
+
+        if (!match)
+            throw new ValueAssertionError(String.format(errorMessages.get("ValueAssertionError"),
+                    expectedValue, actualValueStr, node.getName()));
     }
 
     /** Asserts value evaluates as expected on a calculate.
+     *
      * @param node An XForm instance node representing an XLSForm calculate.
      * @param value The value expected to be evaluate correctly on node.
+     *
      * @throws ValueAssertionError if value doesn't evaluate as expected on node, for whatever reason. */
-    private void assertCalculateEval(TreeElement node, String value) throws ValueAssertionError {
+    private void assertCalculateEval(TreeElement node, String value) throws XFormTestException {
         // TODO 7: solve calculates
         /* calculate issues
         - 1. all_selected_HH is not coming through either?
@@ -925,7 +1273,7 @@ public class XFormTest {
 
         try {
             // not sure which of these is useful
-            //noinspection UnusedAssignment
+            //////inspection UnusedAssignment
             Object result = expression.eval(instance, context);
             Object result2 = expression.evalRaw(instance, context);
 //        Object result3 = expression.getExpr().eval(instance, context);
@@ -962,30 +1310,48 @@ public class XFormTest {
             && !validChoiceOption(node, value))
             throw new ValueAssertionError(err + errorMessages.get("choiceNotFoundError"));
 
-        // convert to integer / decimal if needed
-        boolean isLong = false;
-        boolean isInt = false;
-
-        try {
-            Long.parseLong(value);
-            isLong = true;
-        } catch (Exception e) {
-            try {
-                Integer.parseInt(value);
-                isInt = true;
-            } catch (Exception e2) {
-                // no-op
-            }
-        }
-
         int entryStatusCode;
-        if (isInt) {
-            entryStatusCode = formEntryController.answerQuestion(new IntegerData(Integer.parseInt(value)),
-                    true);
-        } else if (isLong) {
-            entryStatusCode = formEntryController.answerQuestion(new LongData(Long.parseLong(value)), true);
-        } else {
-            entryStatusCode = formEntryController.answerQuestion(new StringData(value), true);
+        switch (xlsformType(node)) {
+            case "integer":  // int
+                entryStatusCode =
+                    formEntryController.answerQuestion(new IntegerData(Integer.parseInt(value)), true);
+                break;
+            case "decimal":  // long
+                entryStatusCode =
+                    formEntryController.answerQuestion(new LongData(Long.parseLong(value)), true);
+                break;
+            case "date":
+            case "dateTime":
+                Date dateValue = null;
+                try {
+                    dateValue = new SimpleDateFormat("yyyy-MM-dd").parse(value);
+                } catch (ParseException e) {
+                    e.printStackTrace(); }
+                // TODO 2019-06-10: read only date/dateTime should evaluate to current
+                entryStatusCode = formEntryController.answerQuestion(new DateData(dateValue), true);
+                break;
+            case "select_one":
+                Selection selectOneValue = new Selection(value);
+                entryStatusCode = formEntryController.answerQuestion(new SelectOneData(selectOneValue), true);
+                break;
+            case "select_multiple":
+                List<String> selections = asList(value.split(" "));
+                List<Selection> selectMultipleValue = new ArrayList();
+                selections.forEach((x) -> selectMultipleValue.add(new Selection(x)));
+                entryStatusCode =
+                        formEntryController.answerQuestion(new SelectMultiData(selectMultipleValue), true);
+                break;
+            default:
+                // TODO: Other edge cases?
+                try {
+                    entryStatusCode = formEntryController.answerQuestion(new StringData(value), true);
+                } catch (RuntimeException e) {
+                    // TODO: Temp debugging: Non-question object at the form index; why?
+                    // Currently at: group_review[1]
+                    System.out.println();
+                    entryStatusCode = 0;  // ANSWER_OK
+                }
+                break;
         }
 
         String entryStatus = formEntryControllerEntryStatusMapping.get(entryStatusCode);
@@ -1051,18 +1417,8 @@ public class XFormTest {
 
     /** If first iteration of repeat is over and more repeats remain, recurse.
      *
-     * @param testFieldName Name of test field <bind/> element (XLSForm column).
-     *
-     * @throws AssertionSyntaxException if invalid syntax via usage of comma within values rather than exclusively as an
-     * assertion field delimiter.
-     * @throws AssertionTypeException if invalid assertion type (e.g. value or relevant or constraint) is
-     * asserted. This can happen if, for example, a value assertion is made on a read_only question. For read_only
-     * questions, no value can be entered, so such an assertion is inherently invalid.
-     * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
-     * @throws RelevantAssertionError if relevant did not evaluate as expected.
-     * @throws ValueAssertionError if value expected does not match value that exists on node. */
-    private void handleRepeatProcessingRecursively(String testFieldName) throws AssertionTypeException,
-            AssertionSyntaxException, MissingAssertionError, RelevantAssertionError, ValueAssertionError {
+     * @param testFieldName Name of test field <bind/> element (XLSForm column). */
+    private void handleRepeatProcessingRecursively(String testFieldName) throws XFormTestException {
         boolean moreRepeatsRemain = currentRepeatNum <= currentRepeatTotIterationsAsserted;
         boolean repeatNodesInInstanceHaveBeenCheckedOnce = currentRepeatNum > 1;
         if (repeatNodesInInstanceHaveBeenCheckedOnce && moreRepeatsRemain)
@@ -1102,11 +1458,9 @@ public class XFormTest {
     /** Runs assertion test on asserted values for a given node, and updates running testCases for report.
      *
      * @param node Instance XForm node containing XFormTest assertion bind.
-     * @param value A value assertion on the XFormTest assertion bind.
-     *
-     * @throws ValueAssertionError if value expected does not match value that exists on node.*/
-    private void handleValueAssertion(TreeElement node, String value) throws ValueAssertionError {
-        HashMap<String, String> nodeTestResults = new HashMap<>();
+     * @param value A value assertion on the XFormTest assertion bind. */
+    private void handleValueAssertion(TreeElement node, String value) throws XFormTestException {
+        HashMap<String, Object> nodeTestResults = new HashMap<>();
         FormEntryModel model = formEntryController.getModel();
         FormIndex index = model.getFormIndex();
         TreeElement activeInstanceNode  = formDef.getMainInstance().resolveReference(index.getReference());
@@ -1129,7 +1483,7 @@ public class XFormTest {
      * @throws RelevantAssertionError if relevant did not evaluate as expected. */
     private void handleRelevantAssertion(TreeElement arbitraryNode, String relevant) throws AssertionSyntaxException,
             RelevantAssertionError {
-        HashMap<String, String> nodeTestResults = new HashMap<>();
+        HashMap<String, Object> nodeTestResults = new HashMap<>();
 //        FormEntryModel model = formEntryController.getModel();
 //        FormIndex index = model.getFormIndex();
 //        TreeElement activeInstanceNode = formDef.getMainInstance().resolveReference(index.getReference());
@@ -1146,6 +1500,7 @@ public class XFormTest {
         if (node.isRelevant() != assertedRelevancy)
             throw new RelevantAssertionError(String.format(errorMessages.get("RelevantAssertionError"),
                     node.getName(), String.valueOf(assertedRelevancy), String.valueOf(node.isRelevant())));
+
         nodeTestResults.put("relevant", node.getName());
         nodeTestResults.put("relevantAssertion", String.valueOf(node.isRelevant()));
         testCases.add(nodeTestResults);
@@ -1154,24 +1509,14 @@ public class XFormTest {
     /** Tests assertions on a given node.
      *
      * @param node The TreeElement instance node which contain XFormTest bind information.
-     * @param testFieldName Name of test field <bind/> element (XLSForm column).
-     *
-     * @throws AssertionSyntaxException if invalid syntax via usage of comma within values rather than exclusively as an
-     * assertion field delimiter.
-     * @throws AssertionTypeException if invalid assertion type (e.g. value or relevant or constraint) is
-     * asserted. This can happen if, for example, a value assertion is made on a read_only question. For read_only
-     * questions, no value can be entered, so such an assertion is inherently invalid.
-     * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
-     * @throws RelevantAssertionError if relevant did not evaluate as expected.
-     * @throws ValueAssertionError if value expected does not match value that exists on node. */
-    private void testAssertions(TreeElement node, String testFieldName) throws AssertionTypeException,
-            AssertionSyntaxException,  MissingAssertionError, RelevantAssertionError, ValueAssertionError {
-        HashMap<String, String> assertions = nodeAssertions(node, testFieldName);
+     * @param testFieldName Name of test field <bind/> element (XLSForm column). */
+    private void evaluateAssertions(TreeElement node, String testFieldName) throws XFormTestException {
+        Map<String, Object> assertions = nodeAssertions(node, testFieldName);
 
         if (!assertions.get("value").equals(""))
-            handleValueAssertion(node, assertions.get("value"));
+            handleValueAssertion(node, (String) assertions.get("value"));
         if (!assertions.get("relevant").equals(""))
-            handleRelevantAssertion(node, assertions.get("relevant"));
+            handleRelevantAssertion(node, (String) assertions.get("relevant"));
     }
 
     /** Iterate through nodes and run tests on them.
@@ -1181,29 +1526,85 @@ public class XFormTest {
      * an active instance in a running form. In actuality, they probably are not.
      * @param testFieldName Name of test field <bind/> element (XLSForm column).
      *
-     * @return True if finished as expected, else false.
-     *
-     * @throws AssertionSyntaxException if invalid syntax via usage of comma within values rather than exclusively as an
-     * assertion field delimiter.
-     * @throws AssertionTypeException if invalid assertion type (e.g. value or relevant or constraint) is
-     * asserted. This can happen if, for example, a value assertion is made on a read_only question. For read_only
-     * questions, no value can be entered, so such an assertion is inherently invalid.
-     * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
-     * @throws RelevantAssertionError if relevant did not evaluate as expected.
-     * @throws ValueAssertionError if value expected does not match value that exists on node. */
-    private boolean processNodes(ArrayList<TreeElement> arbitraryNodeset, String testFieldName) throws
-            AssertionSyntaxException, AssertionTypeException, MissingAssertionError, RelevantAssertionError,
-            ValueAssertionError {
+     * @return True if finished as expected, else false. */
+    private boolean processNodes(ArrayList<TreeElement> arbitraryNodeset, String testFieldName)
+            throws XFormTestException {
         HashMap<String, Integer> nodeIndexLookup = new HashMap<>();
-        for (int i=0; i<arbitraryNodeset.size(); i++) {
+        for (int i=0; i<arbitraryNodeset.size(); i++)
             nodeIndexLookup.put(arbitraryNodeset.get(i).getName(), i);
+
+        ArrayList<TreeElement> nodes = processNodesOverrideDirectives(arbitraryNodeset, testFieldName);
+        //noinspection UnnecessaryLocalVariable
+        boolean finishedAsExpected = processNodesAssertions(nodes, nodeIndexLookup, testFieldName);
+
+        return finishedAsExpected;
+    }
+
+    /** Process all evaluation override directives on nodes, i.e. (1) the general-purpose 'set-value' directive, e.g.
+     * 'set-value: VALUE', and (2) the function-specific evaluation overrides of the form 'funcName(): VALUE'.
+     *
+     * @param nodes Nodes to iterate through. These could for example be the set of all instance nodes in an
+     * XForm, or it might just be the set of all nodes in a given repeat group. These nodes may or may not be tied to
+     * an active instance in a running form. In actuality, they probably are not.
+     * @param testFieldName Name of test field <bind/> element (XLSForm column).
+     *
+     * @return New list of nodes that have had their calculate elements modified as instructed by directives */
+    private ArrayList<TreeElement> processNodesOverrideDirectives(ArrayList<TreeElement> nodes, String testFieldName)
+            throws XFormTestException {
+        ArrayList<TreeElement> processedNodes = new ArrayList<>(nodes);
+
+        for (TreeElement node : processedNodes) {
+            Map<String, Object> assertions = nodeAssertions(node, testFieldName);
+            Map<String, String> overrides = (Map<String, String>) assertions.get("evaluationOverrides");
+
+            if (overrides != null && overrides.size() > 0)
+                handleEvaluationOverrideDirectives(node, (Map<String, String>) assertions.get("evaluationOverrides"));
+            else if (!assertions.get("set-value").equals(""))
+                handleSetValueDirective(node, (String) assertions.get("set-value"));
         }
 
-        for (TreeElement node : arbitraryNodeset) {
+        return processedNodes;
+    }
+
+    /** Process function-specific evaluation overrides of the form 'funcName(): VALUE'. For each override specified,
+     * this modifies the raw calculate text, replacing an instance of that function call with static value specified.
+     *
+     * @param node Instance XForm node containing XFormTest assertion bind.
+     * @param overrides a map of function names to be searched for and static values to be put in as replacements */
+    private void handleEvaluationOverrideDirectives(TreeElement node, Map<String, String> overrides) {
+        // assertCalculateEval(node, "to-replace");  // likely dont need to evaluate
+        // TODO
+        System.out.println(node);
+        System.out.println(overrides);
+    }
+
+    /** Replaces any existing value of a node corrollary to XLSForm calculate to the new value passed.
+     *
+     * @param node Instance XForm node containing XFormTest assertion bind.
+     * @param value New value to set on the node. */
+    private void handleSetValueDirective(TreeElement node, String value) {
+        // assertCalculateEval(node, "to-replace");  // likely dont need to evaluate
+        // TODO
+        System.out.println(node);
+        System.out.println(value);
+    }
+
+    /** Process all test assertions on a nodeset.
+     *
+     * @param nodes Nodes to iterate through. These could for example be the set of all instance nodes in an
+     * XForm, or it might just be the set of all nodes in a given repeat group. These nodes may or may not be tied to
+     * an active instance in a running form. In actuality, they probably are not.
+     * @param nodeIndexLookup A map of the node name to the index it appears in the form instance.
+     * @param testFieldName Name of test field <bind/> element (XLSForm column).
+     *
+     * @return boolean, true if finished as expected, else false */
+    private boolean processNodesAssertions(ArrayList<TreeElement> nodes, Map<String, Integer> nodeIndexLookup, String
+            testFieldName) throws XFormTestException {
+        for (TreeElement node : nodes) {
             if (currentRepeatNum == 1)  // Only needed once per repeat group.
                 trackAndValidateRepeatNode(node, testFieldName);
 
-            testAssertions(node, testFieldName);
+            evaluateAssertions(node, testFieldName);
 
             if (!formEntryController.getModel().getFormIndex().isEndOfFormIndex()) {
                 TreeElement activeInstanceNode = formDef.getMainInstance().resolveReference(
@@ -1218,9 +1619,6 @@ public class XFormTest {
                 handleRepeatNavigation();
                 handleRepeatProcessingRecursively(testFieldName);
             }
-
-            // TODO 5.5: PR JavaRosa docstrings.
-            // TODO 6: Build and release
         }
         //noinspection UnnecessaryLocalVariable
         boolean finishedAsExpected = currentEventState.equals("EVENT_END_OF_FORM");
@@ -1258,15 +1656,6 @@ public class XFormTest {
      *                     formEntryController.
      * @param testFieldName Name of test field <bind/> element (XLSForm column).
      *
-     * @throws AssertionSyntaxException if invalid syntax via usage of comma within values rather than exclusively as an
-     * assertion field delimiter.
-     * @throws AssertionTypeException if invalid assertion type (e.g. value or relevant or constraint) is
-     * asserted. This can happen if, for example, a value assertion is made on a read_only question. For read_only
-     * questions, no value can be entered, so such an assertion is inherently invalid.
-     * @throws MissingAssertionError if no assertions on non-read only , required question prompts.
-     * @throws RelevantAssertionError if relevant did not evaluate as expected.
-     * @throws ValueAssertionError if value expected does not match value that exists on node.
-     *
      * #to-do: Need to try this only if detecting that it is a repeat group first.
      * #to-do: error out on currently unsupported assertions
      * #to-do: allow for assertions on currently unsupported XLSForm types: calculate
@@ -1277,8 +1666,7 @@ public class XFormTest {
      * #to-do: relevant assertions
      *   boolean relevantEval = state.isIndexRelevant(); */
     private Map linearAssertionTest(ArrayList<TreeElement> formElements, String testFieldName)
-            throws AssertionSyntaxException, AssertionTypeException, MissingAssertionError, RelevantAssertionError,
-            ValueAssertionError {
+            throws XFormTestException {
         Map results = new HashMap<>();
 
         step();

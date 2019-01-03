@@ -1,0 +1,911 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>FP Registration KE dev_002</h:title>
+    <model>
+      <instance>
+        <fp_registration_ke-v4-jef id="fp_registration_kev-dev_002" version="dev_002">
+          <pregnant/>
+          <has_risk_factors/>
+          <want_to_get_pregnant/>
+          <fear_side_effects/>
+          <partner_refuse/>
+          <need_more_information/>
+          <cant_pay_now/>
+          <last_insertion_date/>
+          <current_cocs/>
+          <current_pops/>
+          <current_dmpa_im/>
+          <current_sayana/>
+          <switch_sayana/>
+          <switch_ll_permanent/>
+          <want_to_switch/>
+          <refer_for_initial_dose/>
+          <refer_on_cocs/>
+          <refer_not_switching/>
+          <dispensed_sayana_press/>
+          <switch_condoms/>
+          <switch_cycle_beads/>
+          <eligibility>
+            <in_the_household/>
+            <n_confidentiality_e/>
+            <patient_name/>
+            <patient_age_in_years/>
+            <screened_for_pregnancy/>
+            <currently_pregnant/>
+            <n_screening/>
+          </eligibility>
+          <pregnancy_screening>
+            <n_confidentiality_ps/>
+            <g_lmp_method/>
+            <g_lmp_calendar/>
+            <g_lmp_approx/>
+            <g_lmp_date_raw/>
+            <g_lmp_date_8601/>
+            <days_since_lmp/>
+            <g_edd_8601/>
+            <g_edd/>
+            <n_pregnancy_test/>
+            <confirmed_pregnancy/>
+            <confirmed_pregnancy_results/>
+            <buy_pregnancy_kit/>
+            <pregnancy_test/>
+          </pregnancy_screening>
+          <family_planning>
+            <breastfeeding/>
+            <breastfeeding_duration/>
+            <used_modern_fp/>
+            <why_not_use_modern_fp/>
+            <using_modern_fp/>
+            <current_method/>
+            <n_breastfeeding_cocs/>
+            <current_method_last_dose/>
+            <most_recent_method/>
+            <most_recent_method_dose/>
+            <n_cervical_screening/>
+            <why_stop/>
+            <n_thank_client_stop/>
+            <heath_education_session/>
+            <spouse_included_hes/>
+            <take_on_switch/>
+            <risk_factors/>
+            <reason_not_switch/>
+            <n_thank_client/>
+            <n_referral/>
+            <n_referral_counselling/>
+            <new_fp_method/>
+            <g_fp_method_administered/>
+            <n_cocs/>
+            <n_side_effects_sp/>
+            <n_lam/>
+            <n_condom/>
+            <n_cycle_beads/>
+            <n_side_effects/>
+            <n_refer_first_dose/>
+            <chv_administer_fp/>
+            <chv_administer_methods/>
+            <sayana_administer/>
+          </family_planning>
+          <group_review>
+            <submit/>
+            <r_summary/>
+            <r_client_details/>
+            <r_pregnancy_details/>
+            <r_educate/>
+            <r_educate_fp/>
+            <r_educate_fp_side_effects/>
+            <r_educate_fp_side_effects1/>
+            <r_educate_after_live_birth/>
+            <r_educate_after_live_birth1/>
+            <r_educate_pregnancy1/>
+            <r_educate_pregnancy2/>
+            <r_educate_pregnancy3/>
+            <r_referral/>
+            <r_referral_note/>
+            <r_risk_factor1/>
+            <r_risk_factor2/>
+            <r_risk_factor3/>
+            <r_risk_factor4/>
+            <r_risk_factor5/>
+            <r_risk_factor6/>
+            <r_first_dose/>
+            <r_breastfeeding_cocs/>
+            <r_counselling/>
+            <r_followup/>
+            <r_followup_note/>
+          </group_review>
+          <meta>
+            <instanceID/>
+          </meta>
+        </fp_registration_ke-v4-jef>
+      </instance>
+      <bind calculate="if(../eligibility/currently_pregnant = 'yes' or  /fp_registration_ke-v4-jef/pregnancy_screening/confirmed_pregnancy_results  = 'positive' or ../pregnancy_screening/pregnancy_test = 'positive', 'true', 'false')" nodeset="/fp_registration_ke-v4-jef/pregnant" test1="." type="string"/>
+      <bind calculate="if(count-selected(../family_planning/risk_factors) &gt; 0 and not(selected(../family_planning/risk_factors, 'no_risk')), 'true','false')" nodeset="/fp_registration_ke-v4-jef/has_risk_factors" test1="." type="string"/>
+      <bind calculate="if(../family_planning/reason_not_switch = 'get_pregnant', 'true', 'false')" nodeset="/fp_registration_ke-v4-jef/want_to_get_pregnant" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/reason_not_switch,'side_effects') ,'true','false')" nodeset="/fp_registration_ke-v4-jef/fear_side_effects" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/reason_not_switch,'partner_refuse') ,'true','false')" nodeset="/fp_registration_ke-v4-jef/partner_refuse" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/reason_not_switch,'more_information'),'true','false')" nodeset="/fp_registration_ke-v4-jef/need_more_information" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/reason_not_switch,'not_afford'),'true','false')" nodeset="/fp_registration_ke-v4-jef/cant_pay_now" test1="." type="string"/>
+      <bind calculate="../family_planning/current_method_last_dose" nodeset="/fp_registration_ke-v4-jef/last_insertion_date" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/current_method,'cocs'),'true','false')" nodeset="/fp_registration_ke-v4-jef/current_cocs" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/current_method,'pops'),'true','false')" nodeset="/fp_registration_ke-v4-jef/current_pops" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/current_method,'dmpa_in'),'true','false')" nodeset="/fp_registration_ke-v4-jef/current_dmpa_im" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/current_method,'sayana_press'),'true','false')" nodeset="/fp_registration_ke-v4-jef/current_sayana" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/new_fp_method,'sayana_press'),'true','false')" nodeset="/fp_registration_ke-v4-jef/switch_sayana" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/new_fp_method,'referral_ll') or selected(../family_planning/new_fp_method,'referral_lmplants') or selected(../family_planning/new_fp_method,'referral_iud'),'true','false')" nodeset="/fp_registration_ke-v4-jef/switch_ll_permanent" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/take_on_switch,'yes'),'true','false')" nodeset="/fp_registration_ke-v4-jef/want_to_switch" test1="." type="string"/>
+      <bind calculate="if((
+not(selected(../family_planning/current_method,'cocs') and selected(../family_planning/new_fp_method,'cocs')) and
+not(selected(../family_planning/current_method,'dmpa_im') and selected(../family_planning/new_fp_method,'dmpa_im')) and
+not(selected(../family_planning/current_method,'pops') and selected(../family_planning/new_fp_method,'pops')) and
+not(selected(../family_planning/new_fp_method,'condoms')) and 
+not(selected(../family_planning/new_fp_method,'cycle_beads')) and
+not(selected(../family_planning/new_fp_method,'lam')) and
+not(selected(../family_planning/new_fp_method,'sayana_press')) and
+count-selected(../family_planning/new_fp_method) &gt; 0), 'true', 'false')" nodeset="/fp_registration_ke-v4-jef/refer_for_initial_dose" test1="." type="string"/>
+      <bind calculate="if((../family_planning/breastfeeding = 'yes' and ../family_planning/current_method = 'cocs' and ../family_planning/breastfeeding_duration &lt; 180
+),'true','false')" nodeset="/fp_registration_ke-v4-jef/refer_on_cocs" test1="." type="string"/>
+      <bind calculate="if((count-selected(../family_planning/reason_not_switch) &gt; 0 and not(selected(../family_planning/reason_not_switch, 'get_pregnant')) and not(selected(../family_planning/reason_not_switch, 'satisfied'))
+),'true','false')" nodeset="/fp_registration_ke-v4-jef/refer_not_switching" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/chv_administer_methods,'sayana_press'),'true','false')" nodeset="/fp_registration_ke-v4-jef/dispensed_sayana_press" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/new_fp_method,'condoms'),'true','false')" nodeset="/fp_registration_ke-v4-jef/switch_condoms" test1="." type="string"/>
+      <bind calculate="if(selected(../family_planning/new_fp_method,'cycle_beads'),'true','false')" nodeset="/fp_registration_ke-v4-jef/switch_cycle_beads" test1="." type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/eligibility" test1="relevant: 1"/>
+      <bind constraint="selected(.,'yes')" jr:constraintMsg="Exit the form since the eligible woman is not in" nodeset="/fp_registration_ke-v4-jef/eligibility/in_the_household" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/eligibility/n_confidentiality_e" readonly="true()" relevant=" /fp_registration_ke-v4-jef/eligibility/in_the_household  = 'yes'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/eligibility/patient_name" relevant=" /fp_registration_ke-v4-jef/eligibility/in_the_household  = 'yes'" required="true()" test1="Anonymous" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/eligibility/patient_age_in_years" relevant=" /fp_registration_ke-v4-jef/eligibility/in_the_household  = 'yes'" required="true()" test1="25" type="int"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/eligibility/screened_for_pregnancy" relevant=" /fp_registration_ke-v4-jef/eligibility/in_the_household  = 'yes'" required="true()" test1="no" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/eligibility/currently_pregnant" relevant=" /fp_registration_ke-v4-jef/eligibility/screened_for_pregnancy  = 'yes'" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/eligibility/n_screening" readonly="true()" relevant=" /fp_registration_ke-v4-jef/eligibility/currently_pregnant  = 'no'" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/pregnancy_screening" relevant=" /fp_registration_ke-v4-jef/eligibility/screened_for_pregnancy  = 'no'" test1="relevant: 1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/n_confidentiality_ps" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/g_lmp_method" relevant=" /fp_registration_ke-v4-jef/eligibility/in_the_household  = 'yes' and  /fp_registration_ke-v4-jef/eligibility/screened_for_pregnancy  = 'no'" required="true()" test1="calendar" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/g_lmp_calendar" relevant="../g_lmp_method = 'calendar'" required="true()" test1="2019-02-15" type="date"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/g_lmp_approx" relevant="../g_lmp_method = 'approx'" required="true()" test1="relevant: 0" type="select1"/>
+      <bind calculate="if(selected( ../g_lmp_method,'calendar'), ../g_lmp_calendar,date-time(decimal-date-time(today()-../g_lmp_approx)))" nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/g_lmp_date_raw" test1="." type="string"/>
+      <bind calculate="format-date-time(if(selected( ../g_lmp_method,'calendar'), ../g_lmp_calendar,date-time(decimal-date-time(today()-../g_lmp_approx))),&quot;%Y-%m-%d&quot;)" nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/g_lmp_date_8601" test1="." type="string"/>
+      <bind calculate="round(decimal-date-time(today()) - decimal-date-time(../g_lmp_date_8601), 2)" nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/days_since_lmp" test1="." type="string"/>
+      <bind calculate="format-date-time(date-time(decimal-date-time(../g_lmp_date_8601)+280),&quot;%Y-%m-%d&quot;)" nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/g_edd_8601" test1="." type="string"/>
+      <bind calculate="format-date-time(date-time(decimal-date-time(../g_lmp_date_8601)+280),&quot;%b %e, %Y&quot;)" nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/g_edd" test1="." type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/n_pregnancy_test" readonly="true()" relevant="../days_since_lmp &gt;= 32" required="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/confirmed_pregnancy" relevant="../days_since_lmp &gt;= 32" required="true()" test1="value: no" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/confirmed_pregnancy_results" relevant=" /fp_registration_ke-v4-jef/pregnancy_screening/confirmed_pregnancy  = 'yes'" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/buy_pregnancy_kit" relevant=" /fp_registration_ke-v4-jef/pregnancy_screening/confirmed_pregnancy  = 'no' or  /fp_registration_ke-v4-jef/pregnancy_screening/confirmed_pregnancy_results  = 'negative'" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/pregnancy_screening/pregnancy_test" relevant=" /fp_registration_ke-v4-jef/pregnancy_screening/buy_pregnancy_kit  = 'yes'" required="true()" test1="negative" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning" relevant=" /fp_registration_ke-v4-jef/pregnant  = 'false'" test1="relevant: 1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/breastfeeding" required="true()" test1="no" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/breastfeeding_duration" relevant="../breastfeeding = 'yes'" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/used_modern_fp" required="true()" test1="value: yes" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/why_not_use_modern_fp" relevant="../used_modern_fp = 'no'" required="true()" test1="relevant: 0" type="select"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/using_modern_fp" relevant="../used_modern_fp = 'yes'" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/current_method" relevant="../using_modern_fp = 'yes'" required="true()" test1="pops" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_breastfeeding_cocs" readonly="true()" relevant="../breastfeeding = 'yes' and ../current_method = 'cocs' and ../breastfeeding_duration &lt; 180" test1="relevant: 0" type="string"/>
+      <bind constraint=". &lt;= today()" nodeset="/fp_registration_ke-v4-jef/family_planning/current_method_last_dose" relevant="../using_modern_fp = 'yes' and not(selected( /fp_registration_ke-v4-jef/family_planning/current_method , 'lam')) and not(selected( /fp_registration_ke-v4-jef/family_planning/current_method , 'condoms')) and not(selected( /fp_registration_ke-v4-jef/family_planning/current_method , 'cycle_beads'))" required="true()" test1="2019-03-25" type="date"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/most_recent_method" relevant="../using_modern_fp = 'no'" required="true()" test1="relevant: 0" type="select1"/>
+      <bind constraint=". &lt;= today()" nodeset="/fp_registration_ke-v4-jef/family_planning/most_recent_method_dose" relevant="../using_modern_fp = 'no' and not(selected( /fp_registration_ke-v4-jef/family_planning/most_recent_method , 'lam')) and not(selected( /fp_registration_ke-v4-jef/family_planning/most_recent_method , 'condoms')) and not(selected( /fp_registration_ke-v4-jef/family_planning/most_recent_method , 'cycle_beads'))" required="true()" test1="relevant: 0" type="date"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_cervical_screening" readonly="true()" relevant="../current_method = 'tubal_ligation'" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/why_stop" relevant="../using_modern_fp = 'no'" required="true()" test1="relevant: 0" type="select"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_thank_client_stop" readonly="true()" relevant="count-selected(../why_stop) &gt; 0 and (selected(../why_stop, 'get_pregnant') or selected(../why_stop, 'menopause') or selected(../why_stop, 'risk_factors'))" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/heath_education_session" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/spouse_included_hes" relevant="../used_modern_fp = 'no'" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/take_on_switch" relevant=" /fp_registration_ke-v4-jef/eligibility/in_the_household  = 'yes' and ../../pregnant = 'false' and (
+(../used_modern_fp = 'no' or ../using_modern_fp = 'no' or
+../using_modern_fp = 'yes' or
+selected(../why_stop,'side_effects') or 
+selected(../why_stop,'not_sexually_active') or 
+selected(../why_stop,'spouse_refused') or 
+selected(../why_stop,'no_reason') or 
+selected(../why_stop,'not_afford') or 
+selected(../why_stop,'was_pregnant')) 
+and not (selected(../current_method, 'tubal_ligation'))
+and not
+ (selected(../why_stop, 'get_pregnant') or 
+selected(../why_stop, 'menopause') or selected(../why_stop, 'risk_factors')))" required="true()" test1="value: yes, relevant: 1" type="select1"/>
+      <bind constraint="not(count-selected(.) &gt; 1 and selected(.,'no_risk'))" jr:constraintMsg="No Risk' should not be selected in conjunction with other options" nodeset="/fp_registration_ke-v4-jef/family_planning/risk_factors" relevant="../take_on_switch = 'yes'" required="true()" test1="medication kidney_liver_disease" type="select"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/reason_not_switch" relevant="../take_on_switch = 'no'" required="true()" test1="relevant: 0" type="select"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_thank_client" readonly="true()" relevant="selected(../c_not_switch_fp, 'get_pregnant')" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_referral" readonly="true()" relevant="count-selected(../risk_factors) &gt; 0 and not(selected(../risk_factors, 'no_risk'))" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_referral_counselling" readonly="true()" relevant="count-selected(../reason_not_switch) &gt; 0 and not(selected(../reason_not_switch, 'get_pregnant')) and not(selected(../reason_not_switch, 'satisfied'))" test1="relevant: 0" type="string"/>
+      <bind constraint="not(selected(., 'lam') and (../breastfeeding = 'no' or ../breastfeeding_duration &gt;= 180)) and not(selected(.,'cocs') and ../breastfeeding = 'yes' and ../breastfeeding_duration &lt; 180)" jr:constraintMsg="LAM can only be selected for exclusively breastfeeding mothers / Cannot select COCs if mother has been exclusively breastfeeding." nodeset="/fp_registration_ke-v4-jef/family_planning/new_fp_method" relevant="selected(../risk_factors,'no_risk')" required="true()" test1="dmpa_im referral_lmplants referral_iud sayana_press" type="select1"/>
+      <bind calculate="if(../take_on_switch = 'yes' and ../new_fp_method != '', jr:choice-name(../new_fp_method, ' /fp_registration_ke-v4-jef/family_planning/new_fp_method '),'')" nodeset="/fp_registration_ke-v4-jef/family_planning/g_fp_method_administered" test1="." type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_cocs" readonly="true()" relevant="selected(../new_fp_method,'cocs') and ../breastfeeding = 'yes' and ../breastfeeding_duration &lt; 180" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_side_effects_sp" readonly="true()" relevant="../new_fp_method = 'sayana_press'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_lam" readonly="true()" relevant="selected(../new_fp_method, 'lam')" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_condom" readonly="true()" relevant="selected(../new_fp_method, 'condoms')" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_cycle_beads" readonly="true()" relevant="selected(../new_fp_method, 'cycle_beads')" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_side_effects" readonly="true()" relevant="count-selected(../new_fp_method) &gt; 0 and not(selected(../new_fp_method,'condoms')) and not(selected(../new_fp_method,'cycle_beads')) and not(selected(../new_fp_method,'lam')) and not(selected(../new_fp_method,'sayana_press'))" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/n_refer_first_dose" readonly="true()" relevant="not(selected(../current_method,'cocs') and selected(../new_fp_method,'cocs')) and
+not(selected(../current_method,'dmpa_im') and selected(../new_fp_method,'dmpa_im')) and
+not(selected(../current_method,'pops') and selected(../new_fp_method,'pops')) and
+not(selected(../new_fp_method,'condoms')) and not(selected(../new_fp_method,'lam')) and not(selected(../new_fp_method,'cycle_beads')) and
+not(selected(../new_fp_method,'sayana_press')) and
+count-selected(../new_fp_method) &gt; 0" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/chv_administer_fp" relevant="selected(../new_fp_method, 'cocs') or selected(../new_fp_method, 'pops') or selected(../new_fp_method, 'condoms') or selected(../new_fp_method, 'sayana_press')" required="true()" test1="relevant: 1, value: yes" type="select1"/>
+      <bind constraint="not(
+(not(selected(../current_method,'cocs') ) and selected(.,'cocs')) or
+(not(selected(../current_method,'pops') ) and selected(.,'pops')))" jr:constraintMsg="You can not initiate a family planning method. Refer client to health facility to receive the FP method" nodeset="/fp_registration_ke-v4-jef/family_planning/chv_administer_methods" relevant="../chv_administer_fp = 'yes'" required="true()" test1="sayana_press" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/family_planning/sayana_administer" relevant="../chv_administer_fp = 'yes' and ../chv_administer_methods = 'sayana_press'" required="true()" test1="client_self_injection" type="select1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review" test1="relevant: 1"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/submit" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_summary" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_client_details" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_pregnancy_details" readonly="true()" relevant=" /fp_registration_ke-v4-jef/pregnant  = 'true' and  /fp_registration_ke-v4-jef/pregnancy_screening/g_edd  != ''" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_educate" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_educate_fp" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_educate_fp_side_effects" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_educate_fp_side_effects1" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_educate_after_live_birth" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_educate_after_live_birth1" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_educate_pregnancy1" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_educate_pregnancy2" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_educate_pregnancy3" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_referral" readonly="true()" relevant=" /fp_registration_ke-v4-jef/has_risk_factors  = 'true' or  /fp_registration_ke-v4-jef/switch_ll_permanent  = 'true' or  /fp_registration_ke-v4-jef/refer_for_initial_dose  = 'true' or  /fp_registration_ke-v4-jef/refer_on_cocs  = 'true' or  /fp_registration_ke-v4-jef/refer_not_switching  = 'true'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_referral_note" readonly="true()" relevant=" /fp_registration_ke-v4-jef/has_risk_factors  = 'true'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_risk_factor1" readonly="true()" relevant="selected( /fp_registration_ke-v4-jef/family_planning/risk_factors , 'high_bp')" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_risk_factor2" readonly="true()" relevant="selected( /fp_registration_ke-v4-jef/family_planning/risk_factors , 'heart_disease')" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_risk_factor3" readonly="true()" relevant="selected( /fp_registration_ke-v4-jef/family_planning/risk_factors , 'blood_clots')" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_risk_factor4" readonly="true()" relevant="selected( /fp_registration_ke-v4-jef/family_planning/risk_factors , 'medication')" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_risk_factor5" readonly="true()" relevant="selected( /fp_registration_ke-v4-jef/family_planning/risk_factors , 'kidney_liver_disease')" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_risk_factor6" readonly="true()" relevant="selected( /fp_registration_ke-v4-jef/family_planning/risk_factors , 'dont_know')" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_first_dose" readonly="true()" relevant=" /fp_registration_ke-v4-jef/refer_for_initial_dose  = 'true'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_breastfeeding_cocs" readonly="true()" relevant=" /fp_registration_ke-v4-jef/refer_on_cocs  = 'true'" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_counselling" readonly="true()" relevant=" /fp_registration_ke-v4-jef/refer_not_switching  = 'true'" test1="relevant: 0" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_followup" readonly="true()" relevant=" /fp_registration_ke-v4-jef/has_risk_factors  = 'true' or  /fp_registration_ke-v4-jef/switch_ll_permanent  = 'true' or  /fp_registration_ke-v4-jef/refer_for_initial_dose  = 'true' or  /fp_registration_ke-v4-jef/refer_on_cocs  = 'true' or  /fp_registration_ke-v4-jef/refer_not_switching  = 'true'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/fp_registration_ke-v4-jef/group_review/r_followup_note" readonly="true()" relevant=" /fp_registration_ke-v4-jef/pregnant  = 'false'" test1="relevant: 1" type="string"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/fp_registration_ke-v4-jef/meta/instanceID" readonly="true()" type="string"/>
+    </model>
+  </h:head>
+  <h:body class="pages">
+    <group appearance="field-list" ref="/fp_registration_ke-v4-jef/eligibility">
+      <select1 ref="/fp_registration_ke-v4-jef/eligibility/in_the_household">
+        <label>Is the eligible woman in the household?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <input ref="/fp_registration_ke-v4-jef/eligibility/n_confidentiality_e">
+        <label>_**Please ask these questions to the eligible woman to preserve confidentiality**_</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/eligibility/patient_name">
+        <label>What is your name?</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/eligibility/patient_age_in_years">
+        <label>What is your age?</label>
+      </input>
+      <select1 ref="/fp_registration_ke-v4-jef/eligibility/screened_for_pregnancy">
+        <label>Have you been screened for pregnancy?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <select1 ref="/fp_registration_ke-v4-jef/eligibility/currently_pregnant">
+        <label>Are you currently pregnant?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <input ref="/fp_registration_ke-v4-jef/eligibility/n_screening">
+        <label>_**Please proceed to family planning registration.**_</label>
+      </input>
+    </group>
+    <group appearance="field-list" ref="/fp_registration_ke-v4-jef/pregnancy_screening">
+      <input ref="/fp_registration_ke-v4-jef/pregnancy_screening/n_confidentiality_ps">
+        <label>_**Please ask these questions to the eligible woman to preserve confidentiality**_</label>
+      </input>
+      <select1 appearance="horizontal" ref="/fp_registration_ke-v4-jef/pregnancy_screening/g_lmp_method">
+        <label>Do you know the date of your last menstrual cycle?</label>
+        <item>
+          <label>Yes</label>
+          <value>calendar</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>approx</value>
+        </item>
+      </select1>
+      <input ref="/fp_registration_ke-v4-jef/pregnancy_screening/g_lmp_calendar">
+        <label>Start date of the last cycle</label>
+      </input>
+      <select1 ref="/fp_registration_ke-v4-jef/pregnancy_screening/g_lmp_approx">
+        <label>Approximate start date of last cycle</label>
+        <item>
+          <label>up to 2 months ago</label>
+          <value>61</value>
+        </item>
+        <item>
+          <label>up to 3 months ago</label>
+          <value>91</value>
+        </item>
+        <item>
+          <label>up to 4 months ago</label>
+          <value>122</value>
+        </item>
+        <item>
+          <label>beween 5 to 6 months ago</label>
+          <value>183</value>
+        </item>
+        <item>
+          <label>6 months and above</label>
+          <value>244</value>
+        </item>
+      </select1>
+      <input appearance="horizontal" ref="/fp_registration_ke-v4-jef/pregnancy_screening/n_pregnancy_test">
+        <label>**Ask the client If they have had a pregnancy test done. If not advise them to buy a kit to confirm**</label>
+      </input>
+      <select1 ref="/fp_registration_ke-v4-jef/pregnancy_screening/confirmed_pregnancy">
+        <label>Have you had a pregnancy test?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <select1 appearance="compact" ref="/fp_registration_ke-v4-jef/pregnancy_screening/confirmed_pregnancy_results">
+        <label>What were the results of the test?</label>
+        <item>
+          <label>Positive</label>
+          <value>positive</value>
+        </item>
+        <item>
+          <label>Negative</label>
+          <value>negative</value>
+        </item>
+      </select1>
+      <select1 ref="/fp_registration_ke-v4-jef/pregnancy_screening/buy_pregnancy_kit">
+        <label>Would she like to buy a pregnancy kit to confirm pregnancy?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <select1 appearance="compact" ref="/fp_registration_ke-v4-jef/pregnancy_screening/pregnancy_test">
+        <label>What are the results of the test?</label>
+        <item>
+          <label>Positive</label>
+          <value>positive</value>
+        </item>
+        <item>
+          <label>Negative</label>
+          <value>negative</value>
+        </item>
+      </select1>
+    </group>
+    <group appearance="field-list" ref="/fp_registration_ke-v4-jef/family_planning">
+      <select1 appearance="horizontal" ref="/fp_registration_ke-v4-jef/family_planning/breastfeeding">
+        <label>Is she exclusively breastfeeding?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <select1 appearance="horizontal" ref="/fp_registration_ke-v4-jef/family_planning/breastfeeding_duration">
+        <label>How long has she been breastfeeding?</label>
+        <item>
+          <label>One month</label>
+          <value>30</value>
+        </item>
+        <item>
+          <label>Two months</label>
+          <value>60</value>
+        </item>
+        <item>
+          <label>Three months</label>
+          <value>90</value>
+        </item>
+        <item>
+          <label>Four months</label>
+          <value>120</value>
+        </item>
+        <item>
+          <label>Five months</label>
+          <value>150</value>
+        </item>
+        <item>
+          <label>Six+ months</label>
+          <value>180</value>
+        </item>
+      </select1>
+      <select1 appearance="horizontal" ref="/fp_registration_ke-v4-jef/family_planning/used_modern_fp">
+        <label>Have you ever used any modern Family Planning Method?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <select ref="/fp_registration_ke-v4-jef/family_planning/why_not_use_modern_fp">
+        <label>Why have you never used any modern Family Planning Method?</label>
+        <item>
+          <label>Cultural reasons</label>
+          <value>cultural</value>
+        </item>
+        <item>
+          <label>Religious reasons</label>
+          <value>religious</value>
+        </item>
+        <item>
+          <label>Lack of acess to FP methods</label>
+          <value>lack_of_access</value>
+        </item>
+        <item>
+          <label>Lack of information</label>
+          <value>lack_of_info</value>
+        </item>
+        <item>
+          <label>Lack of money</label>
+          <value>money</value>
+        </item>
+      </select>
+      <select1 appearance="horizontal" ref="/fp_registration_ke-v4-jef/family_planning/using_modern_fp">
+        <label>Are you currently using a modern FP method?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <select1 ref="/fp_registration_ke-v4-jef/family_planning/current_method">
+        <label>Which method are you using?</label>
+        <item>
+          <label>COCs-Combined Oral Contraceptive</label>
+          <value>cocs</value>
+        </item>
+        <item>
+          <label>POPs-Progestin-only Pill</label>
+          <value>pops</value>
+        </item>
+        <item>
+          <label>DMPA-IM</label>
+          <value>dmpa_im</value>
+        </item>
+        <item>
+          <label>Implants</label>
+          <value>implants</value>
+        </item>
+        <item>
+          <label>IUD</label>
+          <value>iud</value>
+        </item>
+        <item>
+          <label>Condoms</label>
+          <value>condoms</value>
+        </item>
+        <item>
+          <label>Tubal Ligation (TL)</label>
+          <value>tubal_ligation</value>
+        </item>
+        <item>
+          <label>Cycle beads</label>
+          <value>cycle_beads</value>
+        </item>
+        <item>
+          <label>LAM</label>
+          <value>lam</value>
+        </item>
+        <item>
+          <label>Sayana Press/DMPA-SC</label>
+          <value>sayana_press</value>
+        </item>
+      </select1>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_breastfeeding_cocs">
+        <label>**&lt;p style='color:red;'&gt;A woman exclusively breastfeeding for less than 6 months should not take COCs. Refer client to health facility to discuss suitable FP methods.&lt;/p&gt;**</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/current_method_last_dose">
+        <label>What is the date of the last dose/insertion</label>
+      </input>
+      <select1 ref="/fp_registration_ke-v4-jef/family_planning/most_recent_method">
+        <label>What is the most recent method you were using?</label>
+        <item>
+          <label>COCs-Combined Oral Contraceptive</label>
+          <value>cocs</value>
+        </item>
+        <item>
+          <label>POPs-Progestin-only Pill</label>
+          <value>pops</value>
+        </item>
+        <item>
+          <label>DMPA-IM</label>
+          <value>dmpa_im</value>
+        </item>
+        <item>
+          <label>Implants</label>
+          <value>implants</value>
+        </item>
+        <item>
+          <label>IUD</label>
+          <value>iud</value>
+        </item>
+        <item>
+          <label>Condoms</label>
+          <value>condoms</value>
+        </item>
+        <item>
+          <label>Tubal Ligation (TL)</label>
+          <value>tubal_ligation</value>
+        </item>
+        <item>
+          <label>Cycle beads</label>
+          <value>cycle_beads</value>
+        </item>
+        <item>
+          <label>LAM</label>
+          <value>lam</value>
+        </item>
+        <item>
+          <label>Sayana Press/DMPA-SC</label>
+          <value>sayana_press</value>
+        </item>
+      </select1>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/most_recent_method_dose">
+        <label>What is the date of the last dose/insertion</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_cervical_screening">
+        <label>**Encourage the client to go for cervical screening once a year and general health check up**</label>
+      </input>
+      <select ref="/fp_registration_ke-v4-jef/family_planning/why_stop">
+        <label>Why did you stop?</label>
+        <item>
+          <label>I want to get pregnant</label>
+          <value>get_pregnant</value>
+        </item>
+        <item>
+          <label>I reached menopause</label>
+          <value>menopause</value>
+        </item>
+        <item>
+          <label>Suffered or feared side effects</label>
+          <value>side_effects</value>
+        </item>
+        <item>
+          <label>I was no longer sexually active</label>
+          <value>not_sexually_active</value>
+        </item>
+        <item>
+          <label>My spouse does not want me to use FP</label>
+          <value>spouse_refused</value>
+        </item>
+        <item>
+          <label>No clear reason</label>
+          <value>no_reason</value>
+        </item>
+        <item>
+          <label>I could not afford it</label>
+          <value>not_afford</value>
+        </item>
+        <item>
+          <label>I was pregnant</label>
+          <value>was_pregnant</value>
+        </item>
+        <item>
+          <label>Risk factors</label>
+          <value>risk_factors</value>
+        </item>
+      </select>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_thank_client_stop">
+        <label>Thank client for their time</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/heath_education_session">
+        <label>**Health Education Session (using Flipbook)**
+For women who are or who are not using any FP method, provide information about modern FP and then offer the client the available methods to choose from and review risk factors.</label>
+      </input>
+      <select1 appearance="horizontal" ref="/fp_registration_ke-v4-jef/family_planning/spouse_included_hes">
+        <label>Was the spouse included in the health education session?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+        <item>
+          <label>Not Applicable</label>
+          <value>not_applicable</value>
+        </item>
+      </select1>
+      <select1 appearance="horizontal" ref="/fp_registration_ke-v4-jef/family_planning/take_on_switch">
+        <label>Does the client accept to take on or switch to another FP method?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <select ref="/fp_registration_ke-v4-jef/family_planning/risk_factors">
+        <label>Do you have any of the below risk factors?</label>
+        <item>
+          <label>High blood pressure</label>
+          <value>high_bp</value>
+        </item>
+        <item>
+          <label>Heart disease</label>
+          <value>heart_disease</value>
+        </item>
+        <item>
+          <label>History of blood clots</label>
+          <value>blood_clots</value>
+        </item>
+        <item>
+          <label>Chronic medication</label>
+          <value>medication</value>
+        </item>
+        <item>
+          <label>Kidney and liver disease</label>
+          <value>kidney_liver_disease</value>
+        </item>
+        <item>
+          <label>Client does not know</label>
+          <value>dont_know</value>
+        </item>
+        <item>
+          <label>No risk factors</label>
+          <value>no_risk</value>
+        </item>
+      </select>
+      <select ref="/fp_registration_ke-v4-jef/family_planning/reason_not_switch">
+        <label>Why not?</label>
+        <item>
+          <label>I want to get pregnant</label>
+          <value>get_pregnant</value>
+        </item>
+        <item>
+          <label>I fear the side effects</label>
+          <value>side_effects</value>
+        </item>
+        <item>
+          <label>My partner does not agree</label>
+          <value>partner_refuse</value>
+        </item>
+        <item>
+          <label>I need more information</label>
+          <value>more_information</value>
+        </item>
+        <item>
+          <label>Not able to pay now</label>
+          <value>not_afford</value>
+        </item>
+        <item>
+          <label>I am using a traditional method of Family Planning</label>
+          <value>traditional_fp</value>
+        </item>
+        <item>
+          <label>I am satisfied with my current method</label>
+          <value>satisfied</value>
+        </item>
+      </select>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_thank_client">
+        <label>**Thank the client for their time**</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_referral">
+        <label>**&lt;p style='color:red;'&gt;Refer client to health facility to discuss suitable FP methods.&lt;/p&gt;**
+
+**Thank the client for their time and follow up in 3 days**</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_referral_counselling">
+        <label>**&lt;p style='color:red;'&gt;Refer client to the health facility for counselling on FP methods .&lt;/p&gt;**</label>
+      </input>
+      <select1 ref="/fp_registration_ke-v4-jef/family_planning/new_fp_method">
+        <label>Which method would you like to take?</label>
+        <item>
+          <label>COCs-Combined Oral Contraceptive</label>
+          <value>cocs</value>
+        </item>
+        <item>
+          <label>POPs-Progestin Only Pills</label>
+          <value>pops</value>
+        </item>
+        <item>
+          <label>DMPA-IM</label>
+          <value>dmpa_im</value>
+        </item>
+        <item>
+          <label>Condoms</label>
+          <value>condoms</value>
+        </item>
+        <item>
+          <label>Referral for permanent method</label>
+          <value>referral_ll</value>
+        </item>
+        <item>
+          <label>Referral for Implants</label>
+          <value>referral_lmplants</value>
+        </item>
+        <item>
+          <label>Referral for IUD</label>
+          <value>referral_iud</value>
+        </item>
+        <item>
+          <label>Cycle Beads</label>
+          <value>cycle_beads</value>
+        </item>
+        <item>
+          <label>LAM( for breastfeeding women only)</label>
+          <value>lam</value>
+        </item>
+        <item>
+          <label>SayanaPress/DMPA-SC</label>
+          <value>sayana_press</value>
+        </item>
+      </select1>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_cocs">
+        <label>**Educate the client on the dangers of using COCs during exclusive breastfeeding. COCs reduce milk production during breastfeeding.**</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_side_effects_sp">
+        <label>**Educate client about possible side effects. Thank them for their time and follow them up after 30 days.**</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_lam">
+        <label>**Educate the client on using LAM during breastfeeding and boosting with another FP method after 6 months of exclusive breastfeeding.**</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_condom">
+        <label>**Remind client of the alternative FP methods that are available and the limitations of condoms. Let them know to call you if they would like to discuss further. Follow up in one month to continue FP education.**</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_cycle_beads">
+        <label>**Remind client of the alternative FP methods that are available and the limitations of cycle beads. Let them know to call you if they would like to discuss further. Follow up in one month to continue FP education.**</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_side_effects">
+        <label>**Educate client about possible side effects. Thank them for their time and follow them up after 7 days to see if they have any side effects.**</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/family_planning/n_refer_first_dose">
+        <label>**&lt;p style='color:red;'&gt;You can not initiate a family planning method. Refer client to health facility to receive the FP method &lt;/p&gt;**</label>
+      </input>
+      <select1 ref="/fp_registration_ke-v4-jef/family_planning/chv_administer_fp">
+        <label>**Message to CHV:**
+ Did you administer the FP method?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <select1 ref="/fp_registration_ke-v4-jef/family_planning/chv_administer_methods">
+        <label>Which method did you administer?</label>
+        <item>
+          <label>COCs</label>
+          <value>cocs</value>
+        </item>
+        <item>
+          <label>POPs</label>
+          <value>pops</value>
+        </item>
+        <item>
+          <label>Condoms</label>
+          <value>condoms</value>
+        </item>
+        <item>
+          <label>SayanaPress/DMPA-SC</label>
+          <value>sayana_press</value>
+        </item>
+      </select1>
+      <select1 ref="/fp_registration_ke-v4-jef/family_planning/sayana_administer">
+        <label>Who administered Sayana press?</label>
+        <item>
+          <label>Client Self Injection</label>
+          <value>client_self_injection</value>
+        </item>
+        <item>
+          <label>CHV</label>
+          <value>chv</value>
+        </item>
+      </select1>
+    </group>
+    <group appearance="field-list summary" ref="/fp_registration_ke-v4-jef/group_review">
+      <input ref="/fp_registration_ke-v4-jef/group_review/submit">
+        <label>&lt;h4 style="text-align:center;"&gt;Be sure you Submit to complete this action.&lt;/h4&gt;</label>
+      </input>
+      <input appearance="h1 yellow" ref="/fp_registration_ke-v4-jef/group_review/r_summary">
+        <label>Client Details&lt;I class="fa fa-user"&gt;&lt;/i&gt;</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/group_review/r_client_details">
+        <label> &lt;h4 style=&quot;text-align:center;&quot;&gt;<output value=" /fp_registration_ke-v4-jef/eligibility/patient_name "/>&lt;/h4&gt; &lt;h5 style=&quot;text-align:center;&quot;&gt;<output value=" /fp_registration_ke-v4-jef/eligibility/patient_age_in_years "/> years old&lt;/h5&gt; </label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/group_review/r_pregnancy_details">
+        <label> &lt;h5 style=&quot;text-align:center;&quot;&gt;Estimated delivery date: <output value=" /fp_registration_ke-v4-jef/pregnancy_screening/g_edd "/>&lt;/h5&gt; </label>
+      </input>
+      <input appearance="h1 blue" ref="/fp_registration_ke-v4-jef/group_review/r_educate">
+        <label>Educate Client&lt;i class="fa fa-heart"&gt;&lt;/i&gt;</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_educate_fp">
+        <label>_Educate client on all available modern family planning methods_</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_educate_fp_side_effects">
+        <label>_Educate client on the possible side effects of modern family planning methods (headache, bleeding changes)_</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_educate_fp_side_effects1">
+        <label>_Educate client to visit a hospital if any of the side effects persist for more than 1 month_</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/group_review/r_educate_after_live_birth">
+        <label>&lt;b&gt;After a live birth:&lt;/b&gt;</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_educate_after_live_birth1">
+        <label>Couples should use an effective FP method of their choice continuously for at least two years before trying to become pregnant again.</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/group_review/r_educate_pregnancy1">
+        <label>&lt;b&gt;For first pregnancies among youth:&lt;/b&gt;</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_educate_pregnancy2">
+        <label>Youth should delay first pregnancy until they are at least 18 years old</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_educate_pregnancy3">
+        <label>To delay a first pregnancy, youth should use an effective FP method of their choice or practice abstinence.</label>
+      </input>
+      <input appearance="h1 red" ref="/fp_registration_ke-v4-jef/group_review/r_referral">
+        <label>Refer to a health facility&lt;i class="fa fa-warning"&gt;&lt;/i&gt;</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/group_review/r_referral_note">
+        <label>&lt;b&gt;Refer to the health facility for risk factors.&lt;/b&gt;</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_risk_factor1">
+        <label>High blood pressure</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_risk_factor2">
+        <label>Heart disease</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_risk_factor3">
+        <label>History of blood clots</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_risk_factor4">
+        <label>Chronic medication</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_risk_factor5">
+        <label>Kidney and liver disease</label>
+      </input>
+      <input appearance="li" ref="/fp_registration_ke-v4-jef/group_review/r_risk_factor6">
+        <label>Client does not know</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/group_review/r_first_dose">
+        <label>Refer the client for initiation of the new method</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/group_review/r_breastfeeding_cocs">
+        <label>The client is exclusively breastfeeding and she is on COCs. Refer her to get suitable family planning methods</label>
+      </input>
+      <input ref="/fp_registration_ke-v4-jef/group_review/r_counselling">
+        <label>Refer client to the health facility for counselling on FP methods</label>
+      </input>
+      <input appearance="h1 green" ref="/fp_registration_ke-v4-jef/group_review/r_followup">
+        <label>Follow Up&lt;i class="fa fa-flag"&gt;&lt;/i&gt;</label>
+      </input>
+      <input appearance=" /fp_registration_ke-v4-jef/pregnant  = 'false'" ref="/fp_registration_ke-v4-jef/group_review/r_followup_note">
+        <label>Remember to follow up the client after 3 days to see if they have visited the facility</label>
+      </input>
+    </group>
+  </h:body>
+</h:html>

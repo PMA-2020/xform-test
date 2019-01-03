@@ -1,0 +1,20 @@
+:Desktop joeflack4$
+Joe:Desktop joeflack4$ xls2xform fp_registration_ke-v3-jef.xlsx fp_registration_ke-v3-jef.xml; cp fp_registration_ke-v3-jef.xml fp_registration_ke-v3-jef-fixed.xml; sed -i -e 's/test1="true()/test1="yes/g' fp_registration_ke-v3-jef-fixed.xml; sed -i -e 's/test1="false()/test1="no/g' fp_registration_ke-v3-jef-fixed.xml; rm fp_registration_ke-v3-jef-fixed.xml-e; java -jar xform-test-0.3.2.jar fp_registration_ke-v3-jef-fixed.xml
+Warnings:
+[row : 23] Question has no label: {'control': {'appearance': 'field-list'}, 'type': 'begin group', 'name': 'eligibility', 'bind': {'test1': 'relevant: 1'}}
+[row : 32] Question has no label: {'type': 'begin group', 'name': 'pregnancy_screening', 'control': {'appearance': 'field-list'}, 'bind': {'relevant': "${screened_for_pregnancy} = 'no'", 'test1': 'relevant: 1'}}
+[row : 48] Question has no label: {'type': 'begin group', 'name': 'family_planning', 'control': {'appearance': 'field-list'}, 'bind': {'relevant': "${pregnant} = 'false'", 'test1': 'relevant: 1'}}
+[row : 83] Question has no label: {'control': {'appearance': 'field-list summary'}, 'type': 'begin group', 'name': 'group_review', 'bind': {'test1': 'relevant: 1'}}
+Conversion complete!
+Exception in thread "main" java.lang.RuntimeException: Invalid query for Question prompt. Non-Question object at the form index
+	at org.javarosa.form.api.FormEntryModel.getQuestionPrompt(FormEntryModel.java:170)
+	at org.javarosa.form.api.FormEntryController.answerQuestion(FormEntryController.java:83)
+	at org.javarosa.form.api.FormEntryController.answerQuestion(FormEntryController.java:70)
+	at org.pma2020.xform_test.XFormTest.assertCanEnterValue(XFormTest.java:913)
+	at org.pma2020.xform_test.XFormTest.handleValueAssertion(XFormTest.java:1039)
+	at org.pma2020.xform_test.XFormTest.testAssertions(XFormTest.java:1096)
+	at org.pma2020.xform_test.XFormTest.processNodes(XFormTest.java:1128)
+	at org.pma2020.xform_test.XFormTest.linearAssertionTest(XFormTest.java:1205)
+	at org.pma2020.xform_test.XFormTest.runTestsOnFile(XFormTest.java:262)
+	at org.pma2020.xform_test.XFormTest.main(XFormTest.java:230)
+Joe:Desktop joeflack4$

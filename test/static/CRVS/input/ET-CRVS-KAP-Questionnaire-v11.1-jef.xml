@@ -8827,156 +8827,162 @@ Note2: Caregiver with at least one child who does not have a birth certificate: 
           </item>
         </root>
       </instance>
-      <bind calculate="pulldata('imei.csv','re_name','imei_key',concat('Z', /KAP/deviceid ))" nodeset="/KAP/your_name" type="string"/>
-      <bind nodeset="/KAP/your_name_check" relevant=" /KAP/your_name  != ''" required="true()" type="select1"/>
-      <bind nodeset="/KAP/name_typed" relevant="( /KAP/your_name_check  = 'no') or ( /KAP/your_name  = '')" required="true()" type="string"/>
-      <bind nodeset="/KAP/date_group" relevant="today() &gt; date(&quot;2018-11-01&quot;) and today() &lt; date(&quot;2019-04-01&quot;)"/>
-      <bind nodeset="/KAP/date_group/system_date" readonly="true()" type="dateTime"/>
-      <bind nodeset="/KAP/date_group/system_date_check" required="true()" type="select1"/>
-      <bind constraint=". &gt; date(&quot;2018-04-01&quot;) and . &lt; date(&quot;2019-04-01&quot;)" jr:constraintMsg="jr:itext('/KAP/manual_date:jr:constraintMsg')" nodeset="/KAP/manual_date" relevant=" /KAP/date_group/system_date_check  = 'no' or today() &lt; date(&quot;2018-11-01&quot;) or today() &gt; date(&quot;2019-04-01&quot;)" required="true()" type="dateTime"/>
-      <bind calculate="if( /KAP/date_group/system_date_check  = 'yes', /KAP/date_group/system_date , /KAP/manual_date )" nodeset="/KAP/today" type="string"/>
-      <bind nodeset="/KAP/this_country" type="string"/>
-      <bind nodeset="/KAP/region" required="true()" type="select1"/>
-      <bind nodeset="/KAP/zone" required="true()" type="select1"/>
-      <bind nodeset="/KAP/district" required="true()" type="select1"/>
-      <bind nodeset="/KAP/locality" required="true()" type="select1"/>
-      <bind nodeset="/KAP/EA" required="true()" type="select1"/>
-      <bind nodeset="/KAP/structure" required="true()" type="select1"/>
-      <bind nodeset="/KAP/household" required="true()" type="select1"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'region_num','regionid',  /KAP/region )" nodeset="/KAP/r6region" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'zone_num','zoneid',  /KAP/zone )" nodeset="/KAP/r6zone" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'district_num','districtid',  /KAP/district )" nodeset="/KAP/r6district" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'locality_num','localityid',  /KAP/locality )" nodeset="/KAP/r6locality" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'EAnum','EAid',  /KAP/EA )" nodeset="/KAP/r6EA" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'structure','structureid',  /KAP/structure )" nodeset="/KAP/r6structure" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'household', 'householdid',  /KAP/household )" nodeset="/KAP/r6household" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'metainstanceName','householdid',  /KAP/household )" nodeset="/KAP/r6metainstanceName" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'names','householdid',  /KAP/household )" nodeset="/KAP/r6names" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'HHQ_result','householdid',  /KAP/household )" nodeset="/KAP/r6HHQ_result" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'KEY','householdid',  /KAP/household )" nodeset="/KAP/r6KEY" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'num_HH_members','householdid',  /KAP/household )" nodeset="/KAP/r6num_members" type="string"/>
-      <bind nodeset="/KAP/correct_dwelling" required="true()" type="select1"/>
-      <bind nodeset="/KAP/r6member_available" relevant="( /KAP/correct_dwelling  = 'yes')" required="true()" type="select1"/>
-      <bind nodeset="/KAP/form_duplicate_check" relevant="( /KAP/correct_dwelling  = 'yes') and ( /KAP/r6member_available  = 'yes')" required="true()" type="select1"/>
-      <bind nodeset="/KAP/resubmit_reasons" relevant="( /KAP/form_duplicate_check  = 'yes') and ( /KAP/correct_dwelling  = 'yes')" required="true()" type="select"/>
-      <bind nodeset="/KAP/available" relevant="( /KAP/r6member_available  = 'yes')" required="true()" type="select1"/>
-      <bind nodeset="/KAP/consent_start" readonly="true()" relevant=" /KAP/available  = 'yes'" type="string"/>
-      <bind nodeset="/KAP/consent" readonly="true()" relevant=" /KAP/available  = 'yes'" type="string"/>
-      <bind nodeset="/KAP/begin_interview" relevant=" /KAP/available  = 'yes'" required="true()" type="select1"/>
-      <bind calculate="( /KAP/begin_interview  = 'yes')" nodeset="/KAP/consent_obtained" type="string"/>
-      <bind nodeset="/KAP/witness_auto" relevant=" /KAP/consent_obtained  and ( /KAP/your_name_check  = 'yes')" required="true()" type="select1"/>
-      <bind constraint="(. =  /KAP/name_typed )" jr:constraintMsg="jr:itext('/KAP/witness_manual:jr:constraintMsg')" nodeset="/KAP/witness_manual" relevant=" /KAP/consent_obtained  and (( /KAP/your_name_check  = 'no') or ( /KAP/your_name  = ''))" required="true()" type="string"/>
-      <bind nodeset="/KAP/respondent_firstname" relevant=" /KAP/consent_obtained " required="true()" type="string"/>
-      <bind nodeset="/KAP/Section_1" readonly="true()" relevant=" /KAP/consent_obtained " type="string"/>
-      <bind nodeset="/KAP/r6names_note" readonly="true()" relevant=" /KAP/consent_obtained " type="string"/>
-      <bind nodeset="/KAP/HH_member" relevant=" /KAP/consent_obtained "/>
-      <bind calculate="position(..)" nodeset="/KAP/HH_member/member_Pos" type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'memberid_byhh','memberid_byhh',  /KAP/HH_member/member_Pos )" nodeset="/KAP/HH_member/memberid_byhh" relevant=" /KAP/consent_obtained " type="string"/>
-      <bind nodeset="/KAP/HH_member/member_hhqid" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " required="true()" type="select1"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'firstname','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6firstname" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'relationship','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6relationship" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'gender','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6gender" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'age','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6age" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'marital_status','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6marital_status" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'usually_live','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6usually_live" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'last_night','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6last_night" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " type="string"/>
-      <bind calculate="pulldata('R6_DataFiles.csv', 'FRS_form_name','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6FRS_form_name" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " type="string"/>
-      <bind calculate=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " nodeset="/KAP/HH_member/r6_member" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1/r6_details_note" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members )" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1/usually_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members )" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1/kapusually_live" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members )" required="true()" type="select1"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1/no_r6_details" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/r6_details_update" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/grp1/kapusually_live ='yes')" required="true()" type="select1"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1a/name_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1a/name_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" type="string"/>
-      <bind constraint="regex(.,'^[a-zA-Z_ ]*$')" jr:constraintMsg="jr:itext('/KAP/HH_member/member_bckgrnd/grp1a/kap_firstname:jr:constraintMsg')" nodeset="/KAP/HH_member/member_bckgrnd/grp1a/kap_firstname" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes'))" required="true()" type="string"/>
-      <bind calculate="number( /KAP/HH_member/member_bckgrnd/firstname = /KAP/respondent_firstname )" nodeset="/KAP/HH_member/member_bckgrnd/respondent_match" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/relation_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/relation_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/kap_relationship" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes'))" required="true()" type="select1"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/gender_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/gender_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/kapgender" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes'))" required="true()" type="select1"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/age_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/age_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" type="string"/>
-      <bind constraint="((.&gt;=0) and (. &lt; 130))" jr:constraintMsg="jr:itext('/KAP/HH_member/member_bckgrnd/grp2/kap_age:jr:constraintMsg')" nodeset="/KAP/HH_member/member_bckgrnd/grp2/kap_age" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes'))" required="true()" type="int"/>
-      <bind constraint="(.='yes') and regex( /KAP/HH_member/member_bckgrnd/grp1a/kap_firstname ,'^[a-zA-Z_]*$')" jr:constraintMsg="jr:itext('/KAP/HH_member/member_bckgrnd/firstname_note:jr:constraintMsg')" nodeset="/KAP/HH_member/member_bckgrnd/firstname_note" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')) and ( /KAP/HH_member/member_bckgrnd/grp2/kap_age  &lt; 6)" required="true()" type="select1"/>
-      <bind calculate=" /KAP/HH_member/member_bckgrnd/grp2/kap_age  -  /KAP/HH_member/r6age " nodeset="/KAP/HH_member/member_bckgrnd/age_diff" relevant=" /KAP/HH_member/r6_member " type="string"/>
-      <bind constraint="(.='yes')" jr:constraintMsg="jr:itext('/KAP/HH_member/member_bckgrnd/age_check:jr:constraintMsg')" nodeset="/KAP/HH_member/member_bckgrnd/age_check" relevant=" /KAP/HH_member/member_bckgrnd/age_diff  &lt; 0 or  /KAP/HH_member/member_bckgrnd/age_diff  &gt;1" required="true()" type="select1"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3/marital_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') and ( /KAP/HH_member/r6age &gt;=10)" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3/marital_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/grp2/kap_age &gt;=10)" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3/kapmarital_status" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')) and ( /KAP/HH_member/member_bckgrnd/grp2/kap_age &gt;=10 or  /KAP/HH_member/r6age &gt;=10)" required="true()" type="select1"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3/kapusually_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" type="string"/>
-      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3/kapusually_live_new" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" required="true()" type="select1"/>
-      <bind calculate="if( /KAP/HH_member/r6_member  and  /KAP/HH_member/member_bckgrnd/r6_details_update ='no',  /KAP/HH_member/r6firstname , if(( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') or ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp1a/kap_firstname , ''))" nodeset="/KAP/HH_member/member_bckgrnd/firstname" type="string"/>
-      <bind calculate="if( /KAP/HH_member/r6_member  and  /KAP/HH_member/member_bckgrnd/r6_details_update ='no',  /KAP/HH_member/r6relationship , if(( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') or ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp2/kap_relationship , ''))" nodeset="/KAP/HH_member/member_bckgrnd/relationship" type="string"/>
-      <bind calculate="if( /KAP/HH_member/r6_member  and  /KAP/HH_member/member_bckgrnd/r6_details_update ='no',  /KAP/HH_member/r6gender , if(( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') or ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp2/kapgender , ''))" nodeset="/KAP/HH_member/member_bckgrnd/gender" type="string"/>
-      <bind calculate="if( /KAP/HH_member/r6_member  and  /KAP/HH_member/member_bckgrnd/r6_details_update ='no',  /KAP/HH_member/r6age , if(( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') or ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp2/kap_age , ''))" nodeset="/KAP/HH_member/member_bckgrnd/age" type="string"/>
-      <bind calculate="if( /KAP/HH_member/r6_member  and  /KAP/HH_member/member_bckgrnd/r6_details_update ='no',  /KAP/HH_member/r6marital_status , if(( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') or ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp3/kapmarital_status , ''))" nodeset="/KAP/HH_member/member_bckgrnd/marital_status" type="string"/>
-      <bind calculate="if( /KAP/HH_member/r6_member  and ( /KAP/HH_member/member_bckgrnd/grp1/kapusually_live  ='yes' or  /KAP/HH_member/member_bckgrnd/grp1/kapusually_live  ='no'),  /KAP/HH_member/member_bckgrnd/grp1/kapusually_live , if(( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp3/kapusually_live_new , ''))" nodeset="/KAP/HH_member/member_bckgrnd/usually_live" type="string"/>
-      <bind calculate="( /KAP/HH_member/r6_member ) or (not( /KAP/HH_member/r6_member ) and  /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" nodeset="/KAP/HH_member/member_bckgrnd/roster_member" type="string"/>
-      <bind calculate="number( /KAP/HH_member/member_bckgrnd/relationship ='head')" nodeset="/KAP/HH_member/member_bckgrnd/head_check" type="string"/>
-      <bind calculate="if( /KAP/HH_member/member_bckgrnd/relationship ='head',concat('&#x0a;', /KAP/HH_member/member_bckgrnd/firstname ),'')" nodeset="/KAP/HH_member/member_bckgrnd/head_name" type="string"/>
-      <bind calculate="(( /KAP/HH_member/member_bckgrnd/age &gt;=0 and  /KAP/HH_member/member_bckgrnd/age  &lt; 6) or ( /KAP/HH_member/member_bckgrnd/grp2/kap_age &gt;=0 and  /KAP/HH_member/member_bckgrnd/grp2/kap_age  &lt; 6)) and ( /KAP/HH_member/member_bckgrnd/usually_live  = 'yes')" nodeset="/KAP/HH_member/member_bckgrnd/eligibleChild" type="string"/>
-      <bind calculate="if( /KAP/HH_member/member_bckgrnd/eligibleChild ,  /KAP/HH_member/member_Pos , '')" nodeset="/KAP/HH_member/member_bckgrnd/eligibleChild_pos" type="string"/>
-      <bind nodeset="/KAP/HH_member/child_status" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/usually_live ='no' or  /KAP/HH_member/member_bckgrnd/grp1/kapusually_live ='no') and ( /KAP/HH_member/member_bckgrnd/age  &lt; 6)" required="true()" type="select1"/>
-      <bind nodeset="/KAP/HH_member/eligibility_screen_no" readonly="true()" relevant="not( /KAP/HH_member/member_bckgrnd/eligibleChild ) and ((( /KAP/HH_member/member_bckgrnd/age &gt;=0 and  /KAP/HH_member/member_bckgrnd/age  &lt; 6) or ( /KAP/HH_member/member_bckgrnd/grp2/kap_age &gt;=0 and  /KAP/HH_member/member_bckgrnd/grp2/kap_age  &lt; 6)) and ( /KAP/HH_member/member_bckgrnd/usually_live  = 'no'))" type="string"/>
-      <bind nodeset="/KAP/HH_member/eligibility_screen_yes" readonly="true()" relevant=" /KAP/HH_member/member_bckgrnd/eligibleChild " type="string"/>
-      <bind nodeset="/KAP/HH_member/r6roster_complete_note" readonly="true()" relevant=" /KAP/r6num_members = /KAP/num_HH_members " type="string"/>
-      <bind nodeset="/KAP/HH_member/grp4/more_hh_members_r6" readonly="true()" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;  /KAP/r6num_members " type="string"/>
-      <bind nodeset="/KAP/HH_member/grp4/more_hh_members_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/r6HHQ_result  = 'completed' and  /KAP/HH_member/memberid_byhh  &gt;=  /KAP/r6num_members )" type="string"/>
-      <bind nodeset="/KAP/HH_member/grp4/more_hh_members" required="true()" type="select1"/>
-      <bind nodeset="/KAP/HH_member/r6roster_complete_check" readonly="true()" relevant="( /KAP/r6num_members  != /KAP/num_HH_members ) and ( /KAP/num_HH_members  &lt;  /KAP/r6num_members ) and  /KAP/HH_member/grp4/more_hh_members ='no'" type="string"/>
-      <bind nodeset="/KAP/HH_member/more_hh_members_add" readonly="true()" relevant=" /KAP/HH_member/grp4/more_hh_members ='yes'" type="string"/>
-      <bind nodeset="/KAP/HH_member/more_hh_members_donotadd" readonly="true()" relevant=" /KAP/HH_member/grp4/more_hh_members ='no'" type="string"/>
-      <bind calculate="(count( /KAP/HH_member ))" nodeset="/KAP/num_HH_members" type="string"/>
-      <bind calculate="int(sum( /KAP/HH_member/member_bckgrnd/eligibleChild ))" nodeset="/KAP/num_eligible_child" type="string"/>
-      <bind calculate="trim(join(' ', /KAP/HH_member/member_bckgrnd/eligibleChild_pos ))" nodeset="/KAP/list_eligibleChild_pos" type="string"/>
-      <bind calculate="count-selected( /KAP/list_eligibleChild_pos )" nodeset="/KAP/count_eligible_child" type="string"/>
-      <bind calculate="sum( /KAP/HH_member/member_bckgrnd/head_check )" nodeset="/KAP/heads" type="string"/>
-      <bind calculate="join('', /KAP/HH_member/member_bckgrnd/head_name )" nodeset="/KAP/head_name_joined" type="string"/>
-      <bind nodeset="/KAP/error_noheads" readonly="true()" relevant=" /KAP/heads  = 0 and  /KAP/consent_obtained " type="string"/>
-      <bind nodeset="/KAP/error_extraheads" readonly="true()" relevant=" /KAP/heads  &gt; 1" type="string"/>
-      <bind calculate="join(', ', /KAP/HH_member/member_bckgrnd/firstname )" nodeset="/KAP/names" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=1 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 1)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 1)), '')" nodeset="/KAP/firstname_1" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=2 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 2)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 2)), '')" nodeset="/KAP/firstname_2" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=3 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 3)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 3)), '')" nodeset="/KAP/firstname_3" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=4 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 4)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 4)), '')" nodeset="/KAP/firstname_4" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=5 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 5)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 5)), '')" nodeset="/KAP/firstname_5" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=6 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 6)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 6)), '')" nodeset="/KAP/firstname_6" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=7 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 7)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 7)), '')" nodeset="/KAP/firstname_7" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=8 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 8)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 8)), '')" nodeset="/KAP/firstname_8" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=9 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 9)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 9)), '')" nodeset="/KAP/firstname_9" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=10 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 10)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 10)), '')" nodeset="/KAP/firstname_10" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=11 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 11)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 11)), '')" nodeset="/KAP/firstname_11" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=12 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 12)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 12)), '')" nodeset="/KAP/firstname_12" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=13 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 13)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 13)), '')" nodeset="/KAP/firstname_13" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=14 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 14)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 14)), '')" nodeset="/KAP/firstname_14" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=15 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 15)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 15)), '')" nodeset="/KAP/firstname_15" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=16 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 16)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 16)), '')" nodeset="/KAP/firstname_16" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=17 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 17)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 17)), '')" nodeset="/KAP/firstname_17" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=18 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 18)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 18)), '')" nodeset="/KAP/firstname_18" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=19 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 19)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 19)), '')" nodeset="/KAP/firstname_19" type="string"/>
-      <bind calculate="if( /KAP/num_HH_members &gt;=20 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 20)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 20)), '')" nodeset="/KAP/firstname_20" type="string"/>
-      <bind nodeset="/KAP/respondent_in_roster" readonly="true()" relevant="(sum( /KAP/HH_member/member_bckgrnd/respondent_match ) &lt; 1) and  /KAP/consent_obtained " type="string"/>
-      <bind nodeset="/KAP/rcomp_grp" relevant=" /KAP/consent_obtained "/>
-      <bind nodeset="/KAP/rcomp_grp/rcomp_note1" readonly="true()" relevant=" /KAP/consent_obtained " type="string"/>
-      <bind nodeset="/KAP/rcomp_grp/rcomp_note2" readonly="true()" relevant=" /KAP/consent_obtained  and  /KAP/r6HHQ_result  !='completed'" type="string"/>
-      <bind constraint="(. = 'yes')" jr:constraintMsg="jr:itext('/KAP/rcomp_grp/roster_complete:jr:constraintMsg')" nodeset="/KAP/rcomp_grp/roster_complete" required="true()" type="select1"/>
-      <bind nodeset="/KAP/child_u6_note" readonly="true()" relevant=" /KAP/consent_obtained  and (int( /KAP/num_eligible_child ) &gt; 0)" type="string"/>
+      <bind calculate="pulldata('imei.csv','re_name','imei_key',concat('Z', /KAP/deviceid ))" nodeset="/KAP/your_name" test1="''" type="string"/>
+      <bind nodeset="/KAP/your_name_check" relevant=" /KAP/your_name  != ''" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/KAP/name_typed" relevant="( /KAP/your_name_check  = 'no') or ( /KAP/your_name  = '')" required="true()" test1="Joe" type="string"/>
+      <bind nodeset="/KAP/date_group" relevant="today() &gt; date(&quot;2018-11-01&quot;) and today() &lt; date(&quot;2019-04-01&quot;)" test1="relevant: 1"/>
+      <bind nodeset="/KAP/date_group/system_date" readonly="true()" test1="2019-01-01" type="dateTime"/>
+      <bind nodeset="/KAP/date_group/system_date_check" required="true()" test1="true()" type="select1"/>
+      <bind constraint=". &gt; date(&quot;2018-04-01&quot;) and . &lt; date(&quot;2019-04-01&quot;)" jr:constraintMsg="jr:itext('/KAP/manual_date:jr:constraintMsg')" nodeset="/KAP/manual_date" relevant=" /KAP/date_group/system_date_check  = 'no' or today() &lt; date(&quot;2018-11-01&quot;) or today() &gt; date(&quot;2019-04-01&quot;)" required="true()" test1="relevant: 0" type="dateTime"/>
+      <bind calculate="if( /KAP/date_group/system_date_check  = 'yes', /KAP/date_group/system_date , /KAP/manual_date )" nodeset="/KAP/today" test1="2019-01-01" type="string"/>
+      <bind nodeset="/KAP/this_country" test1="Ethiopia" type="string"/>
+      <bind nodeset="/KAP/region" required="true()" test1="r07" type="select1"/>
+      <bind nodeset="/KAP/zone" required="true()" test1="z0701" type="select1"/>
+      <bind nodeset="/KAP/district" required="true()" test1="d070103" type="select1"/>
+      <bind nodeset="/KAP/locality" required="true()" test1="L0701038010" type="select1"/>
+      <bind nodeset="/KAP/EA" required="true()" test1="L0701038010_ea02" type="select1"/>
+      <bind nodeset="/KAP/structure" required="true()" test1="1" type="select1"/>
+      <bind nodeset="/KAP/household" required="true()" test1="2" type="select1"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'region_num','regionid',  /KAP/region )" nodeset="/KAP/r6region" test1="r07" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'zone_num','zoneid',  /KAP/zone )" nodeset="/KAP/r6zone" test1="z0701" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'district_num','districtid',  /KAP/district )" nodeset="/KAP/r6district" test1="d070103" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'locality_num','localityid',  /KAP/locality )" nodeset="/KAP/r6locality" test1="L0701038010" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'EAnum','EAid',  /KAP/EA )" nodeset="/KAP/r6EA" test1="L0701038010_ea02" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'structure','structureid',  /KAP/structure )" nodeset="/KAP/r6structure" test1="1" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'household', 'householdid',  /KAP/household )" nodeset="/KAP/r6household" test1="2" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'metainstanceName','householdid',  /KAP/household )" nodeset="/KAP/r6metainstanceName" test1="?" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'names','householdid',  /KAP/household )" nodeset="/KAP/r6names" test1="joey ashley" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'HHQ_result','householdid',  /KAP/household )" nodeset="/KAP/r6HHQ_result" test1="?" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'KEY','householdid',  /KAP/household )" nodeset="/KAP/r6KEY" test1="?" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'num_HH_members','householdid',  /KAP/household )" nodeset="/KAP/r6num_members" test1="2" type="string"/>
+      <bind nodeset="/KAP/correct_dwelling" required="true()" test1="true()" type="select1"/>
+      <bind nodeset="/KAP/r6member_available" relevant="( /KAP/correct_dwelling  = 'yes')" required="true()" test1="true()" type="select1"/>
+      <bind nodeset="/KAP/form_duplicate_check" relevant="( /KAP/correct_dwelling  = 'yes') and ( /KAP/r6member_available  = 'yes')" required="true()" test1="false()" type="select1"/>
+      <bind nodeset="/KAP/resubmit_reasons" relevant="( /KAP/form_duplicate_check  = 'yes') and ( /KAP/correct_dwelling  = 'yes')" required="true()" test1="relevant: 0" type="select"/>
+      <bind nodeset="/KAP/available" relevant="( /KAP/r6member_available  = 'yes')" required="true()" test1="true()" type="select1"/>
+      <bind nodeset="/KAP/consent_start" readonly="true()" relevant=" /KAP/available  = 'yes'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/consent" readonly="true()" relevant=" /KAP/available  = 'yes'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/begin_interview" relevant=" /KAP/available  = 'yes'" required="true()" test1="true()" type="select1"/>
+      <bind calculate="( /KAP/begin_interview  = 'yes')" nodeset="/KAP/consent_obtained" test1="true()" type="string"/>
+      <bind nodeset="/KAP/witness_auto" relevant=" /KAP/consent_obtained  and ( /KAP/your_name_check  = 'yes')" required="true()" test1="Joe" type="select1"/>
+      <bind constraint="(. =  /KAP/name_typed )" jr:constraintMsg="jr:itext('/KAP/witness_manual:jr:constraintMsg')" nodeset="/KAP/witness_manual" relevant=" /KAP/consent_obtained  and (( /KAP/your_name_check  = 'no') or ( /KAP/your_name  = ''))" required="true()" test1="Joe" type="string"/>
+      <bind nodeset="/KAP/respondent_firstname" relevant=" /KAP/consent_obtained " required="true()" test1="Joey" type="string"/>
+      <bind nodeset="/KAP/Section_1" readonly="true()" relevant=" /KAP/consent_obtained " test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/r6names_note" readonly="true()" relevant=" /KAP/consent_obtained " test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/HH_member" relevant=" /KAP/consent_obtained " test1="relevant: 1"/>
+      <bind calculate="position(..)" nodeset="/KAP/HH_member/member_Pos" test1="[1, 2, 3]" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'memberid_byhh','memberid_byhh',  /KAP/HH_member/member_Pos )" nodeset="/KAP/HH_member/memberid_byhh" relevant=" /KAP/consent_obtained " test1="[1, 2, false]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_hhqid" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " required="true()" test1="[hhqid_key, hhqid_key]" type="select1"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'firstname','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6firstname" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " test1="[joey, ashley]" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'relationship','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6relationship" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " test1="[head, spouse]" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'gender','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6gender" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " test1="[male, female]" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'age','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6age" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " test1="[33, 30]" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'marital_status','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6marital_status" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " test1="[married, married]" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'usually_live','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6usually_live" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " test1="[yes, yes]" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'last_night','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6last_night" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " test1="[yes, yes]" type="string"/>
+      <bind calculate="pulldata('R6_DataFiles.csv', 'FRS_form_name','hhqid_key',  /KAP/HH_member/member_hhqid )" nodeset="/KAP/HH_member/r6FRS_form_name" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " test1="[FQ-Joey-Ashley, FQ-Joey-Ashley]" type="string"/>
+      <bind calculate=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members " nodeset="/KAP/HH_member/r6_member" test1="[true, true, false]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd" test1="[relevant: 1, relevant: 1, relevant: 1]"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1" test1="[relevant: 1, relevant: 1, relevant: 1]"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1/r6_details_note" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members )" test1="[., ., .]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1/usually_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members )" test1="[relevant: 1, relevant: 1, relevant: 1]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1/kapusually_live" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members )" required="true()" test1="[yes, yes, yes]" type="select1"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1/no_r6_details" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" test1="[relevant: 0, relevant: 0, relevant: 1]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/r6_details_update" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/grp1/kapusually_live ='yes')" required="true()" test1="[yes, no, relevant: 0]" type="select1"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1a" test1="[relevant: 1, relevant: 1, relevant: 1]"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1a/name_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')" test1="[Joey, relevant: 0, relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp1a/name_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" test1="[relevant: 0, relevant: 0, relevant: 1]" type="string"/>
+      <bind constraint="regex(.,'^[a-zA-Z_ ]*$')" jr:constraintMsg="jr:itext('/KAP/HH_member/member_bckgrnd/grp1a/kap_firstname:jr:constraintMsg')" nodeset="/KAP/HH_member/member_bckgrnd/grp1a/kap_firstname" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes'))" required="true()" test1="[., ., baby]" type="string"/>
+      <bind calculate="number( /KAP/HH_member/member_bckgrnd/firstname = /KAP/respondent_firstname )" nodeset="/KAP/HH_member/member_bckgrnd/respondent_match" test1="[true, false, false]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2" test1="[relevant: 1, relevant: 1, relevant: 1]"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/relation_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')" test1="[relevant: 1, ., .]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/relation_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" test1="[relevant: 0, relevant: 0, relevant: 1]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/kap_relationship" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes'))" required="true()" test1="[head, ., child]" type="select1"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/gender_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')" test1="[relevant: 1, relevant: 0, relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/gender_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" test1="[relevant: 0, relevant: 0, relevant: 1]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/kapgender" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes'))" required="true()" test1="[male, ., male]" type="select1"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/age_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')" test1="[relevant: 1, relevant: 1]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp2/age_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" test1="[relevant: 1, relevant: 1]" type="string"/>
+      <bind constraint="((.&gt;=0) and (. &lt; 130))" jr:constraintMsg="jr:itext('/KAP/HH_member/member_bckgrnd/grp2/kap_age:jr:constraintMsg')" nodeset="/KAP/HH_member/member_bckgrnd/grp2/kap_age" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes'))" required="true()" test1="[34, ., 1]" type="int"/>
+      <bind constraint="(.='yes') and regex( /KAP/HH_member/member_bckgrnd/grp1a/kap_firstname ,'^[a-zA-Z_]*$')" jr:constraintMsg="jr:itext('/KAP/HH_member/member_bckgrnd/firstname_note:jr:constraintMsg')" nodeset="/KAP/HH_member/member_bckgrnd/firstname_note" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')) and ( /KAP/HH_member/member_bckgrnd/grp2/kap_age  &lt; 6)" required="true()" test1="[relevant: 0, relevant: 0, yes]" type="select1"/>
+      <bind calculate=" /KAP/HH_member/member_bckgrnd/grp2/kap_age  -  /KAP/HH_member/r6age " nodeset="/KAP/HH_member/member_bckgrnd/age_diff" relevant=" /KAP/HH_member/r6_member " test1="[1, relevant: 0, relevant: 0]" type="string"/>
+      <bind constraint="(.='yes')" jr:constraintMsg="jr:itext('/KAP/HH_member/member_bckgrnd/age_check:jr:constraintMsg')" nodeset="/KAP/HH_member/member_bckgrnd/age_check" relevant=" /KAP/HH_member/member_bckgrnd/age_diff  &lt; 0 or  /KAP/HH_member/member_bckgrnd/age_diff  &gt;1" required="true()" test1="[relevant: 0, relevant: 0, relevant: 0]" type="select1"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3" test1="[., ., .]"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3/marital_note_r6" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') and ( /KAP/HH_member/r6age &gt;=10)" test1="[relevant: 1, relevant:0, relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3/marital_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/grp2/kap_age &gt;=10)" test1="[relevant: 0, relevant: 0, relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3/kapmarital_status" relevant=" /KAP/consent_obtained  and (( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ) or ( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes')) and ( /KAP/HH_member/member_bckgrnd/grp2/kap_age &gt;=10 or  /KAP/HH_member/r6age &gt;=10)" required="true()" test1="[married, relevant:0, relevant: 0]" type="select1"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3/kapusually_note_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" test1="[relevant: 0, relevant: 0, relevant: 1]" type="string"/>
+      <bind nodeset="/KAP/HH_member/member_bckgrnd/grp3/kapusually_live_new" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" required="true()" test1="[relevant: 0, relevant: 0, yes]" type="select1"/>
+      <bind calculate="if( /KAP/HH_member/r6_member  and  /KAP/HH_member/member_bckgrnd/r6_details_update ='no',  /KAP/HH_member/r6firstname , if(( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') or ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp1a/kap_firstname , ''))" nodeset="/KAP/HH_member/member_bckgrnd/firstname" test1="[Joey, ashley, baby]" type="string"/>
+      <bind calculate="if( /KAP/HH_member/r6_member  and  /KAP/HH_member/member_bckgrnd/r6_details_update ='no',  /KAP/HH_member/r6relationship , if(( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') or ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp2/kap_relationship , ''))" nodeset="/KAP/HH_member/member_bckgrnd/relationship" test1="[head, spouse, child]" type="string"/>
+      <bind calculate="if( /KAP/HH_member/r6_member  and  /KAP/HH_member/member_bckgrnd/r6_details_update ='no',  /KAP/HH_member/r6gender , if(( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') or ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp2/kapgender , ''))" nodeset="/KAP/HH_member/member_bckgrnd/gender" test1="[male, female, male]" type="string"/>
+      <bind calculate="if( /KAP/HH_member/r6_member  and  /KAP/HH_member/member_bckgrnd/r6_details_update ='no',  /KAP/HH_member/r6age , if(( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') or ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp2/kap_age , ''))" nodeset="/KAP/HH_member/member_bckgrnd/age" test1="[34, 30, 1]" type="string"/>
+      <bind calculate="if( /KAP/HH_member/r6_member  and  /KAP/HH_member/member_bckgrnd/r6_details_update ='no',  /KAP/HH_member/r6marital_status , if(( /KAP/HH_member/member_bckgrnd/r6_details_update ='yes') or ( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp3/kapmarital_status , ''))" nodeset="/KAP/HH_member/member_bckgrnd/marital_status" test1="[married, married, .]" type="string"/>
+      <bind calculate="if( /KAP/HH_member/r6_member  and ( /KAP/HH_member/member_bckgrnd/grp1/kapusually_live  ='yes' or  /KAP/HH_member/member_bckgrnd/grp1/kapusually_live  ='no'),  /KAP/HH_member/member_bckgrnd/grp1/kapusually_live , if(( /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members ),  /KAP/HH_member/member_bckgrnd/grp3/kapusually_live_new , ''))" nodeset="/KAP/HH_member/member_bckgrnd/usually_live" test1="[yes, yes, yes]" type="string"/>
+      <bind calculate="( /KAP/HH_member/r6_member ) or (not( /KAP/HH_member/r6_member ) and  /KAP/HH_member/memberid_byhh  &gt;  /KAP/r6num_members )" nodeset="/KAP/HH_member/member_bckgrnd/roster_member" test1="[yes, yes, yes]" type="string"/>
+      <bind calculate="number( /KAP/HH_member/member_bckgrnd/relationship ='head')" nodeset="/KAP/HH_member/member_bckgrnd/head_check" test1="[1]" type="string"/>
+      <bind calculate="if( /KAP/HH_member/member_bckgrnd/relationship ='head',concat('&#x0a;', /KAP/HH_member/member_bckgrnd/firstname ),'')" nodeset="/KAP/HH_member/member_bckgrnd/head_name" test1="[Joey]" type="string"/>
+      <bind calculate="(( /KAP/HH_member/member_bckgrnd/age &gt;=0 and  /KAP/HH_member/member_bckgrnd/age  &lt; 6) or ( /KAP/HH_member/member_bckgrnd/grp2/kap_age &gt;=0 and  /KAP/HH_member/member_bckgrnd/grp2/kap_age  &lt; 6)) and ( /KAP/HH_member/member_bckgrnd/usually_live  = 'yes')" nodeset="/KAP/HH_member/member_bckgrnd/eligibleChild" test1="[false, false, true]" type="string"/>
+      <bind calculate="if( /KAP/HH_member/member_bckgrnd/eligibleChild ,  /KAP/HH_member/member_Pos , '')" nodeset="/KAP/HH_member/member_bckgrnd/eligibleChild_pos" test1="['', '', 3]" type="string"/>
+      <bind nodeset="/KAP/HH_member/child_status" relevant=" /KAP/consent_obtained  and ( /KAP/HH_member/memberid_byhh  &lt;=  /KAP/r6num_members ) and ( /KAP/HH_member/member_bckgrnd/usually_live ='no' or  /KAP/HH_member/member_bckgrnd/grp1/kapusually_live ='no') and ( /KAP/HH_member/member_bckgrnd/age  &lt; 6)" required="true()" test1="[relevant: 0, relevant: 0, relevant: 0]" type="select1"/>
+      <bind nodeset="/KAP/HH_member/eligibility_screen_no" readonly="true()" relevant="not( /KAP/HH_member/member_bckgrnd/eligibleChild ) and ((( /KAP/HH_member/member_bckgrnd/age &gt;=0 and  /KAP/HH_member/member_bckgrnd/age  &lt; 6) or ( /KAP/HH_member/member_bckgrnd/grp2/kap_age &gt;=0 and  /KAP/HH_member/member_bckgrnd/grp2/kap_age  &lt; 6)) and ( /KAP/HH_member/member_bckgrnd/usually_live  = 'no'))" test1="[relevant: 0, relevant: 0, relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/HH_member/eligibility_screen_yes" readonly="true()" relevant=" /KAP/HH_member/member_bckgrnd/eligibleChild " test1="[relevant: 0, relevant: 0, relevant: 1]" type="string"/>
+      <bind nodeset="/KAP/HH_member/r6roster_complete_note" readonly="true()" relevant=" /KAP/r6num_members = /KAP/num_HH_members " test1="[relevant: 0, relevant: 0, relevant: 1]" type="string"/>
+      <bind nodeset="/KAP/HH_member/grp4" test1="[relevant: 1, relevant: 1, relevant: 1]"/>
+      <bind nodeset="/KAP/HH_member/grp4/more_hh_members_r6" readonly="true()" relevant=" /KAP/consent_obtained  and  /KAP/HH_member/memberid_byhh  &lt;  /KAP/r6num_members " test1="[relevant: 0, relevant: 1, relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/HH_member/grp4/more_hh_members_new" readonly="true()" relevant=" /KAP/consent_obtained  and ( /KAP/r6HHQ_result  = 'completed' and  /KAP/HH_member/memberid_byhh  &gt;=  /KAP/r6num_members )" test1="[relevant: 0, relevant: 0, relevant: 1]" type="string"/>
+      <bind nodeset="/KAP/HH_member/grp4/more_hh_members" required="true()" test1="[relevant: 0, yes, no]" type="select1"/>
+      <bind nodeset="/KAP/HH_member/r6roster_complete_check" readonly="true()" relevant="( /KAP/r6num_members  != /KAP/num_HH_members ) and ( /KAP/num_HH_members  &lt;  /KAP/r6num_members ) and  /KAP/HH_member/grp4/more_hh_members ='no'" test1="[relevant: 0, relevant: 0, relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/HH_member/more_hh_members_add" readonly="true()" relevant=" /KAP/HH_member/grp4/more_hh_members ='yes'" test1="[relevant: 1, relevant: 1, relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/HH_member/more_hh_members_donotadd" readonly="true()" relevant=" /KAP/HH_member/grp4/more_hh_members ='no'" test1="[relevant: 0, relevant: 0, relevant: 1]" type="string"/>
+      <bind calculate="(count( /KAP/HH_member ))" nodeset="/KAP/num_HH_members" test1="3" type="string"/>
+      <bind calculate="int(sum( /KAP/HH_member/member_bckgrnd/eligibleChild ))" nodeset="/KAP/num_eligible_child" test1="1" type="string"/>
+      <bind calculate="trim(join(' ', /KAP/HH_member/member_bckgrnd/eligibleChild_pos ))" nodeset="/KAP/list_eligibleChild_pos" test1="3" type="string"/>
+      <bind calculate="count-selected( /KAP/list_eligibleChild_pos )" nodeset="/KAP/count_eligible_child" test1="1" type="string"/>
+      <bind calculate="sum( /KAP/HH_member/member_bckgrnd/head_check )" nodeset="/KAP/heads" test1="1" type="string"/>
+      <bind calculate="join('', /KAP/HH_member/member_bckgrnd/head_name )" nodeset="/KAP/head_name_joined" test1="Joey" type="string"/>
+      <bind nodeset="/KAP/error_noheads" readonly="true()" relevant=" /KAP/heads  = 0 and  /KAP/consent_obtained " test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/error_extraheads" readonly="true()" relevant=" /KAP/heads  &gt; 1" test1="relevant: 0" type="string"/>
+      <bind calculate="join(', ', /KAP/HH_member/member_bckgrnd/firstname )" nodeset="/KAP/names" test1="Joey ashley baby" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=1 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 1)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 1)), '')" nodeset="/KAP/firstname_1" test1="Joey" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=2 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 2)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 2)), '')" nodeset="/KAP/firstname_2" test1="ashley" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=3 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 3)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 3)), '')" nodeset="/KAP/firstname_3" test1="baby" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=4 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 4)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 4)), '')" nodeset="/KAP/firstname_4" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=5 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 5)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 5)), '')" nodeset="/KAP/firstname_5" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=6 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 6)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 6)), '')" nodeset="/KAP/firstname_6" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=7 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 7)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 7)), '')" nodeset="/KAP/firstname_7" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=8 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 8)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 8)), '')" nodeset="/KAP/firstname_8" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=9 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 9)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 9)), '')" nodeset="/KAP/firstname_9" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=10 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 10)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 10)), '')" nodeset="/KAP/firstname_10" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=11 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 11)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 11)), '')" nodeset="/KAP/firstname_11" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=12 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 12)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 12)), '')" nodeset="/KAP/firstname_12" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=13 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 13)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 13)), '')" nodeset="/KAP/firstname_13" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=14 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 14)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 14)), '')" nodeset="/KAP/firstname_14" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=15 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 15)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 15)), '')" nodeset="/KAP/firstname_15" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=16 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 16)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 16)), '')" nodeset="/KAP/firstname_16" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=17 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 17)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 17)), '')" nodeset="/KAP/firstname_17" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=18 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 18)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 18)), '')" nodeset="/KAP/firstname_18" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=19 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 19)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 19)), '')" nodeset="/KAP/firstname_19" test1="false()" type="string"/>
+      <bind calculate="if( /KAP/num_HH_members &gt;=20 and (indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 20)) &gt; 15, (indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 20)), '')" nodeset="/KAP/firstname_20" test1="false()" type="string"/>
+      <bind nodeset="/KAP/respondent_in_roster" readonly="true()" relevant="(sum( /KAP/HH_member/member_bckgrnd/respondent_match ) &lt; 1) and  /KAP/consent_obtained " test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/rcomp_grp" relevant=" /KAP/consent_obtained " test1="relevant: 1"/>
+      <bind nodeset="/KAP/rcomp_grp/rcomp_note1" readonly="true()" relevant=" /KAP/consent_obtained " test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/rcomp_grp/rcomp_note2" readonly="true()" relevant=" /KAP/consent_obtained  and  /KAP/r6HHQ_result  !='completed'" test1="relevant: 0" type="string"/>
+      <bind constraint="(. = 'yes')" jr:constraintMsg="jr:itext('/KAP/rcomp_grp/roster_complete:jr:constraintMsg')" nodeset="/KAP/rcomp_grp/roster_complete" required="true()" test1="true()" type="select1"/>
+      <bind nodeset="/KAP/child_u6_note" readonly="true()" relevant=" /KAP/consent_obtained  and (int( /KAP/num_eligible_child ) &gt; 0)" test1="relevant: 1" type="string"/>
       <bind calculate="int( /KAP/num_eligible_child )" nodeset="/KAP/child_u6_count" readonly="true()" type="string"/>
-      <bind nodeset="/KAP/child_u6" relevant=" /KAP/consent_obtained "/>
-      <bind calculate="position(..)" nodeset="/KAP/child_u6/child_pos" type="string"/>
-      <bind calculate="selected-at( /KAP/list_eligibleChild_pos ,  /KAP/child_u6/child_pos -1)" nodeset="/KAP/child_u6/roster_child_Index" type="string"/>
-      <bind calculate="selected-at( /KAP/list_eligibleChild_pos , child_pos)" nodeset="/KAP/child_u6/roster_child_Index_old" type="string"/>
-      <bind calculate="if(( /KAP/list_eligibleChild_pos  != ''), indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname  , /KAP/HH_member , /KAP/child_u6/roster_child_Index ),'')" nodeset="/KAP/child_u6/CHILD_Name" type="string"/>
-      <bind calculate="if(( /KAP/list_eligibleChild_pos  != ''), indexed-repeat( /KAP/HH_member/member_bckgrnd/age  , /KAP/HH_member , /KAP/child_u6/roster_child_Index ),'')" nodeset="/KAP/child_u6/child_age" type="string"/>
-      <bind calculate="once(uuid())" nodeset="/KAP/child_u6/ID" type="string"/>
-      <bind constraint="(. &lt;= today()) or (.= '2020-01-01')" jr:constraintMsg="jr:itext('/KAP/child_u6/birthdate:jr:constraintMsg')" nodeset="/KAP/child_u6/birthdate" relevant="( /KAP/child_u6/child_age  &lt; 6)" required="true()" type="date"/>
-      <bind calculate="int(format-date( /KAP/child_u6/birthdate ,'%n'))" nodeset="/KAP/child_u6/birthmonth" type="string"/>
-      <bind calculate="int(format-date( /KAP/child_u6/birthdate ,'%Y'))" nodeset="/KAP/child_u6/birthyear" type="string"/>
-      <bind calculate="int(format-date(today(),'%n'))" nodeset="/KAP/child_u6/thismonth" type="string"/>
-      <bind calculate="int(format-date(today(),'%Y'))" nodeset="/KAP/child_u6/thisyear" type="string"/>
+      <bind nodeset="/KAP/child_u6" relevant=" /KAP/consent_obtained " test1="relevant: 1"/>
+      <bind calculate="position(..)" nodeset="/KAP/child_u6/child_pos" test1="[1]" type="string"/>
+      <bind calculate="selected-at( /KAP/list_eligibleChild_pos ,  /KAP/child_u6/child_pos -1)" nodeset="/KAP/child_u6/roster_child_Index" test1="[3]" type="string"/>
+      <bind calculate="selected-at( /KAP/list_eligibleChild_pos , child_pos)" nodeset="/KAP/child_u6/roster_child_Index_old" test1="[ERROR]" type="string"/>
+      <bind calculate="if(( /KAP/list_eligibleChild_pos  != ''), indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname  , /KAP/HH_member , /KAP/child_u6/roster_child_Index ),'')" nodeset="/KAP/child_u6/CHILD_Name" test1="[baby]" type="string"/>
+      <bind calculate="if(( /KAP/list_eligibleChild_pos  != ''), indexed-repeat( /KAP/HH_member/member_bckgrnd/age  , /KAP/HH_member , /KAP/child_u6/roster_child_Index ),'')" nodeset="/KAP/child_u6/child_age" test1="[1]" type="string"/>
+      <bind calculate="once(uuid())" nodeset="/KAP/child_u6/ID" test1="[uuid()]" type="string"/>
+      <bind constraint="(. &lt;= today()) or (.= '2020-01-01')" jr:constraintMsg="jr:itext('/KAP/child_u6/birthdate:jr:constraintMsg')" nodeset="/KAP/child_u6/birthdate" relevant="( /KAP/child_u6/child_age  &lt; 6)" required="true()" test1="[2018-01-01]" type="date"/>
+      <bind calculate="int(format-date( /KAP/child_u6/birthdate ,'%n'))" nodeset="/KAP/child_u6/birthmonth" test1="[01]" type="string"/>
+      <bind calculate="int(format-date( /KAP/child_u6/birthdate ,'%Y'))" nodeset="/KAP/child_u6/birthyear" test1="[2018]" type="string"/>
+      <bind calculate="int(format-date(today(),'%n'))" nodeset="/KAP/child_u6/thismonth" test1="[01]" type="string"/>
+      <bind calculate="int(format-date(today(),'%Y'))" nodeset="/KAP/child_u6/thisyear" test1="[2019]" type="string"/>
       <bind constraint="(. &gt;= 0) and (. &lt; 6) and
 ( 
  (
@@ -8984,20 +8990,20 @@ Note2: Caregiver with at least one child who does not have a birth certificate: 
  or 
  (( /KAP/child_u6/birthmonth  &gt;=  /KAP/child_u6/thismonth ) and (. = ( /KAP/child_u6/thisyear  -  /KAP/child_u6/birthyear  - 1)))
  )
-)" jr:constraintMsg="jr:itext('/KAP/child_u6/CH_age:jr:constraintMsg')" nodeset="/KAP/child_u6/CH_age" relevant="( /KAP/child_u6/birthdate  != '2020-01-01')" required="true()" type="int"/>
-      <bind nodeset="/KAP/child_u6/PCGfirstname" relevant="( /KAP/child_u6/CH_age  &lt; 6)" required="true()" type="select1"/>
-      <bind calculate="if(string-length( /KAP/child_u6/PCGfirstname ) !=0, jr:choice-name( /KAP/child_u6/PCGfirstname , ' /KAP/child_u6/PCGfirstname '),'')" nodeset="/KAP/child_u6/PCGfirstname_lab" type="string"/>
-      <bind constraint="(.='yes') and  /KAP/child_u6/PCGfirstname_lab  !=''" nodeset="/KAP/child_u6/PCGfirstname_note" relevant="( /KAP/child_u6/PCGfirstname_lab ='')" required="true()" type="select1"/>
-      <bind nodeset="/KAP/child_u6/PCGrelationship" relevant="( /KAP/child_u6/PCGfirstname  != '') and not(( /KAP/child_u6/PCGfirstname  = '-88') or ( /KAP/child_u6/PCGfirstname  = '-99'))" required="true()" type="select1"/>
-      <bind calculate="if( /KAP/child_u6/PCGfirstname_lab  !='', position(..), '')" nodeset="/KAP/child_u6/eligibleCG_Index" type="string"/>
-      <bind calculate="position(..)= /KAP/random_Index " nodeset="/KAP/child_u6/selectedCG_Index" type="string"/>
-      <bind calculate="join(&quot; &quot;, /KAP/child_u6/eligibleCG_Index )" nodeset="/KAP/list_eligibleCG_Index" type="string"/>
-      <bind calculate="if(( /KAP/list_eligibleCG_Index  != ''), count-selected( /KAP/list_eligibleCG_Index ), '')" nodeset="/KAP/num_eligibleCG" type="string"/>
-      <bind calculate="once(random())" nodeset="/KAP/randomnum" type="string"/>
-      <bind calculate="if(( /KAP/list_eligibleCG_Index  != ''),int( /KAP/randomnum * /KAP/num_eligibleCG ),'')" nodeset="/KAP/random_num" type="string"/>
-      <bind calculate="selected-at( /KAP/list_eligibleCG_Index , /KAP/random_num )" nodeset="/KAP/random_Index" type="string"/>
-      <bind calculate="if(( /KAP/list_eligibleCG_Index  != ''), indexed-repeat( /KAP/child_u6/PCGfirstname_lab  , /KAP/child_u6 , /KAP/random_Index ),'')" nodeset="/KAP/selectedCG_name" type="string"/>
-      <bind nodeset="/KAP/selectedCG_name_note" readonly="true()" relevant="( /KAP/list_eligibleCG_Index  !='') and ( /KAP/random_Index  !='')" type="string"/>
+)" jr:constraintMsg="jr:itext('/KAP/child_u6/CH_age:jr:constraintMsg')" nodeset="/KAP/child_u6/CH_age" relevant="( /KAP/child_u6/birthdate  != '2020-01-01')" required="true()" test1="[1]" type="int"/>
+      <bind nodeset="/KAP/child_u6/PCGfirstname" relevant="( /KAP/child_u6/CH_age  &lt; 6)" required="true()" test1="[1]" type="select1"/>
+      <bind calculate="if(string-length( /KAP/child_u6/PCGfirstname ) !=0, jr:choice-name( /KAP/child_u6/PCGfirstname , ' /KAP/child_u6/PCGfirstname '),'')" nodeset="/KAP/child_u6/PCGfirstname_lab" test1="[ashley]" type="string"/>
+      <bind constraint="(.='yes') and  /KAP/child_u6/PCGfirstname_lab  !=''" nodeset="/KAP/child_u6/PCGfirstname_note" relevant="( /KAP/child_u6/PCGfirstname_lab ='')" required="true()" test1="." type="select1"/>
+      <bind nodeset="/KAP/child_u6/PCGrelationship" relevant="( /KAP/child_u6/PCGfirstname  != '') and not(( /KAP/child_u6/PCGfirstname  = '-88') or ( /KAP/child_u6/PCGfirstname  = '-99'))" required="true()" test1="[mother]" type="select1"/>
+      <bind calculate="if( /KAP/child_u6/PCGfirstname_lab  !='', position(..), '')" nodeset="/KAP/child_u6/eligibleCG_Index" test1="[1]" type="string"/>
+      <bind calculate="position(..)= /KAP/random_Index " nodeset="/KAP/child_u6/selectedCG_Index" test1="true()" type="string"/>
+      <bind calculate="join(&quot; &quot;, /KAP/child_u6/eligibleCG_Index )" nodeset="/KAP/list_eligibleCG_Index" test1="1" type="string"/>
+      <bind calculate="if(( /KAP/list_eligibleCG_Index  != ''), count-selected( /KAP/list_eligibleCG_Index ), '')" nodeset="/KAP/num_eligibleCG" test1="1" type="string"/>
+      <bind calculate="once(random())" nodeset="/KAP/randomnum" test1="0.88" type="string"/>
+      <bind calculate="if(( /KAP/list_eligibleCG_Index  != ''),int( /KAP/randomnum * /KAP/num_eligibleCG ),'')" nodeset="/KAP/random_num" test1="0" type="string"/>
+      <bind calculate="selected-at( /KAP/list_eligibleCG_Index , /KAP/random_num )" nodeset="/KAP/random_Index" test1="1" type="string"/>
+      <bind calculate="if(( /KAP/list_eligibleCG_Index  != ''), indexed-repeat( /KAP/child_u6/PCGfirstname_lab  , /KAP/child_u6 , /KAP/random_Index ),'')" nodeset="/KAP/selectedCG_name" test1="ashley" type="string"/>
+      <bind nodeset="/KAP/selectedCG_name_note" readonly="true()" relevant="( /KAP/list_eligibleCG_Index  !='') and ( /KAP/random_Index  !='')" test1="." type="string"/>
       <bind calculate="trim(concat(
  if(count( /KAP/child_u6 ) &gt;= 1, 
  if( /KAP/selectedCG_name  = indexed-repeat( /KAP/child_u6/PCGfirstname_lab ,  /KAP/child_u6 , 1),
@@ -9118,7 +9124,7 @@ Note2: Caregiver with at least one child who does not have a birth certificate: 
  concat(indexed-repeat( /KAP/child_u6/CHILD_Name ,  /KAP/child_u6 , 20), ' '),
  ''),
  '')
-))" nodeset="/KAP/selectedCG_child_names" type="string"/>
+))" nodeset="/KAP/selectedCG_child_names" test1="baby" type="string"/>
       <bind calculate="trim(concat(
  if(count( /KAP/child_u6 ) &gt;= 1, 
  if( /KAP/selectedCG_name  = indexed-repeat( /KAP/child_u6/PCGfirstname_lab ,  /KAP/child_u6 , 1),
@@ -9239,14 +9245,14 @@ Note2: Caregiver with at least one child who does not have a birth certificate: 
  concat(indexed-repeat( /KAP/child_u6/CH_age ,  /KAP/child_u6 , 20), ' '),
  ''),
  '')
-))" nodeset="/KAP/selectedCG_child_ages" type="string"/>
-      <bind calculate="int(count-selected( /KAP/selectedCG_child_ages ))" nodeset="/KAP/selectedCG_num_children" type="string"/>
-      <bind nodeset="/KAP/kap_available" relevant=" /KAP/consent_obtained  and (int( /KAP/num_eligible_child ) &gt; 0)" required="true()" type="select1"/>
-      <bind nodeset="/KAP/cg_consent_note" readonly="true()" relevant=" /KAP/kap_available  = 'yes'" type="string"/>
-      <bind nodeset="/KAP/begin_interview_kap" relevant=" /KAP/kap_available  = 'yes'" required="true()" type="select1"/>
-      <bind calculate="( /KAP/begin_interview_kap  = 'yes')" nodeset="/KAP/consent_obtained_kap" type="string"/>
-      <bind nodeset="/KAP/cg_background_note" readonly="true()" relevant=" /KAP/consent_obtained_kap " type="string"/>
-      <bind nodeset="/KAP/cg_gender" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
+))" nodeset="/KAP/selectedCG_child_ages" test1="1" type="string"/>
+      <bind calculate="int(count-selected( /KAP/selectedCG_child_ages ))" nodeset="/KAP/selectedCG_num_children" test1="1" type="string"/>
+      <bind nodeset="/KAP/kap_available" relevant=" /KAP/consent_obtained  and (int( /KAP/num_eligible_child ) &gt; 0)" required="true()" test1="true()" type="select1"/>
+      <bind nodeset="/KAP/cg_consent_note" readonly="true()" relevant=" /KAP/kap_available  = 'yes'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/begin_interview_kap" relevant=" /KAP/kap_available  = 'yes'" required="true()" test1="true()" type="select1"/>
+      <bind calculate="( /KAP/begin_interview_kap  = 'yes')" nodeset="/KAP/consent_obtained_kap" test1="true()" type="string"/>
+      <bind nodeset="/KAP/cg_background_note" readonly="true()" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/cg_gender" relevant=" /KAP/consent_obtained_kap " required="true()" test1="female" type="select1"/>
       <bind calculate="trim(concat(
  if(count( /KAP/HH_member ) &gt;= 1, 
  if( /KAP/selectedCG_name  = indexed-repeat( /KAP/HH_member/member_bckgrnd/firstname ,  /KAP/HH_member , 1),
@@ -9367,21 +9373,21 @@ Note2: Caregiver with at least one child who does not have a birth certificate: 
  concat(indexed-repeat( /KAP/HH_member/member_bckgrnd/age ,  /KAP/HH_member , 20), ' '),
  ''),
  '')
-))" nodeset="/KAP/HR_age" type="string"/>
-      <bind nodeset="/KAP/birthdate_grp" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/birthdate_grp/bday_note" readonly="true()" type="string"/>
-      <bind nodeset="/KAP/birthdate_grp/birthdate_m" required="true()" type="select1"/>
-      <bind constraint="(. &lt;= ( /KAP/today  - 366)) or (.= '2020-01-01')" jr:constraintMsg="jr:itext('/KAP/birthdate_grp/birthdate_y:jr:constraintMsg')" nodeset="/KAP/birthdate_grp/birthdate_y" relevant=" /KAP/consent_obtained_kap " required="true()" type="date"/>
+))" nodeset="/KAP/HR_age" test1="30" type="string"/>
+      <bind nodeset="/KAP/birthdate_grp" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/birthdate_grp/bday_note" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/birthdate_grp/birthdate_m" required="true()" test1="4" type="select1"/>
+      <bind constraint="(. &lt;= ( /KAP/today  - 366)) or (.= '2020-01-01')" jr:constraintMsg="jr:itext('/KAP/birthdate_grp/birthdate_y:jr:constraintMsg')" nodeset="/KAP/birthdate_grp/birthdate_y" relevant=" /KAP/consent_obtained_kap " required="true()" test1="1987" type="date"/>
       <bind calculate="if(
   /KAP/birthdate_grp/birthdate_m  &lt; 0, 
   /KAP/birthdate_grp/birthdate_y ,
  date( /KAP/birthdate_grp/birthdate_y  +  /KAP/birthdate_grp/birthdate_m *30 - 112)
-)" nodeset="/KAP/birthdate_grp/cg_birthdate" type="string"/>
-      <bind calculate="format-date( /KAP/birthdate_grp/cg_birthdate , '%Y-%m')" nodeset="/KAP/birthdate_grp/cg_birthdate_lab" type="string"/>
-      <bind calculate="int(format-date( /KAP/birthdate_grp/cg_birthdate ,'%n'))" nodeset="/KAP/cg_birthmonth" type="string"/>
-      <bind calculate="int(format-date( /KAP/birthdate_grp/cg_birthdate ,'%Y'))" nodeset="/KAP/cg_birthyear" type="string"/>
-      <bind calculate="if( /KAP/date_group/system_date_check ='yes',int(format-date( /KAP/date_group/system_date ,'%n')),int(format-date( /KAP/manual_date ,'%n')))" nodeset="/KAP/cg_thismonth" type="string"/>
-      <bind calculate="if( /KAP/date_group/system_date_check ='yes',int(format-date( /KAP/date_group/system_date ,'%Y')),int(format-date( /KAP/manual_date ,'%Y')))" nodeset="/KAP/cg_thisyear" type="string"/>
+)" nodeset="/KAP/birthdate_grp/cg_birthdate" test1="1987-04-01 00:00:00" type="string"/>
+      <bind calculate="format-date( /KAP/birthdate_grp/cg_birthdate , '%Y-%m')" nodeset="/KAP/birthdate_grp/cg_birthdate_lab" test1="1987-04" type="string"/>
+      <bind calculate="int(format-date( /KAP/birthdate_grp/cg_birthdate ,'%n'))" nodeset="/KAP/cg_birthmonth" test1="4" type="string"/>
+      <bind calculate="int(format-date( /KAP/birthdate_grp/cg_birthdate ,'%Y'))" nodeset="/KAP/cg_birthyear" test1="1987" type="string"/>
+      <bind calculate="if( /KAP/date_group/system_date_check ='yes',int(format-date( /KAP/date_group/system_date ,'%n')),int(format-date( /KAP/manual_date ,'%n')))" nodeset="/KAP/cg_thismonth" test1="1" type="string"/>
+      <bind calculate="if( /KAP/date_group/system_date_check ='yes',int(format-date( /KAP/date_group/system_date ,'%Y')),int(format-date( /KAP/manual_date ,'%Y')))" nodeset="/KAP/cg_thisyear" test1="2019" type="string"/>
       <bind constraint="(.= /KAP/HR_age ) and ((. &gt; 15) and (. &lt; 130)) and
 ( 
  (
@@ -9389,139 +9395,139 @@ Note2: Caregiver with at least one child who does not have a birth certificate: 
  or 
  (( /KAP/cg_birthmonth  &gt;=  /KAP/cg_thismonth ) and (. = ( /KAP/cg_thisyear  -  /KAP/cg_birthyear  - 1)))
  )
-)" jr:constraintMsg="jr:itext('/KAP/CG_age:jr:constraintMsg')" nodeset="/KAP/CG_age" relevant=" /KAP/consent_obtained_kap " required="true()" type="int"/>
-      <bind nodeset="/KAP/school" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind nodeset="/KAP/religion" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind nodeset="/KAP/all_children_note" readonly="true()" relevant=" /KAP/consent_obtained_kap  and (int( /KAP/num_eligible_child ) &gt; 0)" type="string"/>
+)" jr:constraintMsg="jr:itext('/KAP/CG_age:jr:constraintMsg')" nodeset="/KAP/CG_age" relevant=" /KAP/consent_obtained_kap " required="true()" test1="31" type="int"/>
+      <bind nodeset="/KAP/school" relevant=" /KAP/consent_obtained_kap " required="true()" test1="higher" type="select1"/>
+      <bind nodeset="/KAP/religion" relevant=" /KAP/consent_obtained_kap " required="true()" test1="-77" type="select1"/>
+      <bind nodeset="/KAP/all_children_note" readonly="true()" relevant=" /KAP/consent_obtained_kap  and (int( /KAP/num_eligible_child ) &gt; 0)" test1="relevant: 1" type="string"/>
       <bind calculate="int( /KAP/selectedCG_num_children )" nodeset="/KAP/caregiverKAP_count" readonly="true()" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP" relevant=" /KAP/consent_obtained_kap "/>
-      <bind calculate="position(..)" nodeset="/KAP/caregiverKAP/kap_pos" type="string"/>
-      <bind calculate="if( /KAP/selectedCG_num_children  &gt;= 1, selected-at( /KAP/selectedCG_child_names ,  /KAP/caregiverKAP/kap_pos  - 1),'')" nodeset="/KAP/caregiverKAP/kap_child_name" type="string"/>
-      <bind calculate="if( /KAP/selectedCG_num_children  &gt;= 1, selected-at( /KAP/selectedCG_child_ages ,  /KAP/caregiverKAP/kap_pos  - 1),'')" nodeset="/KAP/caregiverKAP/kap_child_age" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/region_born" relevant="( /KAP/caregiverKAP/kap_child_age  &lt; 6)" required="true()" type="select1"/>
-      <bind nodeset="/KAP/caregiverKAP/zone_born" relevant="( /KAP/caregiverKAP/region_born  != '') and not(( /KAP/caregiverKAP/region_born  = '-88') or ( /KAP/caregiverKAP/region_born  = '-99'))" required="true()" type="select1"/>
-      <bind nodeset="/KAP/caregiverKAP/delivery_place" relevant="( /KAP/caregiverKAP/kap_child_age  &lt; 6)" required="true()" type="select1"/>
-      <bind nodeset="/KAP/caregiverKAP/birth_cert" relevant="( /KAP/caregiverKAP/kap_child_age  &lt; 6)" required="true()" type="select1"/>
-      <bind nodeset="/KAP/caregiverKAP/birth_registered" relevant="( /KAP/caregiverKAP/birth_cert  = 'no') or ( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved')" required="true()" type="select1"/>
-      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/why_nobirth_cert:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/why_nobirth_cert" relevant="( /KAP/caregiverKAP/birth_registered  = 'yes') and ( /KAP/caregiverKAP/birth_cert  = 'no')" required="true()" type="select"/>
-      <bind nodeset="/KAP/caregiverKAP/why_nobirth_cert_other" relevant="selected( /KAP/caregiverKAP/why_nobirth_cert , 'other')" required="true()" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/birth_recorded_else" relevant="( /KAP/caregiverKAP/kap_child_age  &lt; 6)" required="true()" type="select1"/>
-      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/birth_recorded_else_place:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/birth_recorded_else_place" relevant="( /KAP/caregiverKAP/birth_recorded_else  = 'yes')" required="true()" type="select"/>
-      <bind nodeset="/KAP/caregiverKAP/birth_recorded_place_other" relevant="selected( /KAP/caregiverKAP/birth_recorded_else_place , 'other')" required="true()" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/registered_children_note" readonly="true()" relevant=" /KAP/consent_obtained_kap  and (( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes'))" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/birth_registered_place" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" type="select1"/>
-      <bind nodeset="/KAP/caregiverKAP/birth_registered_place_other" relevant="selected( /KAP/caregiverKAP/birth_registered_place , 'elsewhere')" required="true()" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/registered_time_unit" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" type="select1"/>
-      <bind calculate="if(string-length( /KAP/caregiverKAP/registered_time_unit )!=0, jr:choice-name( /KAP/caregiverKAP/registered_time_unit ,' /KAP/caregiverKAP/registered_time_unit '),'XXX')" nodeset="/KAP/caregiverKAP/registered_time_lab" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/registered_time_value" relevant="( /KAP/caregiverKAP/registered_time_unit  = 'days') or ( /KAP/caregiverKAP/registered_time_unit  = 'weeks') or ( /KAP/caregiverKAP/registered_time_unit  = 'months') or ( /KAP/caregiverKAP/registered_time_unit  = 'years')" required="true()" type="int"/>
-      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/who_registered:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/who_registered" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" type="select"/>
-      <bind nodeset="/KAP/caregiverKAP/registration_cost" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" type="select1"/>
-      <bind constraint="(. &gt; 0)" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/registration_cost_birr:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/registration_cost_birr" relevant="( /KAP/caregiverKAP/registration_cost  = 'yes')" required="true()" type="decimal"/>
-      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88'))) and ((. = 'no') or not(selected(.,'no'))) and ((. = 'paid') or not(selected(.,'paid')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/reg_cert_cost:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/reg_cert_cost" relevant="(( /KAP/caregiverKAP/birth_cert  = 'yes') or ( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved'))" required="true()" type="select"/>
-      <bind nodeset="/KAP/caregiverKAP/cost_grp" relevant="(selected( /KAP/caregiverKAP/reg_cert_cost , 'registration') or selected( /KAP/caregiverKAP/reg_cert_cost , 'certificate') or selected( /KAP/caregiverKAP/reg_cert_cost , 'paid')) and (( /KAP/caregiverKAP/birth_cert  = 'yes') or ( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved'))"/>
-      <bind constraint="(. &gt; 0) or (.=-88) or (.=-99)" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/cost_grp/registration_cost_birr:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/cost_grp/registration_cost_birr" relevant="selected( /KAP/caregiverKAP/reg_cert_cost , 'registration')" required="true()" type="decimal"/>
-      <bind constraint="(. &gt; 0) or (.=-88) or (.=-99)" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/cost_grp/certificate_cost_birr:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/cost_grp/certificate_cost_birr" relevant="selected( /KAP/caregiverKAP/reg_cert_cost , 'certificate')" required="true()" type="decimal"/>
-      <bind constraint="(. &gt; 0) or (.=-88) or (.=-99)" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/cost_grp/paid_amount:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/cost_grp/paid_amount" relevant="selected( /KAP/caregiverKAP/reg_cert_cost , 'paid')" required="true()" type="decimal"/>
-      <bind nodeset="/KAP/caregiverKAP/num_visits_register" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" type="int"/>
-      <bind nodeset="/KAP/caregiverKAP/num_visits_certificate" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes') or ( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved')" required="true()" type="int"/>
-      <bind nodeset="/KAP/caregiverKAP/registration_process_unit" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" type="select1"/>
-      <bind calculate="if(string-length( /KAP/caregiverKAP/registration_process_unit )!=0, jr:choice-name( /KAP/caregiverKAP/registration_process_unit ,' /KAP/caregiverKAP/registration_process_unit '),'XXX')" nodeset="/KAP/caregiverKAP/registration_process_lab" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/registration_process_value" relevant="( /KAP/caregiverKAP/registration_process_unit  = 'hours') or ( /KAP/caregiverKAP/registration_process_unit  = 'days') or ( /KAP/caregiverKAP/registration_process_unit  = 'weeks') or ( /KAP/caregiverKAP/registration_process_unit  = 'months')" required="true()" type="int"/>
-      <bind nodeset="/KAP/caregiverKAP/obtain_certificate_unit" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes') or ( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved')" required="true()" type="select1"/>
-      <bind calculate="if(string-length( /KAP/caregiverKAP/obtain_certificate_unit )!=0, jr:choice-name( /KAP/caregiverKAP/obtain_certificate_unit ,' /KAP/caregiverKAP/obtain_certificate_unit '),'XXX')" nodeset="/KAP/caregiverKAP/obtain_certificate_lab" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/obtain_certificate_value" relevant="( /KAP/caregiverKAP/obtain_certificate_unit  = 'hours') or ( /KAP/caregiverKAP/obtain_certificate_unit  = 'days') or ( /KAP/caregiverKAP/obtain_certificate_unit  = 'weeks') or ( /KAP/caregiverKAP/obtain_certificate_unit  = 'months')" required="true()" type="int"/>
-      <bind nodeset="/KAP/caregiverKAP/why_reg_grp" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')"/>
-      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/why_reg_grp/why_registered:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/why_reg_grp/why_registered" required="true()" type="select"/>
-      <bind nodeset="/KAP/caregiverKAP/why_reg_grp/why_registered_check" required="true()" type="select1"/>
-      <bind nodeset="/KAP/caregiverKAP/why_registered_other" relevant="selected( /KAP/caregiverKAP/why_reg_grp/why_registered , 'other')" required="true()" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/unregistered_children_note" readonly="true()" relevant=" /KAP/consent_obtained_kap  and (( /KAP/caregiverKAP/birth_registered  = 'no') or ( /KAP/caregiverKAP/birth_registered  = '-88') or ( /KAP/caregiverKAP/birth_registered  = '-99'))" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/whynot_reg_grp" relevant="( /KAP/caregiverKAP/birth_registered  = 'no') or ( /KAP/caregiverKAP/birth_registered  = '-88') or ( /KAP/caregiverKAP/birth_registered  = '-99')"/>
-      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/whynot_reg_grp/why_not_registered:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/whynot_reg_grp/why_not_registered" required="true()" type="select"/>
-      <bind nodeset="/KAP/caregiverKAP/whynot_reg_grp/why_not_registered_check" required="true()" type="select1"/>
-      <bind nodeset="/KAP/caregiverKAP/why_not_registered_other" relevant="selected( /KAP/caregiverKAP/whynot_reg_grp/why_not_registered , 'other')" required="true()" type="string"/>
-      <bind nodeset="/KAP/caregiverKAP/wish_to_obtain" relevant="( /KAP/caregiverKAP/birth_registered  = 'no') or ( /KAP/caregiverKAP/birth_registered  = '-88') or ( /KAP/caregiverKAP/birth_registered  = '-99')" required="true()" type="select1"/>
-      <bind nodeset="/KAP/DCE_note" readonly="true()" relevant=" /KAP/consent_obtained_kap " type="string"/>
-      <bind nodeset="/KAP/sample_2" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/sample_2/sample_2_note1" readonly="true()" type="string"/>
-      <bind nodeset="/KAP/sample_2/DCE_sample_2" required="true()" type="select1"/>
-      <bind nodeset="/KAP/sample_1" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/sample_1/sample_1_note1" readonly="true()" type="string"/>
-      <bind nodeset="/KAP/sample_1/DCE_sample_1" required="true()" type="select1"/>
-      <bind calculate="once(int(random() * 3))" nodeset="/KAP/attribute_order" type="string"/>
-      <bind nodeset="/KAP/dce_grp1" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/dce_grp1/choice_set_1_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" type="string"/>
-      <bind nodeset="/KAP/dce_grp1/choice_set_1_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" type="string"/>
-      <bind nodeset="/KAP/dce_grp1/choice_set_1_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" type="string"/>
-      <bind nodeset="/KAP/dce_grp1/choice_set_1" required="true()" type="select1"/>
-      <bind nodeset="/KAP/dce_grp2" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/dce_grp2/choice_set_2_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" type="string"/>
-      <bind nodeset="/KAP/dce_grp2/choice_set_2_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" type="string"/>
-      <bind nodeset="/KAP/dce_grp2/choice_set_2_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" type="string"/>
-      <bind nodeset="/KAP/dce_grp2/choice_set_2" required="true()" type="select1"/>
-      <bind nodeset="/KAP/dce_grp3" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/dce_grp3/choice_set_3_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" type="string"/>
-      <bind nodeset="/KAP/dce_grp3/choice_set_3_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" type="string"/>
-      <bind nodeset="/KAP/dce_grp3/choice_set_3_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" type="string"/>
-      <bind nodeset="/KAP/dce_grp3/choice_set_3" required="true()" type="select1"/>
-      <bind nodeset="/KAP/dce_grp4" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/dce_grp4/choice_set_4_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" type="string"/>
-      <bind nodeset="/KAP/dce_grp4/choice_set_4_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" type="string"/>
-      <bind nodeset="/KAP/dce_grp4/choice_set_4_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" type="string"/>
-      <bind nodeset="/KAP/dce_grp4/choice_set_4" required="true()" type="select1"/>
-      <bind nodeset="/KAP/dce_grp5" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/dce_grp5/choice_set_5_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" type="string"/>
-      <bind nodeset="/KAP/dce_grp5/choice_set_5_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" type="string"/>
-      <bind nodeset="/KAP/dce_grp5/choice_set_5_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" type="string"/>
-      <bind nodeset="/KAP/dce_grp5/choice_set_5" required="true()" type="select1"/>
-      <bind nodeset="/KAP/dce_grp6" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/dce_grp6/choice_set_6_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" type="string"/>
-      <bind nodeset="/KAP/dce_grp6/choice_set_6_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" type="string"/>
-      <bind nodeset="/KAP/dce_grp6/choice_set_6_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" type="string"/>
-      <bind nodeset="/KAP/dce_grp6/choice_set_6" required="true()" type="select1"/>
-      <bind nodeset="/KAP/dce_grp7" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/dce_grp7/choice_set_7_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" type="string"/>
-      <bind nodeset="/KAP/dce_grp7/choice_set_7_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" type="string"/>
-      <bind nodeset="/KAP/dce_grp7/choice_set_7_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" type="string"/>
-      <bind nodeset="/KAP/dce_grp7/choice_set_7" required="true()" type="select1"/>
-      <bind nodeset="/KAP/dce_grp8" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/dce_grp8/choice_set_8_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" type="string"/>
-      <bind nodeset="/KAP/dce_grp8/choice_set_8_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" type="string"/>
-      <bind nodeset="/KAP/dce_grp8/choice_set_8_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" type="string"/>
-      <bind nodeset="/KAP/dce_grp8/choice_set_8" required="true()" type="select1"/>
-      <bind nodeset="/KAP/dce_grp9" relevant=" /KAP/consent_obtained_kap "/>
-      <bind nodeset="/KAP/dce_grp9/choice_set_9_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" type="string"/>
-      <bind nodeset="/KAP/dce_grp9/choice_set_9_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" type="string"/>
-      <bind nodeset="/KAP/dce_grp9/choice_set_9_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" type="string"/>
-      <bind nodeset="/KAP/dce_grp9/choice_set_9" required="true()" type="select1"/>
-      <bind nodeset="/KAP/awareness_note" readonly="true()" relevant=" /KAP/consent_obtained_kap " type="string"/>
-      <bind nodeset="/KAP/heard_messages" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind nodeset="/KAP/messages_grp" relevant="( /KAP/heard_messages  = 'yes')"/>
-      <bind constraint="((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/KAP/messages_grp/messages_from:jr:constraintMsg')" nodeset="/KAP/messages_grp/messages_from" required="true()" type="select"/>
-      <bind nodeset="/KAP/messages_grp/messages_from_check" required="true()" type="select1"/>
-      <bind nodeset="/KAP/messages_from_other" relevant="selected( /KAP/messages_grp/messages_from , 'other')" required="true()" type="string"/>
-      <bind nodeset="/KAP/obligation_declare" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/know_where_register:jr:constraintMsg')" nodeset="/KAP/know_where_register" relevant=" /KAP/consent_obtained_kap " required="true()" type="select"/>
-      <bind nodeset="/KAP/know_where_register_other" relevant="selected( /KAP/know_where_register , 'yes_other')" required="true()" type="string"/>
-      <bind nodeset="/KAP/believe_benefit" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind nodeset="/KAP/when_register_unit" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind calculate="if(string-length( /KAP/when_register_unit )!=0, jr:choice-name( /KAP/when_register_unit ,' /KAP/when_register_unit '),'XXX')" nodeset="/KAP/when_register_lab" type="string"/>
-      <bind nodeset="/KAP/when_register_value" relevant="( /KAP/when_register_unit  = 'days') or ( /KAP/when_register_unit  = 'weeks') or ( /KAP/when_register_unit  = 'months')" required="true()" type="int"/>
-      <bind nodeset="/KAP/requirement_grp" relevant=" /KAP/consent_obtained_kap "/>
-      <bind constraint="((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/KAP/requirement_grp/requirement_needed:jr:constraintMsg')" nodeset="/KAP/requirement_grp/requirement_needed" required="true()" type="select"/>
-      <bind nodeset="/KAP/requirement_grp/requirement_needed_check" required="true()" type="select1"/>
-      <bind nodeset="/KAP/requirement_needed_other" relevant="selected( /KAP/requirement_grp/requirement_needed , 'other')" required="true()" type="string"/>
-      <bind nodeset="/KAP/punishable_by_law" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/punishment:jr:constraintMsg')" nodeset="/KAP/punishment" relevant="( /KAP/punishable_by_law  = 'yes')" required="true()" type="select"/>
-      <bind nodeset="/KAP/social_stigmas" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind nodeset="/KAP/likert_scale_note" readonly="true()" relevant=" /KAP/consent_obtained_kap " type="string"/>
-      <bind nodeset="/KAP/penalty_not_declaring" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind nodeset="/KAP/requirement_vaccin" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind nodeset="/KAP/requirement_school_enroll" relevant=" /KAP/consent_obtained_kap " required="true()" type="select1"/>
-      <bind nodeset="/KAP/thankyou" readonly="true()" relevant="( /KAP/available  = 'yes')" type="string"/>
-      <bind nodeset="/KAP/sect_end" readonly="true()" type="string"/>
-      <bind nodeset="/KAP/location" type="geopoint"/>
-      <bind nodeset="/KAP/times_visited" required="true()" type="select1"/>
-      <bind nodeset="/KAP/survey_language" relevant=" /KAP/consent_obtained  or  /KAP/consent_obtained_kap " required="true()" type="select1"/>
+      <bind nodeset="/KAP/caregiverKAP" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind calculate="position(..)" nodeset="/KAP/caregiverKAP/kap_pos" test1="[1]" type="string"/>
+      <bind calculate="if( /KAP/selectedCG_num_children  &gt;= 1, selected-at( /KAP/selectedCG_child_names ,  /KAP/caregiverKAP/kap_pos  - 1),'')" nodeset="/KAP/caregiverKAP/kap_child_name" test1="[baby]" type="string"/>
+      <bind calculate="if( /KAP/selectedCG_num_children  &gt;= 1, selected-at( /KAP/selectedCG_child_ages ,  /KAP/caregiverKAP/kap_pos  - 1),'')" nodeset="/KAP/caregiverKAP/kap_child_age" test1="[1]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/region_born" relevant="( /KAP/caregiverKAP/kap_child_age  &lt; 6)" required="true()" test1="[r07]" type="select1"/>
+      <bind nodeset="/KAP/caregiverKAP/zone_born" relevant="( /KAP/caregiverKAP/region_born  != '') and not(( /KAP/caregiverKAP/region_born  = '-88') or ( /KAP/caregiverKAP/region_born  = '-99'))" required="true()" test1="[z0701]" type="select1"/>
+      <bind nodeset="/KAP/caregiverKAP/delivery_place" relevant="( /KAP/caregiverKAP/kap_child_age  &lt; 6)" required="true()" test1="[home]" type="select1"/>
+      <bind nodeset="/KAP/caregiverKAP/birth_cert" relevant="( /KAP/caregiverKAP/kap_child_age  &lt; 6)" required="true()" test1="[yes]" type="select1"/>
+      <bind nodeset="/KAP/caregiverKAP/birth_registered" relevant="( /KAP/caregiverKAP/birth_cert  = 'no') or ( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved')" required="true()" test1="[yes]" type="select1"/>
+      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/why_nobirth_cert:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/why_nobirth_cert" relevant="( /KAP/caregiverKAP/birth_registered  = 'yes') and ( /KAP/caregiverKAP/birth_cert  = 'no')" required="true()" test1="[relevant: 0]" type="select"/>
+      <bind nodeset="/KAP/caregiverKAP/why_nobirth_cert_other" relevant="selected( /KAP/caregiverKAP/why_nobirth_cert , 'other')" required="true()" test1="[relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/birth_recorded_else" relevant="( /KAP/caregiverKAP/kap_child_age  &lt; 6)" required="true()" test1="[yes]" type="select1"/>
+      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/birth_recorded_else_place:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/birth_recorded_else_place" relevant="( /KAP/caregiverKAP/birth_recorded_else  = 'yes')" required="true()" test1="[health_facility church]" type="select"/>
+      <bind nodeset="/KAP/caregiverKAP/birth_recorded_place_other" relevant="selected( /KAP/caregiverKAP/birth_recorded_else_place , 'other')" required="true()" test1="[relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/registered_children_note" readonly="true()" relevant=" /KAP/consent_obtained_kap  and (( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes'))" test1="[relevant: 1]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/birth_registered_place" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" test1="[health_facility]" type="select1"/>
+      <bind nodeset="/KAP/caregiverKAP/birth_registered_place_other" relevant="selected( /KAP/caregiverKAP/birth_registered_place , 'elsewhere')" required="true()" test1="[relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/registered_time_unit" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" test1="[weeks]" type="select1"/>
+      <bind calculate="if(string-length( /KAP/caregiverKAP/registered_time_unit )!=0, jr:choice-name( /KAP/caregiverKAP/registered_time_unit ,' /KAP/caregiverKAP/registered_time_unit '),'XXX')" nodeset="/KAP/caregiverKAP/registered_time_lab" test1="[X weeks after]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/registered_time_value" relevant="( /KAP/caregiverKAP/registered_time_unit  = 'days') or ( /KAP/caregiverKAP/registered_time_unit  = 'weeks') or ( /KAP/caregiverKAP/registered_time_unit  = 'months') or ( /KAP/caregiverKAP/registered_time_unit  = 'years')" required="true()" test1="[3]" type="int"/>
+      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/who_registered:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/who_registered" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" test1="[father]" type="select"/>
+      <bind nodeset="/KAP/caregiverKAP/registration_cost" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" test1="[yes]" type="select1"/>
+      <bind constraint="(. &gt; 0)" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/registration_cost_birr:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/registration_cost_birr" relevant="( /KAP/caregiverKAP/registration_cost  = 'yes')" required="true()" test1="[5]" type="decimal"/>
+      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88'))) and ((. = 'no') or not(selected(.,'no'))) and ((. = 'paid') or not(selected(.,'paid')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/reg_cert_cost:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/reg_cert_cost" relevant="(( /KAP/caregiverKAP/birth_cert  = 'yes') or ( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved'))" required="true()" test1="[paid]" type="select"/>
+      <bind nodeset="/KAP/caregiverKAP/cost_grp" relevant="(selected( /KAP/caregiverKAP/reg_cert_cost , 'registration') or selected( /KAP/caregiverKAP/reg_cert_cost , 'certificate') or selected( /KAP/caregiverKAP/reg_cert_cost , 'paid')) and (( /KAP/caregiverKAP/birth_cert  = 'yes') or ( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved'))" test1="[relevant: 1]"/>
+      <bind constraint="(. &gt; 0) or (.=-88) or (.=-99)" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/cost_grp/registration_cost_birr:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/cost_grp/registration_cost_birr" relevant="selected( /KAP/caregiverKAP/reg_cert_cost , 'registration')" required="true()" test1="[relevant: 0]" type="decimal"/>
+      <bind constraint="(. &gt; 0) or (.=-88) or (.=-99)" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/cost_grp/certificate_cost_birr:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/cost_grp/certificate_cost_birr" relevant="selected( /KAP/caregiverKAP/reg_cert_cost , 'certificate')" required="true()" test1="[relevant: 0]" type="decimal"/>
+      <bind constraint="(. &gt; 0) or (.=-88) or (.=-99)" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/cost_grp/paid_amount:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/cost_grp/paid_amount" relevant="selected( /KAP/caregiverKAP/reg_cert_cost , 'paid')" required="true()" test1="[5]" type="decimal"/>
+      <bind nodeset="/KAP/caregiverKAP/num_visits_register" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" test1="[1]" type="int"/>
+      <bind nodeset="/KAP/caregiverKAP/num_visits_certificate" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes') or ( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved')" required="true()" test1="[1]" type="int"/>
+      <bind nodeset="/KAP/caregiverKAP/registration_process_unit" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" required="true()" test1="[hours]" type="select1"/>
+      <bind calculate="if(string-length( /KAP/caregiverKAP/registration_process_unit )!=0, jr:choice-name( /KAP/caregiverKAP/registration_process_unit ,' /KAP/caregiverKAP/registration_process_unit '),'XXX')" nodeset="/KAP/caregiverKAP/registration_process_lab" test1="[It takes X hours]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/registration_process_value" relevant="( /KAP/caregiverKAP/registration_process_unit  = 'hours') or ( /KAP/caregiverKAP/registration_process_unit  = 'days') or ( /KAP/caregiverKAP/registration_process_unit  = 'weeks') or ( /KAP/caregiverKAP/registration_process_unit  = 'months')" required="true()" test1="[1]" type="int"/>
+      <bind nodeset="/KAP/caregiverKAP/obtain_certificate_unit" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes') or ( /KAP/caregiverKAP/birth_cert  = 'yes_unobserved')" required="true()" test1="[hours]" type="select1"/>
+      <bind calculate="if(string-length( /KAP/caregiverKAP/obtain_certificate_unit )!=0, jr:choice-name( /KAP/caregiverKAP/obtain_certificate_unit ,' /KAP/caregiverKAP/obtain_certificate_unit '),'XXX')" nodeset="/KAP/caregiverKAP/obtain_certificate_lab" test1="[It takes X hours]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/obtain_certificate_value" relevant="( /KAP/caregiverKAP/obtain_certificate_unit  = 'hours') or ( /KAP/caregiverKAP/obtain_certificate_unit  = 'days') or ( /KAP/caregiverKAP/obtain_certificate_unit  = 'weeks') or ( /KAP/caregiverKAP/obtain_certificate_unit  = 'months')" required="true()" test1="[1]" type="int"/>
+      <bind nodeset="/KAP/caregiverKAP/why_reg_grp" relevant="( /KAP/caregiverKAP/birth_cert  = 'yes_observed') or ( /KAP/caregiverKAP/birth_registered  = 'yes')" test1="[relevant: 1]"/>
+      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/why_reg_grp/why_registered:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/why_reg_grp/why_registered" required="true()" test1="[school gvt_services]" type="select"/>
+      <bind nodeset="/KAP/caregiverKAP/why_reg_grp/why_registered_check" required="true()" test1="[1]" type="select1"/>
+      <bind nodeset="/KAP/caregiverKAP/why_registered_other" relevant="selected( /KAP/caregiverKAP/why_reg_grp/why_registered , 'other')" required="true()" test1="[relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/unregistered_children_note" readonly="true()" relevant=" /KAP/consent_obtained_kap  and (( /KAP/caregiverKAP/birth_registered  = 'no') or ( /KAP/caregiverKAP/birth_registered  = '-88') or ( /KAP/caregiverKAP/birth_registered  = '-99'))" test1="[relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/whynot_reg_grp" relevant="( /KAP/caregiverKAP/birth_registered  = 'no') or ( /KAP/caregiverKAP/birth_registered  = '-88') or ( /KAP/caregiverKAP/birth_registered  = '-99')" test1="[relevant: 0]"/>
+      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/caregiverKAP/whynot_reg_grp/why_not_registered:jr:constraintMsg')" nodeset="/KAP/caregiverKAP/whynot_reg_grp/why_not_registered" required="true()" test1="[relevant: 0]" type="select"/>
+      <bind nodeset="/KAP/caregiverKAP/whynot_reg_grp/why_not_registered_check" required="true()" test1="[relevant: 0]" type="select1"/>
+      <bind nodeset="/KAP/caregiverKAP/why_not_registered_other" relevant="selected( /KAP/caregiverKAP/whynot_reg_grp/why_not_registered , 'other')" required="true()" test1="[relevant: 0]" type="string"/>
+      <bind nodeset="/KAP/caregiverKAP/wish_to_obtain" relevant="( /KAP/caregiverKAP/birth_registered  = 'no') or ( /KAP/caregiverKAP/birth_registered  = '-88') or ( /KAP/caregiverKAP/birth_registered  = '-99')" required="true()" test1="[relevant: 0]" type="select1"/>
+      <bind nodeset="/KAP/DCE_note" readonly="true()" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/sample_2" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/sample_2/sample_2_note1" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/sample_2/DCE_sample_2" required="true()" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/KAP/sample_1" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/sample_1/sample_1_note1" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/sample_1/DCE_sample_1" required="true()" test1="relevant: 1" type="select1"/>
+      <bind calculate="once(int(random() * 3))" nodeset="/KAP/attribute_order" test1="random(): 0.88, value: 2" type="string"/>
+      <bind nodeset="/KAP/dce_grp1" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/dce_grp1/choice_set_1_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp1/choice_set_1_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp1/choice_set_1_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/dce_grp1/choice_set_1" required="true()" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/KAP/dce_grp2" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/dce_grp2/choice_set_2_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp2/choice_set_2_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp2/choice_set_2_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/dce_grp2/choice_set_2" required="true()" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/KAP/dce_grp3" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/dce_grp3/choice_set_3_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp3/choice_set_3_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp3/choice_set_3_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/dce_grp3/choice_set_3" required="true()" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/KAP/dce_grp4" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/dce_grp4/choice_set_4_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp4/choice_set_4_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp4/choice_set_4_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/dce_grp4/choice_set_4" required="true()" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/KAP/dce_grp5" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/dce_grp5/choice_set_5_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp5/choice_set_5_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp5/choice_set_5_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/dce_grp5/choice_set_5" required="true()" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/KAP/dce_grp6" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/dce_grp6/choice_set_6_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp6/choice_set_6_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp6/choice_set_6_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/dce_grp6/choice_set_6" required="true()" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/KAP/dce_grp7" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/dce_grp7/choice_set_7_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp7/choice_set_7_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp7/choice_set_7_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/dce_grp7/choice_set_7" required="true()" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/KAP/dce_grp8" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/dce_grp8/choice_set_8_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp8/choice_set_8_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp8/choice_set_8_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/dce_grp8/choice_set_8" required="true()" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/KAP/dce_grp9" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind nodeset="/KAP/dce_grp9/choice_set_9_1un" readonly="true()" relevant=" /KAP/attribute_order  = 0" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp9/choice_set_9_2un" readonly="true()" relevant=" /KAP/attribute_order  = 1" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/dce_grp9/choice_set_9_3un" readonly="true()" relevant=" /KAP/attribute_order  &gt;= 2" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/dce_grp9/choice_set_9" required="true()" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/KAP/awareness_note" readonly="true()" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/heard_messages" relevant=" /KAP/consent_obtained_kap " required="true()" test1="true()" type="select1"/>
+      <bind nodeset="/KAP/messages_grp" relevant="( /KAP/heard_messages  = 'yes')" test1="relevant: 1"/>
+      <bind constraint="((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/KAP/messages_grp/messages_from:jr:constraintMsg')" nodeset="/KAP/messages_grp/messages_from" required="true()" test1="radio tv" type="select"/>
+      <bind nodeset="/KAP/messages_grp/messages_from_check" required="true()" test1="1" type="select1"/>
+      <bind nodeset="/KAP/messages_from_other" relevant="selected( /KAP/messages_grp/messages_from , 'other')" required="true()" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/obligation_declare" relevant=" /KAP/consent_obtained_kap " required="true()" test1="false()" type="select1"/>
+      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/know_where_register:jr:constraintMsg')" nodeset="/KAP/know_where_register" relevant=" /KAP/consent_obtained_kap " required="true()" test1="yes_admin_office" type="select"/>
+      <bind nodeset="/KAP/know_where_register_other" relevant="selected( /KAP/know_where_register , 'yes_other')" required="true()" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/believe_benefit" relevant=" /KAP/consent_obtained_kap " required="true()" test1="true()" type="select1"/>
+      <bind nodeset="/KAP/when_register_unit" relevant=" /KAP/consent_obtained_kap " required="true()" test1="months" type="select1"/>
+      <bind calculate="if(string-length( /KAP/when_register_unit )!=0, jr:choice-name( /KAP/when_register_unit ,' /KAP/when_register_unit '),'XXX')" nodeset="/KAP/when_register_lab" test1="X months after" type="string"/>
+      <bind nodeset="/KAP/when_register_value" relevant="( /KAP/when_register_unit  = 'days') or ( /KAP/when_register_unit  = 'weeks') or ( /KAP/when_register_unit  = 'months')" required="true()" test1="6" type="int"/>
+      <bind nodeset="/KAP/requirement_grp" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1"/>
+      <bind constraint="((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/KAP/requirement_grp/requirement_needed:jr:constraintMsg')" nodeset="/KAP/requirement_grp/requirement_needed" required="true()" test1="money" type="select"/>
+      <bind nodeset="/KAP/requirement_grp/requirement_needed_check" required="true()" test1="1" type="select1"/>
+      <bind nodeset="/KAP/requirement_needed_other" relevant="selected( /KAP/requirement_grp/requirement_needed , 'other')" required="true()" test1="relevant: 0" type="string"/>
+      <bind nodeset="/KAP/punishable_by_law" relevant=" /KAP/consent_obtained_kap " required="true()" test1="false()" type="select1"/>
+      <bind constraint="((. = '-99') or not(selected(.,'-99'))) and ((. = '-88') or not(selected(.,'-88')))" jr:constraintMsg="jr:itext('/KAP/punishment:jr:constraintMsg')" nodeset="/KAP/punishment" relevant="( /KAP/punishable_by_law  = 'yes')" required="true()" test1="relevant: 0" type="select"/>
+      <bind nodeset="/KAP/social_stigmas" relevant=" /KAP/consent_obtained_kap " required="true()" test1="false()" type="select1"/>
+      <bind nodeset="/KAP/likert_scale_note" readonly="true()" relevant=" /KAP/consent_obtained_kap " test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/penalty_not_declaring" relevant=" /KAP/consent_obtained_kap " required="true()" test1="s_disagree" type="select1"/>
+      <bind nodeset="/KAP/requirement_vaccin" relevant=" /KAP/consent_obtained_kap " required="true()" test1="s_disagree" type="select1"/>
+      <bind nodeset="/KAP/requirement_school_enroll" relevant=" /KAP/consent_obtained_kap " required="true()" test1="s_disagree" type="select1"/>
+      <bind nodeset="/KAP/thankyou" readonly="true()" relevant="( /KAP/available  = 'yes')" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/sect_end" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/KAP/location" test1="set-value: &quot;41.123456789, -87.123456789&quot;" type="geopoint"/>
+      <bind nodeset="/KAP/times_visited" required="true()" test1="1" type="select1"/>
+      <bind nodeset="/KAP/survey_language" relevant=" /KAP/consent_obtained  or  /KAP/consent_obtained_kap " required="true()" test1="english" type="select1"/>
       <bind constraint="((. = 'completed') and ( /KAP/consent_obtained  or  /KAP/consent_obtained_kap )) or
  ((. = 'not_at_home') and ( /KAP/available  = 'no')) or
  ((. = 'no_primary_cg') and ( /KAP/kap_available  = 'no')) or
@@ -9532,12 +9538,12 @@ Note2: Caregiver with at least one child who does not have a birth certificate: 
  ((. = 'destroyed') and ( /KAP/available  = 'no' or  /KAP/r6member_available  = 'no')) or
  ((. = 'not_found') and ( /KAP/available  = 'no' or  /KAP/r6member_available  = 'no')) or
  ((. = 'absent_extended_period') and ( /KAP/available  = 'no' or  /KAP/r6member_available  = 'no')) or
- ((. = 'entire_hh_moved') and ( /KAP/available  = 'no' or  /KAP/r6member_available  = 'no'))" jr:constraintMsg="jr:itext('/KAP/CGQ_result:jr:constraintMsg')" nodeset="/KAP/CGQ_result" required="true()" type="select1"/>
-      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/KAP/start" type="dateTime"/>
-      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/KAP/end" type="dateTime"/>
-      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/KAP/deviceid" type="string"/>
-      <bind jr:preload="property" jr:preloadParams="simserial" nodeset="/KAP/simserial" type="string"/>
-      <bind jr:preload="property" jr:preloadParams="phonenumber" nodeset="/KAP/phonenumber" type="string"/>
+ ((. = 'entire_hh_moved') and ( /KAP/available  = 'no' or  /KAP/r6member_available  = 'no'))" jr:constraintMsg="jr:itext('/KAP/CGQ_result:jr:constraintMsg')" nodeset="/KAP/CGQ_result" required="true()" test1="completed" type="select1"/>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/KAP/start" test1="." type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/KAP/end" test1="." type="dateTime"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/KAP/deviceid" test1="." type="string"/>
+      <bind jr:preload="property" jr:preloadParams="simserial" nodeset="/KAP/simserial" test1="." type="string"/>
+      <bind jr:preload="property" jr:preloadParams="phonenumber" nodeset="/KAP/phonenumber" test1="." type="string"/>
       <bind calculate="concat('uuid:', uuid())" nodeset="/KAP/meta/instanceID" readonly="true()" type="string"/>
       <bind calculate="concat('KAP:', /KAP/r6EA ,'-', /KAP/r6structure ,'-', /KAP/r6household ,'-', if(( /KAP/consent_obtained_kap ), concat( /KAP/selectedCG_name ,'-', /KAP/selectedCG_num_children ), ''))" nodeset="/KAP/meta/instanceName" type="string"/>
       <bind calculate="string('log.txt')" nodeset="/KAP/meta/logging" type="binary"/>

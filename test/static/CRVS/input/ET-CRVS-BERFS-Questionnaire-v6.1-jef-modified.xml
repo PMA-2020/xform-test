@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- qtools2 v0.2.7 --><h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<?xml version="1.0"?>
+<!-- qtools2 v0.2.7 -->
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <h:head>
     <h:title>ET-CRVS-BERFS-Questionnaire-v6</h:title>
     <model>
@@ -3743,7 +3745,7 @@ Other, specify:</value>
           <text id="/BERF/witness_manual:label">
             <value>009. የመረጃ ሰብሳቢ ስም
 
-Please record your name as a witness to the consent process. You previously entered "<output value=" /BERF/name_typed "/>."</value>
+Please record your name as a witness to the consent process. You previously entered &quot;<output value=" /BERF/name_typed "/>.&quot;</value>
           </text>
           <text id="static_instance-region_list-0">
             <value>ደ/ብ/ብ/ህ ክልል</value>
@@ -7520,7 +7522,7 @@ NA: Not Available</value>
           <text id="/BERF/witness_manual:label">
             <value>009. Interviewer's name
 
-Please record your name as a witness to the consent process. You previously entered "<output value=" /BERF/name_typed "/>."</value>
+Please record your name as a witness to the consent process. You previously entered &quot;<output value=" /BERF/name_typed "/>.&quot;</value>
           </text>
           <text id="static_instance-region_list-0">
             <value>S.N.N.P</value>
@@ -10040,177 +10042,186 @@ Please record your name as a witness to the consent process. You previously ente
           </item>
         </root>
       </instance>
-      <bind calculate="1" nodeset="/BERF/your_name" type="string"/>
-      <bind nodeset="/BERF/your_name_check" relevant=" /BERF/your_name  != ''" required="true()" type="select1"/>
-      <bind nodeset="/BERF/name_typed" relevant=" /BERF/your_name_check  = 'no' or  /BERF/your_name  = ''" required="true()" type="string"/>
-      <bind nodeset="/BERF/date_group" relevant="today() &gt; date(&quot;2018-11-01&quot;) and today() &lt; date(&quot;2019-04-01&quot;)"/>
-      <bind nodeset="/BERF/date_group/system_date" readonly="true()" type="dateTime"/>
-      <bind nodeset="/BERF/date_group/system_date_check" required="true()" type="select1"/>
-      <bind constraint=". &gt; date(&quot;2018-04-01&quot;) and . &lt; date(&quot;2019-04-01&quot;)" jr:constraintMsg="jr:itext('/BERF/manual_date:jr:constraintMsg')" nodeset="/BERF/manual_date" relevant=" /BERF/date_group/system_date_check  = 'no' or today() &lt; date(&quot;2018-11-01&quot;) or today() &gt; date(&quot;2019-04-01&quot;)" required="true()" type="dateTime"/>
-      <bind calculate="if( /BERF/date_group/system_date_check  = 'yes', /BERF/date_group/system_date , /BERF/manual_date )" nodeset="/BERF/today" type="string"/>
-      <bind nodeset="/BERF/this_country" type="string"/>
-      <bind nodeset="/BERF/region" required="true()" type="select1"/>
-      <bind nodeset="/BERF/zone" required="true()" type="select1"/>
-      <bind nodeset="/BERF/district" required="true()" type="select1"/>
-      <bind nodeset="/BERF/locality" required="true()" type="select1"/>
-      <bind nodeset="/BERF/EA" required="true()" type="select1"/>
-      <bind constraint="(. &gt; 0)" jr:constraintMsg="jr:itext('/BERF/facility_number:jr:constraintMsg')" nodeset="/BERF/facility_number" required="true()" type="int"/>
-      <bind nodeset="/BERF/facility_location" required="true()" type="select1"/>
-      <bind nodeset="/BERF/facility_location_other" relevant="selected( /BERF/facility_location , 'other')" required="true()" type="string"/>
-      <bind nodeset="/BERF/available" required="true()" type="select1"/>
-      <bind calculate="if((string-length( /BERF/zone ) !=0 and  /BERF/region  ='r14'), jr:choice-name( /BERF/zone , ' /BERF/zone '), if((string-length( /BERF/locality ) !=0 and  /BERF/region  ='r07'), jr:choice-name( /BERF/locality , ' /BERF/locality '), ''))" nodeset="/BERF/zone_locality_lab" type="string"/>
-      <bind calculate="if(string-length( /BERF/facility_location ) !=0, jr:choice-name( /BERF/facility_location , ' /BERF/facility_location '), '')" nodeset="/BERF/facility_location_lab" type="string"/>
-      <bind nodeset="/BERF/consent_start" readonly="true()" relevant=" /BERF/available  = 'yes'" type="string"/>
-      <bind nodeset="/BERF/consent" readonly="true()" relevant=" /BERF/available  = 'yes'" type="string"/>
-      <bind nodeset="/BERF/begin_interview" relevant=" /BERF/available  = 'yes'" required="true()" type="select1"/>
-      <bind calculate="( /BERF/begin_interview  = 'yes')" nodeset="/BERF/consent_obtained" type="string"/>
-      <bind nodeset="/BERF/witness_auto" relevant=" /BERF/consent_obtained  and ( /BERF/your_name_check  = 'yes')" required="true()" type="select1"/>
-      <bind constraint="(. =  /BERF/name_typed )" jr:constraintMsg="jr:itext('/BERF/witness_manual:jr:constraintMsg')" nodeset="/BERF/witness_manual" relevant=" /BERF/consent_obtained  and (( /BERF/your_name_check  = 'no') or ( /BERF/your_name  = ''))" required="true()" type="string"/>
-      <bind nodeset="/BERF/facility_name" relevant=" /BERF/consent_obtained " required="true()" type="string"/>
-      <bind nodeset="/BERF/position" relevant=" /BERF/consent_obtained " required="true()" type="select1"/>
-      <bind nodeset="/BERF/position_other" relevant="selected( /BERF/position , 'other')" required="true()" type="string"/>
-      <bind constraint="((date('1910-01-01') &lt;= .) and (. &lt;=  /BERF/today )) or (. = '2020-01-01')" jr:constraintMsg="jr:itext('/BERF/work_begin:jr:constraintMsg')" nodeset="/BERF/work_begin" relevant=" /BERF/consent_obtained " required="true()" type="date"/>
-      <bind nodeset="/BERF/section_one_note" readonly="true()" relevant=" /BERF/consent_obtained " type="string"/>
-      <bind constraint="((. &gt;= 0) and (. &lt;= 7)) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/days_open:jr:constraintMsg')" nodeset="/BERF/days_open" relevant=" /BERF/consent_obtained " required="true()" type="int"/>
-      <bind nodeset="/BERF/provide_vers" relevant=" /BERF/consent_obtained " required="true()" type="select1"/>
-      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99'))) and ((. = 'none') or not(selected(.,'none')))" jr:constraintMsg="jr:itext('/BERF/provide_vers_whynot:jr:constraintMsg')" nodeset="/BERF/provide_vers_whynot" relevant=" /BERF/provide_vers ='no'" required="true()" type="select"/>
-      <bind nodeset="/BERF/provide_vers_whynot_other" relevant="selected( /BERF/provide_vers_whynot , 'other')" required="true()" type="string"/>
-      <bind constraint="(. &lt;=  /BERF/today ) or (. = '2020-01-01')" jr:constraintMsg="jr:itext('/BERF/year_open:jr:constraintMsg')" nodeset="/BERF/year_open" relevant=" /BERF/provide_vers ='yes'" required="true()" type="date"/>
-      <bind constraint="((0 &lt;= .) and (. &lt;= 7)) or (. = '-88') or (. = '-99')" jr:constraintMsg="jr:itext('/BERF/vers_days:jr:constraintMsg')" nodeset="/BERF/vers_days" relevant=" /BERF/provide_vers ='yes'" required="true()" type="int"/>
-      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/BERF/provided_vers_currently:jr:constraintMsg')" nodeset="/BERF/provided_vers_currently" relevant=" /BERF/provide_vers ='yes'" required="true()" type="select"/>
-      <bind nodeset="/BERF/provided_vers_currently_other" relevant="selected( /BERF/provided_vers_currently , 'other')" required="true()" type="string"/>
-      <bind nodeset="/BERF/knows_population_served" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" type="select1"/>
-      <bind constraint="(. &gt; 0)" jr:constraintMsg="jr:itext('/BERF/population_served:jr:constraintMsg')" nodeset="/BERF/population_served" relevant=" /BERF/knows_population_served  = 'yes_knows_size'" required="true()" type="int"/>
-      <bind constraint="(. &gt; 0)" jr:constraintMsg="jr:itext('/BERF/staffing_vers:jr:constraintMsg')" nodeset="/BERF/staffing_vers" relevant=" /BERF/provide_vers ='yes'" required="true()" type="int"/>
-      <bind nodeset="/BERF/focal_person_role" relevant=" /BERF/staffing_vers  &gt; 0" required="true()" type="select1"/>
-      <bind nodeset="/BERF/focal_person" relevant="( /BERF/focal_person_role  != '') and not(( /BERF/focal_person_role  = 'no_focalperson') or ( /BERF/focal_person_role  = '-88') or ( /BERF/focal_person_role  = '-99'))" required="true()" type="select1"/>
-      <bind nodeset="/BERF/school" relevant="( /BERF/focal_person_role  != '') and not(( /BERF/focal_person_role  = 'no_focalperson') or ( /BERF/focal_person_role  = '-88') or ( /BERF/focal_person_role  = '-99'))" required="true()" type="select1"/>
-      <bind nodeset="/BERF/focal_person_work_rve" relevant="( /BERF/focal_person_role  != '') and not(( /BERF/focal_person_role  = 'no_focalperson') or ( /BERF/focal_person_role  = '-88') or ( /BERF/focal_person_role  = '-99'))" required="true()" type="select1"/>
-      <bind nodeset="/BERF/focal_person_primary_duty" relevant=" /BERF/focal_person_work_rve ='no_additional'" required="true()" type="select1"/>
-      <bind nodeset="/BERF/training_vera" relevant=" /BERF/staffing_vers  &gt; 0" required="true()" type="select1"/>
-      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99'))) and ((. = 'none') or not(selected(.,'none')))" jr:constraintMsg="jr:itext('/BERF/training_contents:jr:constraintMsg')" nodeset="/BERF/training_contents" relevant=" /BERF/training_vera ='yes'" required="true()" type="select"/>
-      <bind nodeset="/BERF/last_time_training" relevant=" /BERF/training_vera ='yes'" required="true()" type="select1"/>
-      <bind nodeset="/BERF/last_time_visit" relevant=" /BERF/provide_vers ='yes'" required="true()" type="select1"/>
-      <bind nodeset="/BERF/section_two_note" readonly="true()" relevant=" /BERF/provide_vers ='yes'" type="string"/>
-      <bind nodeset="/BERF/electricity" relevant=" /BERF/provide_vers ='yes'" required="true()" type="select1"/>
-      <bind nodeset="/BERF/electricity_out_today" relevant=" /BERF/electricity ='yes'" required="true()" type="select1"/>
-      <bind nodeset="/BERF/forms_available" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/ber_forms" relevant=" /BERF/forms_available ='yes'"/>
-      <bind nodeset="/BERF/ber_forms/ber_forms_note" readonly="true()" type="string"/>
-      <bind nodeset="/BERF/ber_forms/ber_forms_label" type="select1"/>
-      <bind nodeset="/BERF/ber_forms/birth_register" required="true()" type="select1"/>
-      <bind nodeset="/BERF/ber_forms/be_report_format" required="true()" type="select1"/>
-      <bind nodeset="/BERF/ber_forms/be_tally_sheet" required="true()" type="select1"/>
-      <bind nodeset="/BERF/ber_forms/birth_certificate" required="true()" type="select1"/>
-      <bind nodeset="/BERF/ber_forms/handover_form" required="true()" type="select1"/>
-      <bind nodeset="/BERF/forms_runout_6mon" relevant=" /BERF/forms_available ='yes'" required="true()" type="select1"/>
-      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/BERF/forms_stockout_6mon:jr:constraintMsg')" nodeset="/BERF/forms_stockout_6mon" relevant=" /BERF/forms_runout_6mon ='yes'" required="true()" type="select"/>
-      <bind nodeset="/BERF/provided_birthreport_vera" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/birthreport_frequency" relevant=" /BERF/provided_birthreport_vera ='yes'" required="true()" type="select1"/>
-      <bind nodeset="/BERF/report_vera" relevant=" /BERF/provided_birthreport_vera ='yes'"/>
-      <bind nodeset="/BERF/report_vera/report_vera_when" readonly="true()" relevant=" /BERF/provided_birthreport_vera ='yes'" type="string"/>
-      <bind nodeset="/BERF/report_vera/report_vera_d" relevant=" /BERF/provided_birthreport_vera ='yes'" required="true()" type="select1"/>
-      <bind nodeset="/BERF/report_vera/report_vera_m" relevant=" /BERF/provided_birthreport_vera ='yes'" required="true()" type="select1"/>
-      <bind constraint="((. &lt;= ( /BERF/today )) or ((. = '2020-01-01') and ( /BERF/report_vera/report_vera_m  = -88) and ( /BERF/report_vera/report_vera_d  = -88))) and ((.&gt;=( /BERF/year_open )) or ((. = '2020-01-01') and ( /BERF/report_vera/report_vera_m  = -88) and ( /BERF/report_vera/report_vera_d  = -88)))" jr:constraintMsg="jr:itext('/BERF/report_vera/report_vera_y:jr:constraintMsg')" nodeset="/BERF/report_vera/report_vera_y" relevant=" /BERF/provided_birthreport_vera ='yes'" required="true()" type="date"/>
-      <bind nodeset="/BERF/report_vera_how" relevant=" /BERF/provided_birthreport_vera ='yes'" required="true()" type="select1"/>
-      <bind nodeset="/BERF/room_observed" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/rve_items" relevant=" /BERF/room_observed ='yes'"/>
-      <bind nodeset="/BERF/rve_items/rve_room_note" readonly="true()" type="string"/>
-      <bind nodeset="/BERF/rve_items/rve_items_label" type="select1"/>
-      <bind nodeset="/BERF/rve_items/computer" required="true()" type="select1"/>
-      <bind nodeset="/BERF/rve_items/printer" required="true()" type="select1"/>
-      <bind nodeset="/BERF/rve_items/photocopy_machine" required="true()" type="select1"/>
-      <bind nodeset="/BERF/rve_items/telephone" required="true()" type="select1"/>
-      <bind nodeset="/BERF/rve_items/waiting_chairs" required="true()" type="select1"/>
-      <bind nodeset="/BERF/rve_items/lan_network" required="true()" type="select1"/>
-      <bind nodeset="/BERF/recordbook_observed" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/record_book" relevant="( /BERF/recordbook_observed ='yes') or ( /BERF/recordbook_observed ='yes_nar')"/>
-      <bind nodeset="/BERF/record_book/birth_register_rb_note" readonly="true()" type="string"/>
-      <bind constraint="(. &gt;= 0) or (. = '-88') or (. = '-99')" jr:constraintMsg="jr:itext('/BERF/record_book/num_registered_births:jr:constraintMsg')" nodeset="/BERF/record_book/num_registered_births" required="true()" type="int"/>
-      <bind constraint="(. &gt;= 0) or (. = '-88') or (. = '-99')" jr:constraintMsg="jr:itext('/BERF/record_book/num_birth_certificates:jr:constraintMsg')" nodeset="/BERF/record_book/num_birth_certificates" required="true()" type="int"/>
-      <bind nodeset="/BERF/archive_observed" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/archive" relevant=" /BERF/archive_observed ='yes'"/>
-      <bind nodeset="/BERF/archive/archive_observation_note" readonly="true()" type="string"/>
-      <bind nodeset="/BERF/archive/archive_observation_label" type="select1"/>
-      <bind nodeset="/BERF/archive/separate_room" required="true()" type="select1"/>
-      <bind nodeset="/BERF/archive/light_room" required="true()" type="select1"/>
-      <bind nodeset="/BERF/archive/registers_shelf" required="true()" type="select1"/>
-      <bind nodeset="/BERF/archive/registers_sequence" required="true()" type="select1"/>
-      <bind nodeset="/BERF/archive/protected_water" required="true()" type="select1"/>
-      <bind nodeset="/BERF/archive/protected_sunlight" required="true()" type="select1"/>
-      <bind nodeset="/BERF/archive/clean_room_rodents" required="true()" type="select1"/>
-      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99'))) and ((. = '-77') or not(selected(.,'-77')))" jr:constraintMsg="jr:itext('/BERF/clients_charged:jr:constraintMsg')" nodeset="/BERF/clients_charged" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" type="select"/>
-      <bind nodeset="/BERF/clients_charged_other" relevant="selected( /BERF/clients_charged , 'other')" required="true()" type="string"/>
-      <bind nodeset="/BERF/charge_amount" relevant="selected( /BERF/clients_charged , 'birth_event_reg') or selected( /BERF/clients_charged , 'birth_certificate') or selected( /BERF/clients_charged , 'penalty') or selected( /BERF/clients_charged , 'other')"/>
-      <bind nodeset="/BERF/charge_amount/charge_amount_note" readonly="true()" type="string"/>
-      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/registration_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/registration_fees" relevant="selected( /BERF/clients_charged , 'birth_event_reg')" required="true()" type="decimal"/>
-      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/typical_certificate_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/typical_certificate_fees" relevant="selected( /BERF/clients_charged , 'birth_certificate')" required="true()" type="decimal"/>
-      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/delayed_certificate_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/delayed_certificate_fees" relevant="selected( /BERF/clients_charged , 'delayed_birth_certificate')" required="true()" type="decimal"/>
-      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/late_certificate_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/late_certificate_fees" relevant="selected( /BERF/clients_charged , 'late_birth_certificate')" required="true()" type="decimal"/>
-      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/penalty_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/penalty_fees" relevant="selected( /BERF/clients_charged , 'penalty')" required="true()" type="decimal"/>
-      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/other_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/other_fees" relevant="selected( /BERF/clients_charged , 'other')" required="true()" type="decimal"/>
-      <bind nodeset="/BERF/section_three_note" readonly="true()" relevant="selected( /BERF/provided_vers_currently , 'birth')" type="string"/>
-      <bind nodeset="/BERF/institution_govt_ngo" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" type="select1"/>
-      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/BERF/institution_type:jr:constraintMsg')" nodeset="/BERF/institution_type" relevant=" /BERF/institution_govt_ngo ='yes'" required="true()" type="select"/>
-      <bind nodeset="/BERF/institution_type_other" relevant="selected( /BERF/institution_type , 'other')" required="true()" type="string"/>
-      <bind nodeset="/BERF/question_303_306_note" readonly="true()" relevant="selected( /BERF/institution_type , 'health_posts') or selected( /BERF/institution_type , 'any_health_facilities') or selected( /BERF/institution_type , 'religious_institutions') or selected( /BERF/institution_type , 'community_volunteers') or selected( /BERF/institution_type , 'schools') or selected( /BERF/institution_type , 'other')" type="string"/>
-      <bind nodeset="/BERF/birth_notification_hp" relevant="selected( /BERF/institution_type , 'health_posts')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/birth_notification_hf" relevant="selected( /BERF/institution_type , 'any_health_facilities')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/birth_notification_religious" relevant="selected( /BERF/institution_type , 'religious_institutions')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/birth_notification_cv" relevant="selected( /BERF/institution_type , 'community_volunteers')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/birth_notification_school" relevant="selected( /BERF/institution_type , 'schools')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/birth_notification_other" relevant="selected( /BERF/institution_type , 'other')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/formal_be_report_hp" relevant="selected( /BERF/institution_type , 'health_posts')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/formal_be_report_hf" relevant="selected( /BERF/institution_type , 'any_health_facilities')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/formal_be_report_religious" relevant="selected( /BERF/institution_type , 'religious_institutions')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/formal_be_report_cv" relevant="selected( /BERF/institution_type , 'community_volunteers')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/formal_be_report_school" relevant="selected( /BERF/institution_type , 'schools')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/formal_be_report_other" relevant="selected( /BERF/institution_type , 'other')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/frequency_report_hp" relevant="selected( /BERF/institution_type , 'health_posts') and ( /BERF/formal_be_report_hp ='yes_alltimes' or  /BERF/formal_be_report_hp ='yes_sometimes')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/frequency_report_hf" relevant="selected( /BERF/institution_type , 'any_health_facilities') and ( /BERF/formal_be_report_hf ='yes_alltimes' or  /BERF/formal_be_report_hf ='yes_sometimes')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/frequency_report_religious" relevant="selected( /BERF/institution_type , 'religious_institutions') and ( /BERF/formal_be_report_religious ='yes_alltimes' or  /BERF/formal_be_report_religious ='yes_sometimes')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/frequency_report_cv" relevant="selected( /BERF/institution_type , 'community_volunteers') and ( /BERF/formal_be_report_cv ='yes_alltimes' or  /BERF/formal_be_report_cv ='yes_sometimes')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/frequency_report_school" relevant="selected( /BERF/institution_type , 'schools') and ( /BERF/formal_be_report_school ='yes_alltimes' or  /BERF/formal_be_report_school ='yes_sometimes')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/frequency_report_other" relevant="selected( /BERF/institution_type , 'other') and ( /BERF/formal_be_report_other ='yes_alltimes' or  /BERF/formal_be_report_other ='yes_sometimes')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_support_hp" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'health_posts')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_support_hf" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'any_health_facilities')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_support_religious" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'religious_institutions')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_support_cv" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'community_volunteers')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_support_school" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'schools')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_support_other" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'other')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supervision_hp" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'health_posts')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supervision_hf" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'any_health_facilities')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supervision_religious" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'religious_institutions')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supervision_cv" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'community_volunteers')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supervision_school" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'schools')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supervision_other" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'other')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supplies_hp" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'health_posts')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supplies_hf" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'any_health_facilities')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supplies_religious" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'religious_institutions')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supplies_cv" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'community_volunteers')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supplies_school" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'schools')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/provide_supplies_other" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'other')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/any_challenges_bers" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" type="select1"/>
-      <bind nodeset="/BERF/challenges_grp" relevant=" /BERF/any_challenges_bers  = 'yes'"/>
-      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/BERF/challenges_grp/challenges_bers:jr:constraintMsg')" nodeset="/BERF/challenges_grp/challenges_bers" required="true()" type="select"/>
-      <bind nodeset="/BERF/challenges_grp/challenges_check" required="true()" type="select1"/>
-      <bind nodeset="/BERF/challenges_bers_other" relevant="selected( /BERF/challenges_grp/challenges_bers , 'other')" required="true()" type="string"/>
-      <bind nodeset="/BERF/solutions_grp" relevant=" /BERF/any_challenges_bers  = 'yes'"/>
-      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99'))) and ((. = 'none') or not(selected(.,'none')))" jr:constraintMsg="jr:itext('/BERF/solutions_grp/solutions_bers:jr:constraintMsg')" nodeset="/BERF/solutions_grp/solutions_bers" required="true()" type="select"/>
-      <bind nodeset="/BERF/solutions_grp/solutions_check" required="true()" type="select1"/>
-      <bind nodeset="/BERF/solutions_bers_other" relevant="selected( /BERF/solutions_grp/solutions_bers , 'other')" required="true()" type="string"/>
-      <bind nodeset="/BERF/sect_end" readonly="true()" type="string"/>
-      <bind nodeset="/BERF/thankyou" readonly="true()" type="string"/>
-      <bind nodeset="/BERF/location" required="true()" type="geopoint"/>
-      <bind nodeset="/BERF/times_visited" required="true()" type="select1"/>
-      <bind nodeset="/BERF/survey_language" relevant=" /BERF/consent_obtained " required="true()" type="select1"/>
-      <bind nodeset="/BERF/survey_language_other" relevant=" /BERF/survey_language ='other'" required="true()" type="string"/>
-      <bind constraint="((. = 'completed') and  /BERF/consent_obtained ) or  ((. = 'not_at_facility') and ( /BERF/available  = 'no')) or  ((. = 'postponed') and ( /BERF/available  = 'no')) or  ((. = 'refused') and not( /BERF/consent_obtained )) or  ((. = 'partly_completed') and  /BERF/consent_obtained ) or  ((. = 'closed_not_found') and ( /BERF/available  = 'no')) or  (. = 'other')" jr:constraintMsg="jr:itext('/BERF/VERF_result:jr:constraintMsg')" nodeset="/BERF/VERF_result" required="true()" type="select1"/>
-      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/BERF/start" type="dateTime"/>
-      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/BERF/end" type="dateTime"/>
-      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/BERF/deviceid" type="string"/>
-      <bind jr:preload="property" jr:preloadParams="simserial" nodeset="/BERF/simserial" type="string"/>
-      <bind jr:preload="property" jr:preloadParams="phonenumber" nodeset="/BERF/phonenumber" type="string"/>
+      <bind calculate="test-pulldata" nodeset="/BERF/your_name" test1="pulldata(): ''" type="string"/>
+      <bind nodeset="/BERF/your_name_check" relevant=" /BERF/your_name  != ''" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/name_typed" relevant=" /BERF/your_name_check  = 'no' or  /BERF/your_name  = ''" required="true()" test1="Joe" type="string"/>
+      <bind nodeset="/BERF/date_group" relevant="today() &gt; date(&quot;2018-11-01&quot;) and today() &lt; date(&quot;2019-04-01&quot;)" test1="relevant: 1"/>
+      <bind nodeset="/BERF/date_group/system_date" readonly="true()" test1="2019-01-01" type="dateTime"/>
+      <bind nodeset="/BERF/date_group/system_date_check" required="true()" test1="yes" type="select1"/>
+      <bind constraint=". &gt; date(&quot;2018-04-01&quot;) and . &lt; date(&quot;2019-04-01&quot;)" jr:constraintMsg="jr:itext('/BERF/manual_date:jr:constraintMsg')" nodeset="/BERF/manual_date" relevant=" /BERF/date_group/system_date_check  = 'no' or today() &lt; date(&quot;2018-11-01&quot;) or today() &gt; date(&quot;2019-04-01&quot;)" required="true()" test1="relevant: 0" type="dateTime"/>
+      <bind calculate="if( /BERF/date_group/system_date_check  = 'yes', /BERF/date_group/system_date , /BERF/manual_date )" nodeset="/BERF/today" test1="2019-01-01" type="string"/>
+      <bind nodeset="/BERF/this_country" test1="Ethiopia" type="string"/>
+      <bind nodeset="/BERF/region" required="true()" test1="r07" type="select1"/>
+      <bind nodeset="/BERF/zone" required="true()" test1="z0701" type="select1"/>
+      <bind nodeset="/BERF/district" required="true()" test1="d070103" type="select1"/>
+      <bind nodeset="/BERF/locality" required="true()" test1="L0701038010" type="select1"/>
+      <bind nodeset="/BERF/EA" required="true()" test1="L0701038010_ea02" type="select1"/>
+      <bind constraint="(. &gt; 0)" jr:constraintMsg="jr:itext('/BERF/facility_number:jr:constraintMsg')" nodeset="/BERF/facility_number" required="true()" test1="1" type="int"/>
+      <bind nodeset="/BERF/facility_location" required="true()" test1="kebele" type="select1"/>
+      <bind nodeset="/BERF/facility_location_other" relevant="selected( /BERF/facility_location , 'other')" required="true()" test1="relevant: 0" type="string"/>
+      <bind nodeset="/BERF/available" required="true()" test1="yes" type="select1"/>
+      <bind calculate="if((string-length( /BERF/zone ) !=0 and  /BERF/region  ='r14'), jr:choice-name( /BERF/zone , ' /BERF/zone '), if((string-length( /BERF/locality ) !=0 and  /BERF/region  ='r07'), jr:choice-name( /BERF/locality , ' /BERF/locality '), ''))" nodeset="/BERF/zone_locality_lab" test1="?" type="string"/>
+      <bind calculate="if(string-length( /BERF/facility_location ) !=0, jr:choice-name( /BERF/facility_location , ' /BERF/facility_location '), '')" nodeset="/BERF/facility_location_lab" test1="?" type="string"/>
+      <bind nodeset="/BERF/consent_start" readonly="true()" relevant=" /BERF/available  = 'yes'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/consent" readonly="true()" relevant=" /BERF/available  = 'yes'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/begin_interview" relevant=" /BERF/available  = 'yes'" required="true()" test1="yes" type="select1"/>
+      <bind calculate="( /BERF/begin_interview  = 'yes')" nodeset="/BERF/consent_obtained" test1="yes" type="string"/>
+      <bind nodeset="/BERF/witness_auto" relevant=" /BERF/consent_obtained  and ( /BERF/your_name_check  = 'yes')" required="true()" test1="1" type="select1"/>
+      <bind constraint="(. =  /BERF/name_typed )" jr:constraintMsg="jr:itext('/BERF/witness_manual:jr:constraintMsg')" nodeset="/BERF/witness_manual" relevant=" /BERF/consent_obtained  and (( /BERF/your_name_check  = 'no') or ( /BERF/your_name  = ''))" required="true()" test1="Joe" type="string"/>
+      <bind nodeset="/BERF/facility_name" relevant=" /BERF/consent_obtained " required="true()" test1="Some place" type="string"/>
+      <bind nodeset="/BERF/position" relevant=" /BERF/consent_obtained " required="true()" test1="other" type="select1"/>
+      <bind nodeset="/BERF/position_other" relevant="selected( /BERF/position , 'other')" required="true()" test1="General Manager" type="string"/>
+      <bind constraint="((date('1910-01-01') &lt;= .) and (. &lt;=  /BERF/today )) or (. = '2020-01-01')" jr:constraintMsg="jr:itext('/BERF/work_begin:jr:constraintMsg')" nodeset="/BERF/work_begin" relevant=" /BERF/consent_obtained " required="true()" test1="2012" type="date"/>
+      <bind nodeset="/BERF/section_one_note" readonly="true()" relevant=" /BERF/consent_obtained " test1="relevant: 1" type="string"/>
+      <bind constraint="((. &gt;= 0) and (. &lt;= 7)) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/days_open:jr:constraintMsg')" nodeset="/BERF/days_open" relevant=" /BERF/consent_obtained " required="true()" test1="7" type="int"/>
+      <bind nodeset="/BERF/provide_vers" relevant=" /BERF/consent_obtained " required="true()" test1="yes" type="select1"/>
+      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99'))) and ((. = 'none') or not(selected(.,'none')))" jr:constraintMsg="jr:itext('/BERF/provide_vers_whynot:jr:constraintMsg')" nodeset="/BERF/provide_vers_whynot" relevant=" /BERF/provide_vers ='no'" required="true()" test1="relevant: 0" type="select"/>
+      <bind nodeset="/BERF/provide_vers_whynot_other" relevant="selected( /BERF/provide_vers_whynot , 'other')" required="true()" test1="relevant: 0" type="string"/>
+      <bind constraint="(. &lt;=  /BERF/today ) or (. = '2020-01-01')" jr:constraintMsg="jr:itext('/BERF/year_open:jr:constraintMsg')" nodeset="/BERF/year_open" relevant=" /BERF/provide_vers ='yes'" required="true()" test1="2012" type="date"/>
+      <bind constraint="((0 &lt;= .) and (. &lt;= 7)) or (. = '-88') or (. = '-99')" jr:constraintMsg="jr:itext('/BERF/vers_days:jr:constraintMsg')" nodeset="/BERF/vers_days" relevant=" /BERF/provide_vers ='yes'" required="true()" test1="5" type="int"/>
+      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/BERF/provided_vers_currently:jr:constraintMsg')" nodeset="/BERF/provided_vers_currently" relevant=" /BERF/provide_vers ='yes'" required="true()" test1="birth death other" type="select"/>
+      <bind nodeset="/BERF/provided_vers_currently_other" relevant="selected( /BERF/provided_vers_currently , 'other')" required="true()" test1="testing something random" type="string"/>
+      <bind nodeset="/BERF/knows_population_served" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" test1="no" type="select1"/>
+      <bind constraint="(. &gt; 0)" jr:constraintMsg="jr:itext('/BERF/population_served:jr:constraintMsg')" nodeset="/BERF/population_served" relevant=" /BERF/knows_population_served  = 'yes_knows_size'" required="true()" test1="relevant: 0" type="int"/>
+      <bind constraint="(. &gt; 0)" jr:constraintMsg="jr:itext('/BERF/staffing_vers:jr:constraintMsg')" nodeset="/BERF/staffing_vers" relevant=" /BERF/provide_vers ='yes'" required="true()" test1="10" type="int"/>
+      <bind nodeset="/BERF/focal_person_role" relevant=" /BERF/staffing_vers  &gt; 0" required="true()" test1="chief" type="select1"/>
+      <bind nodeset="/BERF/focal_person" relevant="( /BERF/focal_person_role  != '') and not(( /BERF/focal_person_role  = 'no_focalperson') or ( /BERF/focal_person_role  = '-88') or ( /BERF/focal_person_role  = '-99'))" required="true()" test1="no" type="select1"/>
+      <bind nodeset="/BERF/school" relevant="( /BERF/focal_person_role  != '') and not(( /BERF/focal_person_role  = 'no_focalperson') or ( /BERF/focal_person_role  = '-88') or ( /BERF/focal_person_role  = '-99'))" required="true()" test1="-88" type="select1"/>
+      <bind nodeset="/BERF/focal_person_work_rve" relevant="( /BERF/focal_person_role  != '') and not(( /BERF/focal_person_role  = 'no_focalperson') or ( /BERF/focal_person_role  = '-88') or ( /BERF/focal_person_role  = '-99'))" required="true()" test1="-88" type="select1"/>
+      <bind nodeset="/BERF/focal_person_primary_duty" relevant=" /BERF/focal_person_work_rve ='no_additional'" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/training_vera" relevant=" /BERF/staffing_vers  &gt; 0" required="true()" test1="yes" type="select1"/>
+      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99'))) and ((. = 'none') or not(selected(.,'none')))" jr:constraintMsg="jr:itext('/BERF/training_contents:jr:constraintMsg')" nodeset="/BERF/training_contents" relevant=" /BERF/training_vera ='yes'" required="true()" test1="register_births report" type="select"/>
+      <bind nodeset="/BERF/last_time_training" relevant=" /BERF/training_vera ='yes'" required="true()" test1="past_6_mon" type="select1"/>
+      <bind nodeset="/BERF/last_time_visit" relevant=" /BERF/provide_vers ='yes'" required="true()" test1="past_6_mon" type="select1"/>
+      <bind nodeset="/BERF/section_two_note" readonly="true()" relevant=" /BERF/provide_vers ='yes'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/electricity" relevant=" /BERF/provide_vers ='yes'" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/electricity_out_today" relevant=" /BERF/electricity ='yes'" required="true()" test1="no" type="select1"/>
+      <bind nodeset="/BERF/forms_available" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/ber_forms" relevant=" /BERF/forms_available ='yes'" test1="relevant: 1"/>
+      <bind nodeset="/BERF/ber_forms/ber_forms_note" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/ber_forms/ber_forms_label" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/BERF/ber_forms/birth_register" required="true()" test1="O" type="select1"/>
+      <bind nodeset="/BERF/ber_forms/be_report_format" required="true()" test1="O" type="select1"/>
+      <bind nodeset="/BERF/ber_forms/be_tally_sheet" required="true()" test1="O" type="select1"/>
+      <bind nodeset="/BERF/ber_forms/birth_certificate" required="true()" test1="O" type="select1"/>
+      <bind nodeset="/BERF/ber_forms/handover_form" required="true()" test1="O" type="select1"/>
+      <bind nodeset="/BERF/forms_runout_6mon" relevant=" /BERF/forms_available ='yes'" required="true()" test1="no" type="select1"/>
+      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/BERF/forms_stockout_6mon:jr:constraintMsg')" nodeset="/BERF/forms_stockout_6mon" relevant=" /BERF/forms_runout_6mon ='yes'" required="true()" test1="relevant: 0" type="select"/>
+      <bind nodeset="/BERF/provided_birthreport_vera" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/birthreport_frequency" relevant=" /BERF/provided_birthreport_vera ='yes'" required="true()" test1="quarterly" type="select1"/>
+      <bind nodeset="/BERF/report_vera" relevant=" /BERF/provided_birthreport_vera ='yes'" test1="relevant: 1"/>
+      <bind nodeset="/BERF/report_vera/report_vera_when" readonly="true()" relevant=" /BERF/provided_birthreport_vera ='yes'" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/report_vera/report_vera_d" relevant=" /BERF/provided_birthreport_vera ='yes'" required="true()" test1="1" type="select1"/>
+      <bind nodeset="/BERF/report_vera/report_vera_m" relevant=" /BERF/provided_birthreport_vera ='yes'" required="true()" test1="1" type="select1"/>
+      <bind constraint="((. &lt;= ( /BERF/today )) or ((. = '2020-01-01') and ( /BERF/report_vera/report_vera_m  = -88) and ( /BERF/report_vera/report_vera_d  = -88))) and ((.&gt;=( /BERF/year_open )) or ((. = '2020-01-01') and ( /BERF/report_vera/report_vera_m  = -88) and ( /BERF/report_vera/report_vera_d  = -88)))" jr:constraintMsg="jr:itext('/BERF/report_vera/report_vera_y:jr:constraintMsg')" nodeset="/BERF/report_vera/report_vera_y" relevant=" /BERF/provided_birthreport_vera ='yes'" required="true()" test1="2018" type="date"/>
+      <bind nodeset="/BERF/report_vera_how" relevant=" /BERF/provided_birthreport_vera ='yes'" required="true()" test1="dropped_off_vera" type="select1"/>
+      <bind nodeset="/BERF/room_observed" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/rve_items" relevant=" /BERF/room_observed ='yes'" test1="relevant: 1"/>
+      <bind nodeset="/BERF/rve_items/rve_room_note" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/rve_items/rve_items_label" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/BERF/rve_items/computer" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/rve_items/printer" required="true()" test1="ofl" type="select1"/>
+      <bind nodeset="/BERF/rve_items/photocopy_machine" required="true()" test1="ofl" type="select1"/>
+      <bind nodeset="/BERF/rve_items/telephone" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/rve_items/waiting_chairs" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/rve_items/lan_network" required="true()" test1="ofl" type="select1"/>
+      <bind nodeset="/BERF/recordbook_observed" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/record_book" relevant="( /BERF/recordbook_observed ='yes') or ( /BERF/recordbook_observed ='yes_nar')" test1="relevant: 1"/>
+      <bind nodeset="/BERF/record_book/birth_register_rb_note" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind constraint="(. &gt;= 0) or (. = '-88') or (. = '-99')" jr:constraintMsg="jr:itext('/BERF/record_book/num_registered_births:jr:constraintMsg')" nodeset="/BERF/record_book/num_registered_births" required="true()" test1="2000" type="int"/>
+      <bind constraint="(. &gt;= 0) or (. = '-88') or (. = '-99')" jr:constraintMsg="jr:itext('/BERF/record_book/num_birth_certificates:jr:constraintMsg')" nodeset="/BERF/record_book/num_birth_certificates" required="true()" test1="2000" type="int"/>
+      <bind nodeset="/BERF/archive_observed" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/archive" relevant=" /BERF/archive_observed ='yes'" test1="relevant: 1"/>
+      <bind nodeset="/BERF/archive/archive_observation_note" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/archive/archive_observation_label" test1="relevant: 1" type="select1"/>
+      <bind nodeset="/BERF/archive/separate_room" required="true()" test1="no" type="select1"/>
+      <bind nodeset="/BERF/archive/light_room" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/archive/registers_shelf" required="true()" test1="no" type="select1"/>
+      <bind nodeset="/BERF/archive/registers_sequence" required="true()" test1="no" type="select1"/>
+      <bind nodeset="/BERF/archive/protected_water" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/archive/protected_sunlight" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/archive/clean_room_rodents" required="true()" test1="yes" type="select1"/>
+      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99'))) and ((. = '-77') or not(selected(.,'-77')))" jr:constraintMsg="jr:itext('/BERF/clients_charged:jr:constraintMsg')" nodeset="/BERF/clients_charged" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" test1="late_birth_certificate" type="select"/>
+      <bind nodeset="/BERF/clients_charged_other" relevant="selected( /BERF/clients_charged , 'other')" required="true()" test1="relevant: 0" type="string"/>
+      <bind nodeset="/BERF/charge_amount" relevant="selected( /BERF/clients_charged , 'birth_event_reg') or
+selected( /BERF/clients_charged , 'birth_certificate') or
+selected( /BERF/clients_charged , 'penalty') or
+selected( /BERF/clients_charged , 'other')" test1="relevant: 1"/>
+      <bind nodeset="/BERF/charge_amount/charge_amount_note" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/registration_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/registration_fees" relevant="selected( /BERF/clients_charged , 'birth_event_reg')" required="true()" test1="relevant: 0" type="decimal"/>
+      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/typical_certificate_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/typical_certificate_fees" relevant="selected( /BERF/clients_charged , 'birth_certificate')" required="true()" test1="100" type="decimal"/>
+      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/delayed_certificate_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/delayed_certificate_fees" relevant="selected( /BERF/clients_charged , 'delayed_birth_certificate')" required="true()" test1="relevant: 0" type="decimal"/>
+      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/late_certificate_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/late_certificate_fees" relevant="selected( /BERF/clients_charged , 'late_birth_certificate')" required="true()" test1="relevant: 0" type="decimal"/>
+      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/penalty_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/penalty_fees" relevant="selected( /BERF/clients_charged , 'penalty')" required="true()" test1="relevant: 0" type="decimal"/>
+      <bind constraint="(. &gt; 0) or (. = -88) or (. = -99)" jr:constraintMsg="jr:itext('/BERF/charge_amount/other_fees:jr:constraintMsg')" nodeset="/BERF/charge_amount/other_fees" relevant="selected( /BERF/clients_charged , 'other')" required="true()" test1="relevant: 0" type="decimal"/>
+      <bind nodeset="/BERF/section_three_note" readonly="true()" relevant="selected( /BERF/provided_vers_currently , 'birth')" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/institution_govt_ngo" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" test1="yes" type="select1"/>
+      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/BERF/institution_type:jr:constraintMsg')" nodeset="/BERF/institution_type" relevant=" /BERF/institution_govt_ngo ='yes'" required="true()" test1="any_health_facilities" type="select"/>
+      <bind nodeset="/BERF/institution_type_other" relevant="selected( /BERF/institution_type , 'other')" required="true()" test1="relevant: 0" type="string"/>
+      <bind nodeset="/BERF/question_303_306_note" readonly="true()" relevant="selected( /BERF/institution_type , 'health_posts') or selected( /BERF/institution_type , 'any_health_facilities') or selected( /BERF/institution_type , 'religious_institutions') or selected( /BERF/institution_type , 'community_volunteers') or selected( /BERF/institution_type , 'schools') or selected( /BERF/institution_type , 'other')" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/birth_notification_hp" relevant="selected( /BERF/institution_type , 'health_posts')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/birth_notification_hf" relevant="selected( /BERF/institution_type , 'any_health_facilities')" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/birth_notification_religious" relevant="selected( /BERF/institution_type , 'religious_institutions')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/birth_notification_cv" relevant="selected( /BERF/institution_type , 'community_volunteers')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/birth_notification_school" relevant="selected( /BERF/institution_type , 'schools')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/birth_notification_other" relevant="selected( /BERF/institution_type , 'other')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/formal_be_report_hp" relevant="selected( /BERF/institution_type , 'health_posts')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/formal_be_report_hf" relevant="selected( /BERF/institution_type , 'any_health_facilities')" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/formal_be_report_religious" relevant="selected( /BERF/institution_type , 'religious_institutions')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/formal_be_report_cv" relevant="selected( /BERF/institution_type , 'community_volunteers')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/formal_be_report_school" relevant="selected( /BERF/institution_type , 'schools')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/formal_be_report_other" relevant="selected( /BERF/institution_type , 'other')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/frequency_report_hp" relevant="selected( /BERF/institution_type , 'health_posts') and ( /BERF/formal_be_report_hp ='yes_alltimes' or  /BERF/formal_be_report_hp ='yes_sometimes')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/frequency_report_hf" relevant="selected( /BERF/institution_type , 'any_health_facilities') and ( /BERF/formal_be_report_hf ='yes_alltimes' or  /BERF/formal_be_report_hf ='yes_sometimes')" required="true()" test1="quarterly" type="select1"/>
+      <bind nodeset="/BERF/frequency_report_religious" relevant="selected( /BERF/institution_type , 'religious_institutions') and ( /BERF/formal_be_report_religious ='yes_alltimes' or  /BERF/formal_be_report_religious ='yes_sometimes')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/frequency_report_cv" relevant="selected( /BERF/institution_type , 'community_volunteers') and ( /BERF/formal_be_report_cv ='yes_alltimes' or  /BERF/formal_be_report_cv ='yes_sometimes')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/frequency_report_school" relevant="selected( /BERF/institution_type , 'schools') and ( /BERF/formal_be_report_school ='yes_alltimes' or  /BERF/formal_be_report_school ='yes_sometimes')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/frequency_report_other" relevant="selected( /BERF/institution_type , 'other') and ( /BERF/formal_be_report_other ='yes_alltimes' or  /BERF/formal_be_report_other ='yes_sometimes')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_support_hp" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'health_posts')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_support_hf" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'any_health_facilities')" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/provide_support_religious" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'religious_institutions')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_support_cv" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'community_volunteers')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_support_school" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'schools')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_support_other" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'other')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_supervision_hp" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'health_posts')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_supervision_hf" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'any_health_facilities')" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/provide_supervision_religious" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'religious_institutions')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_supervision_cv" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'community_volunteers')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_supervision_school" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'schools')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_supervision_other" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'other')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_supplies_hp" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'health_posts')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_supplies_hf" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'any_health_facilities')" required="true()" test1="yes" type="select1"/>
+      <bind nodeset="/BERF/provide_supplies_religious" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'religious_institutions')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_supplies_cv" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'community_volunteers')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_supplies_school" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'schools')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/provide_supplies_other" relevant=" /BERF/institution_govt_ngo ='yes' and selected( /BERF/institution_type , 'other')" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/any_challenges_bers" relevant="selected( /BERF/provided_vers_currently , 'birth')" required="true()" test1="no" type="select1"/>
+      <bind nodeset="/BERF/challenges_grp" relevant=" /BERF/any_challenges_bers  = 'yes'" test1="relevant: 0"/>
+      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99')))" jr:constraintMsg="jr:itext('/BERF/challenges_grp/challenges_bers:jr:constraintMsg')" nodeset="/BERF/challenges_grp/challenges_bers" required="true()" test1="relevant: 0" type="select"/>
+      <bind nodeset="/BERF/challenges_grp/challenges_check" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/challenges_bers_other" relevant="selected( /BERF/challenges_grp/challenges_bers , 'other')" required="true()" test1="relevant: 0" type="string"/>
+      <bind nodeset="/BERF/solutions_grp" relevant=" /BERF/any_challenges_bers  = 'yes'" test1="relevant: 0"/>
+      <bind constraint="((. = '-88') or not(selected(.,'-88'))) and ((. = '-99') or not(selected(.,'-99'))) and ((. = 'none') or not(selected(.,'none')))" jr:constraintMsg="jr:itext('/BERF/solutions_grp/solutions_bers:jr:constraintMsg')" nodeset="/BERF/solutions_grp/solutions_bers" required="true()" test1="relevant: 0" type="select"/>
+      <bind nodeset="/BERF/solutions_grp/solutions_check" required="true()" test1="relevant: 0" type="select1"/>
+      <bind nodeset="/BERF/solutions_bers_other" relevant="selected( /BERF/solutions_grp/solutions_bers , 'other')" required="true()" test1="relevant: 0" type="string"/>
+      <bind nodeset="/BERF/sect_end" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/thankyou" readonly="true()" test1="relevant: 1" type="string"/>
+      <bind nodeset="/BERF/location" required="true()" test1="." type="geopoint"/>
+      <bind nodeset="/BERF/times_visited" required="true()" test1="1" type="select1"/>
+      <bind nodeset="/BERF/survey_language" relevant=" /BERF/consent_obtained " required="true()" test1="english" type="select1"/>
+      <bind nodeset="/BERF/survey_language_other" relevant=" /BERF/survey_language ='other'" required="true()" test1="relevant: 0" type="string"/>
+      <bind constraint="((. = 'completed') and  /BERF/consent_obtained ) or 
+((. = 'not_at_facility') and ( /BERF/available  = 'no')) or 
+((. = 'postponed') and ( /BERF/available  = 'no')) or 
+((. = 'refused') and not( /BERF/consent_obtained )) or 
+((. = 'partly_completed') and  /BERF/consent_obtained ) or 
+((. = 'closed_not_found') and ( /BERF/available  = 'no')) or 
+(. = 'other')" jr:constraintMsg="jr:itext('/BERF/VERF_result:jr:constraintMsg')" nodeset="/BERF/VERF_result" required="true()" test1="completed" type="select1"/>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/BERF/start" test1="." type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/BERF/end" test1="." type="dateTime"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/BERF/deviceid" test1="." type="string"/>
+      <bind jr:preload="property" jr:preloadParams="simserial" nodeset="/BERF/simserial" test1="." type="string"/>
+      <bind jr:preload="property" jr:preloadParams="phonenumber" nodeset="/BERF/phonenumber" test1="." type="string"/>
       <bind calculate="concat('uuid:', uuid())" nodeset="/BERF/meta/instanceID" readonly="true()" type="string"/>
       <bind calculate="concat('BERFS:',  /BERF/EA , '-', /BERF/facility_name ,'-', string( /BERF/facility_number ))" nodeset="/BERF/meta/instanceName" type="string"/>
       <bind calculate="string('log.txt')" nodeset="/BERF/meta/logging" type="binary"/>
@@ -10355,7 +10366,7 @@ Please record your name as a witness to the consent process. You previously ente
       <label ref="jr:itext('/BERF/witness_auto:label')"/>
       <hint ref="jr:itext('/BERF/witness_auto:hint')"/>
       <item>
-        <label/>
+        <label></label>
         <value>1</value>
       </item>
     </select1>
@@ -10864,7 +10875,7 @@ Please record your name as a witness to the consent process. You previously ente
         <hint ref="jr:itext('/BERF/ber_forms/ber_forms_note:hint')"/>
       </input>
       <select1 appearance="label" ref="/BERF/ber_forms/ber_forms_label">
-        <label/>
+        <label></label>
         <item>
           <label ref="jr:itext('/BERF/ber_forms/ber_forms_label/observed:label')"/>
           <value>observed</value>
@@ -11302,7 +11313,7 @@ Please record your name as a witness to the consent process. You previously ente
         <hint ref="jr:itext('/BERF/rve_items/rve_room_note:hint')"/>
       </input>
       <select1 appearance="label" ref="/BERF/rve_items/rve_items_label">
-        <label/>
+        <label></label>
         <item>
           <label ref="jr:itext('/BERF/rve_items/rve_items_label/ofl:label')"/>
           <value>ofl</value>
@@ -11495,7 +11506,7 @@ Please record your name as a witness to the consent process. You previously ente
         <hint ref="jr:itext('/BERF/archive/archive_observation_note:hint')"/>
       </input>
       <select1 appearance="label" ref="/BERF/archive/archive_observation_label">
-        <label/>
+        <label></label>
         <item>
           <label ref="jr:itext('/BERF/archive/archive_observation_label/yes:label')"/>
           <value>yes</value>
@@ -12762,7 +12773,7 @@ Please record your name as a witness to the consent process. You previously ente
       <select1 ref="/BERF/challenges_grp/challenges_check">
         <label ref="jr:itext('/BERF/challenges_grp/challenges_check:label')"/>
         <item>
-          <label/>
+          <label></label>
           <value>1</value>
         </item>
       </select1>
@@ -12875,7 +12886,7 @@ Please record your name as a witness to the consent process. You previously ente
       <select1 ref="/BERF/solutions_grp/solutions_check">
         <label ref="jr:itext('/BERF/solutions_grp/solutions_check:label')"/>
         <item>
-          <label/>
+          <label></label>
           <value>1</value>
         </item>
       </select1>
