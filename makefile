@@ -10,21 +10,25 @@ validate-crvs crvs-validate-only
 # Test
 # LivingGood.org tests
 living-goods-convert:
-	xls2xform test/static/fp_registration_ke/input/src/fp_registration_ke-v4-jef.xlsx test/static/fp_registration_ke/input/fp_registration_ke-v4-jef.xml
+	xls2xform test/static/fp_registration_ke/input/src/fp_registration_ke-v4-jef.xlsx \
+	test/static/fp_registration_ke/input/fp_registration_ke-v4-jef.xml
 living-goods-test:
 	java -jar build/libs/xform-test-0.3.3.jar test/static/fp_registration_ke/input/fp_registration_ke-v4-jef.xml
 living-goods-full-test: living-goods-convert living-goods-test
 manual-fix-test:
 	make living-goods-test-convert
-	cp test/static/fp_registration_ke/input/fp_registration_ke-v4-jef.xml test/static/fp_registration_ke/input/fp_registration_ke-v4-jef-fixed.xml
+	cp test/static/fp_registration_ke/input/fp_registration_ke-v4-jef.xml \
+	test/static/fp_registration_ke/input/fp_registration_ke-v4-jef-fixed.xml
 	sed -i -e 's/test1="true()/test1="yes/g' test/static/fp_registration_ke/input/fp_registration_ke-v4-jef-fixed.xml
 	sed -i -e 's/test1="false()/test1="no/g' test/static/fp_registration_ke/input/fp_registration_ke-v4-jef-fixed.xml
 	rm test/static/fp_registration_ke/input/fp_registration_ke-v4-jef-fixed.xml-e
-	java -jar test/static/fp_registration_ke/input/src/_archive/xform-test-0.3.3.jar test/static/fp_registration_ke/input/fp_registration_ke-v4-jef-fixed.xml
+	java -jar test/static/fp_registration_ke/input/src/_archive/xform-test-0.3.3.jar \
+	test/static/fp_registration_ke/input/fp_registration_ke-v4-jef-fixed.xml
 test-unit-tests:
 	python3 test/test.py
 update-xml:
-	xls2xform test/static/fp_registration_ke/input/src/fp_registration_ke-v2-jef.xlsx test/static/fp_registration_ke/input/fp_registration_ke-v2-jef.xml
+	xls2xform test/static/fp_registration_ke/input/src/fp_registration_ke-v2-jef.xlsx \
+	test/static/fp_registration_ke/input/fp_registration_ke-v2-jef.xml
 #	xls2xform test/static/XformTest/input/src/XFormTest1.xlsx test/static/XformTest/input/XFormTest1.xml; \
 #	xls2xform test/static/MultipleFiles/input/src/XFormTest1.xlsx test/static/MultipleFiles/input/XFormTest1.xml; \
 #	xls2xform test/static/MultipleFiles/input/src/XFormTest2.xlsx test/static/MultipleFiles/input/XFormTest2.xml; \
@@ -86,7 +90,7 @@ open-docs:
 readme-to-docs:
 	cp README.md docs/source/content/docs.md
 test-files-to-static-doc-files:
-	cp test/static/XformTest/input/XformTest1.xlsx docs/source/_static/xlsx_example.xlsx
+	cp test/static/XformTest/input/src/XformTest1.xlsx docs/source/_static/xlsx_example.xlsx
 build-docs-no-open:
 	rm -rf docs/build/ && \
 	make readme-to-docs && \
